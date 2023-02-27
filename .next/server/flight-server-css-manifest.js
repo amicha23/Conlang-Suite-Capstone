@@ -1,16 +1,3 @@
 self.__RSC_CSS_MANIFEST={
-  "__entry_css_mods__": {
-    "C:\\Users\\leagu\\Documents\\LANGTIME\\Conlang-Suite-Capstone\\src\\app\\page": [
-      "C:\\Users\\leagu\\Documents\\LANGTIME\\Conlang-Suite-Capstone\\src\\app\\page.module.css",
-      "C:\\Users\\leagu\\Documents\\LANGTIME\\Conlang-Suite-Capstone\\node_modules\\@next\\font\\google\\target.css?{\"path\":\"src\\\\app\\\\page.tsx\",\"import\":\"Inter\",\"arguments\":[{\"subsets\":[\"latin\"]}],\"variableName\":\"inter\"}",
-      "C:\\Users\\leagu\\Documents\\LANGTIME\\Conlang-Suite-Capstone\\src\\app\\globals.css"
-    ]
-  },
-  "C:\\Users\\leagu\\Documents\\LANGTIME\\Conlang-Suite-Capstone\\src\\app\\page.tsx": [
-    "C:\\Users\\leagu\\Documents\\LANGTIME\\Conlang-Suite-Capstone\\node_modules\\@next\\font\\google\\target.css?{\"path\":\"src\\\\app\\\\page.tsx\",\"import\":\"Inter\",\"arguments\":[{\"subsets\":[\"latin\"]}],\"variableName\":\"inter\"}",
-    "C:\\Users\\leagu\\Documents\\LANGTIME\\Conlang-Suite-Capstone\\src\\app\\page.module.css"
-  ],
-  "C:\\Users\\leagu\\Documents\\LANGTIME\\Conlang-Suite-Capstone\\src\\app\\layout.tsx": [
-    "C:\\Users\\leagu\\Documents\\LANGTIME\\Conlang-Suite-Capstone\\src\\app\\globals.css"
-  ]
+  "__entry_css_mods__": {}
 }
