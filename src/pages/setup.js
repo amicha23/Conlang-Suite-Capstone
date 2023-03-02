@@ -1,4 +1,5 @@
-// import 'antd/dist/antd.css';
+// Hold the Dictionary Setup Page 1 for naming the languge and uploads
+
 import { Input } from 'antd';
 import { UploadOutlined } from '@ant-design/icons';
 import { Button, message, Upload } from 'antd';
@@ -6,9 +7,17 @@ import React, { useEffect, useState } from "react";
 import { Layout } from 'antd';
 const { Header, Footer, Sider, Content } = Layout;
 
-//icons
+// Router
+import { useRouter } from 'next/navigation';
+
+// icons
 import { CheckCircleOutlined, CheckCircleTwoTone, InfoCircleOutlined, InfoCircleTwoTone } from '@ant-design/icons';
 
+// Components
+import { DictionaryPrefilledForms } from '../components/dictionaryPrefilled';
+import { DictionaryCustomForms } from '../components/dictionaryCustomFields';
+
+// Functions
 import saveUserInfo from "../app/dictionary"
 
 
@@ -39,7 +48,7 @@ const props = {
 export default function setup() {
   const [langName, setValue] = useState('');
   const [langDesc, setDesc] = useState('');
-
+  const router = useRouter();
 
   return (
       <div>
@@ -66,22 +75,32 @@ export default function setup() {
                 </>
 
                 <p>Upload Custom Font</p>
-                <Upload {...props}>
+                {/* Removed file props for now */}
+                <Upload >
                   <Button icon={<UploadOutlined />}>Click to Upload</Button>
                 </Upload>
 
                 <p>Upload Cover Image</p>
-                <Upload {...props}>
+                <Upload >
                   <Button icon={<UploadOutlined />}>Click to Upload</Button>
                 </Upload>
               </div>
 
               <div id="continue-button">
                 <br></br>
-                <Button type="primary" onClick={() => saveUserInfo({langName, langDesc})} >Continue</Button>
+                <Button
+                  type="primary"
+                  onClick={
+                    () => {
+                      saveUserInfo({langName, langDesc})
+                      router.push('/setupFields')
+                    }}>
+                    Continue
+                 </Button>
               </div>
             </Content>
           </Layout>
       </div>
   );
 }
+
