@@ -11,7 +11,7 @@ export default async function saveDictionaryFields() {
   console.log("Final Request Data: ", data);
 
   try {
-    let responseJson = await fetch(`api/getFields`, {
+    let responseJson = await fetch(`api/createSetup`, {
       method: "POST",
       body: JSON.stringify({data})
     })

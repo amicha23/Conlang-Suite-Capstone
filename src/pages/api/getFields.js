@@ -2,5 +2,10 @@
 
 export default function handler(req, res) {
   console.log(JSON.parse(req.body).data)
-  res.status(200).json({ response: 'successfully sent form fields to server' })
+  // try {
+
+  //   res.status(200).json({ response: 'successfully sent form fields to server' })
+  // } catch (e) {
+  //   res.status(500).json({error: e})
+  // }
 }
