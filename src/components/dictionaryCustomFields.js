@@ -2,7 +2,7 @@
 
 
 import { Input } from 'antd';
-import { UploadOutlined } from '@ant-design/icons';
+import { UploadOutlined, DeleteOutlined } from '@ant-design/icons';
 import { Button, message, Upload, Form } from 'antd';
 import React, { useRef, useEffect, useState } from "react";
 import { Layout } from 'antd';
@@ -54,7 +54,7 @@ export function DictionaryCustomForms() {
                   />
                 </Form.Item>
                 {fields.length > 0 ? (
-                  <MinusCircleOutlined
+                  <DeleteOutlined
                     className="dynamic-delete-button"
                     name={index}
                     onClick={() => {
