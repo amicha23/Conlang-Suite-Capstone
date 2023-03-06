@@ -6,7 +6,7 @@ export default async function saveLangInfo({langName, langDesc} :any) {
 
   //Do an ajax call to save dictionary pop up info from user into the database
   try {
-    let responseJson = await fetch(`api/createSetup`, {
+    let responseJson = await fetch(`api/getFields`, {
       method: "POST",
       body: JSON.stringify(
         {"language_name": langName,
