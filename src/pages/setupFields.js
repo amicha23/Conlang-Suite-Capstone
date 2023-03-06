@@ -1,7 +1,7 @@
 // Hold the Dictionary Setup Page 2 for pre-filled and custom fields
 
 import { Input } from 'antd';
-import { UploadOutlined } from '@ant-design/icons';
+import { UploadOutlined, LeftOutlined } from '@ant-design/icons';
 import { Button, message, Upload } from 'antd';
 import React, { useRef, useEffect, useState } from "react";
 import { Layout } from 'antd';
@@ -16,10 +16,15 @@ import { CheckCircleOutlined, CheckCircleTwoTone, InfoCircleOutlined, InfoCircle
 // Components
 import { DictionaryPrefilledForms } from '../components/dictionaryPrefilled';
 import { DictionaryCustomForms } from '../components/dictionaryCustomFields';
+import { SetUp } from '../components/setup';
 
 // Functions
 // import saveLangInfo from "../app/dictionary"
 import saveDictionaryFields from "../app/sendTableInfo"
+
+//css
+// import '../app/page.module.css';
+import styles from '../app/page.module.css'
 
 
 const { TextArea } = Input;
@@ -50,6 +55,7 @@ export default function setup() {
   const [langName, setValue] = useState('');
   const [langDesc, setDesc] = useState('');
   const [fieldView, setFieldView] = useState(true);
+  const [setUpView, changeSetUpView] = useState(true);
   const router = useRouter();
 
   const [fields, setFields] = React.useState([
@@ -66,78 +72,91 @@ export default function setup() {
 
   return (
       <div>
-          <Layout>
-            <Sider style={{ padding: '0 20px', background: 'white'}}>
-              {/* Will need to add in the css */}
-              <div id='progress-sidebar'>
-                <CheckCircleTwoTone />
-                <p>Your Details</p>
-                <InfoCircleTwoTone />
-                <p>Dictionary Setup</p>
-                <InfoCircleOutlined />
-                <p>Dictionary Setup</p>
-              </div>
-            </Sider>
-            <Content style={{ padding: '0 20px', background: 'white'}}>
-              <h1>Dictionary Setup</h1>
-              <p className='fields'>
-                To get started, you'll need to set up the header fields.
-                These fields will be used to organize your dictionary.
-                Some common header fields are: [X, X, X].
-                You can also create your own header fields that make sense for your language.
-                Once your header fields are set up, you'll be ready to start adding words and their definitions.
-              </p>
-              <p><b>
-                You can always update these at anytime throughout your language creation process.
-              </b></p>
-              <div id="field-option">
-                <Button
-                    id='prefilled-btn'
-                    type={fieldView ? "primary" : "outline"}
-                    onClick={() => setFieldView(true)}
-                      >
-                      Pre-filled Fields
-                </Button>
-                <Button
-                  type={fieldView ? "outline" : "primary"}
-                  onClick={() => setFieldView(false)}
+          <div id="LangInfo-Setup" style={{display: setUpView ? "block" : "none"}}>
+            <SetUp setUpView={setUpView} changeSetUpView={changeSetUpView}/>
+          </div>
+          <div id="Fields-Setup"  style={{display: setUpView ? "none" : "block"}}>
+            <Layout>
+              <Sider style={{ padding: '0 20px', background: 'white'}}>
+                {/* Will need to add in the css */}
+                <div id='progress-sidebar'>
+                  <CheckCircleTwoTone />
+                  <p>Your Details</p>
+                  <CheckCircleTwoTone />
+                  <p>Dictionary Setup</p>
+                  <InfoCircleTwoTone />
+                  <p>Dictionary Setup</p>
+                </div>
+              </Sider>
+              <Content style={{ padding: '0 20px', background: 'white'}}>
+                <h1>Dictionary Setup</h1>
+                <p className='fields'>
+                  To get started, you'll need to set up the header fields.
+                  These fields will be used to organize your dictionary.
+                  Some common header fields are: [X, X, X].
+                  You can also create your own header fields that make sense for your language.
+                  Once your header fields are set up, you'll be ready to start adding words and their definitions.
+                </p>
+                <p><b>
+                  You can always update these at anytime throughout your language creation process.
+                </b></p>
+                <div id="field-option">
+                  <Button
+                      id='prefilled-btn'
+                      type={fieldView ? "primary" : "outline"}
+                      onClick={() => setFieldView(true)}
+                        >
+                        Pre-filled Fields
+                  </Button>
+                  <Button
+                    type={fieldView ? "outline" : "primary"}
+                    onClick={() => setFieldView(false)}
 
-                      >
-                      Custom Fields
-                </Button>
-              </div>
-
-              <div id="form-fields-setup">
-                <br></br>
-                <div style={{display: fieldView ? "block" : "none"}}>
-                  <DictionaryPrefilledForms fields={fields} setFields={setFields}/>
+                        >
+                        Custom Fields
+                  </Button>
                 </div>
 
-                <div style={{display: fieldView ? "none" : "block"}}>
-                  <DictionaryCustomForms />
+                <div id="form-fields-setup">
+                  <br></br>
+                  <div style={{display: fieldView ? "block" : "none"}}>
+                    <DictionaryPrefilledForms fields={fields} setFields={setFields}/>
+                    <DictionaryCustomForms />
+                  </div>
+
+                  <div style={{display: fieldView ? "none" : "block"}}>
+                    <DictionaryCustomForms />
+                  </div>
+
+                  {/* <ShowField fieldView={fieldView} /> */}
+                  {/* { fieldView ? <DictionaryPrefilledForms /> : null } */}
+
+
                 </div>
+                <div id="buttons" className={styles.buttons}>
+                  <div id="back-btn" className={styles.buttonsChild} style={{display: setUpView ? "none" : "block"}}>
+                    <LeftOutlined onClick={() => {
+                      changeSetUpView(true);
+                    }}/>
+                  </div>
+                  <div id="create-dict-button">
+                    <br></br>
+                    {/* <Button type="primary" htmlType="submit" onClick={onFinish}> */}
+                    <Button
+                      type="primary"
+                      htmlType="submit"
+                      onClick={() => {
+                        saveDictionaryFields();
+                      }}
+                      >
+                      Create Dictionary
+                    </Button>
 
-                {/* <ShowField fieldView={fieldView} /> */}
-                {/* { fieldView ? <DictionaryPrefilledForms /> : null } */}
-
-
-              </div>
-              <div id="create-dict-button">
-                <br></br>
-                {/* <Button type="primary" htmlType="submit" onClick={onFinish}> */}
-                <Button
-                  type="primary"
-                  htmlType="submit"
-                  onClick={() => {
-                    saveDictionaryFields();
-                  }}
-                   >
-                  Create Dictionary
-                </Button>
-
-              </div>
-            </Content>
-          </Layout>
+                  </div>
+                </div>
+              </Content>
+            </Layout>
+          </div>
       </div>
   );
 }

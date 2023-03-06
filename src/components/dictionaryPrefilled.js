@@ -1,7 +1,7 @@
 // Dictionary Prefilled Fields setup view
 
 import { Input } from 'antd';
-import { UploadOutlined } from '@ant-design/icons';
+import { UploadOutlined, DeleteOutlined } from '@ant-design/icons';
 import { Button, message, Upload, Form } from 'antd';
 import React, { useEffect, useState } from "react";
 import { Layout } from 'antd';
@@ -24,7 +24,7 @@ export function DictionaryPrefilledForms({fields, setFields}) {
       <br></br>
       <PreFilledList setFields={setFields} fields={fields} />
 
-      <AddInput setFields={setFields} />
+      {/* <AddInput setFields={setFields} /> */}
 
       {/* <Button type="primary" htmlType="submit" onClick={onFinish}>
           Submit
@@ -72,14 +72,14 @@ function DeleteInput({ field, setFields }) {
     <span
       onClick={handleDelete}
       role="button"
-      style={{
-        color: "red",
-        fontWeight: "bold",
-        marginLeft: 10,
-        cursor: "pointer"
-      }}
+      // style={{
+      //   color: "red",
+      //   fontWeight: "bold",
+      //   marginLeft: 10,
+      //   cursor: "pointer"
+      // }}
     >
-      x
+      <DeleteOutlined />
     </span>
   );
 }
