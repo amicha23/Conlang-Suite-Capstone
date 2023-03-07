@@ -15,6 +15,7 @@ import getUserLanguages from '../app/getLanguages';
 
 const { Header, Footer, Sider, Content } = Layout;
 
+
 export default function Home() {
     const [languages, setLanguages] = useState([]);
     const router = useRouter();
@@ -22,6 +23,7 @@ export default function Home() {
     const createDict = () => {
         router.push('/setupFields');
     };
+
 
     const responsejson = getUserLanguages();
 
