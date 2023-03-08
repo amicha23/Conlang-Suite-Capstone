@@ -6,14 +6,19 @@ import { ref, child, push, update } from "firebase/database";
 export default function handler(req, res) {
   console.log(req.body);
   try {
-    console.log("tried pushing new data to database");
     const data = JSON.parse(req.body);
     const dictFields = String(data.dictFields).slice(0, String(data.dictFields).length);
     var _uid = 'user1';
+    // var langData = {
+    //   description: data.language_desc,
+    //   dictionary_fields: dictFields,
+    //   name: data.language_name,
+    //   uid: _uid,
+    // }
     var langData = {
-      description: data.language_desc,
-      dictionary_fields: dictFields,
-      name: data.language_name,
+      description: "testing lang1",
+      dictionary_fields: '"Orthographic forms","Keystrokes for orthography","Head word","Inflected forms","Pronunciation","Proto-form","Politeness-register scale","English definition"',
+      name: "testing lang1",
       uid: _uid,
       dict: "",
     }
