@@ -26,6 +26,10 @@ import saveDictionaryFields from "../app/sendTableInfo"
 // import '../app/page.module.css';
 import styles from '../app/page.module.css'
 
+// images
+import Image from 'next/image';
+import logo from '../../public/langtimelogo.png';
+
 
 const { TextArea } = Input;
 
@@ -80,6 +84,7 @@ export default function setup() {
               <Sider style={{ padding: '0 20px', background: 'white'}}>
                 {/* Will need to add in the css */}
                 <div id='progress-sidebar'>
+                  <Image src={ logo } alt='Logo placeholder' width={150} style={{'margin-bottom': '10px'}} />
                   <CheckCircleTwoTone />
                   <p>Your Details</p>
                   <CheckCircleTwoTone />
@@ -119,12 +124,12 @@ export default function setup() {
 
                 <div id="form-fields-setup">
                   <br></br>
-                  <div style={{display: fieldView ? "block" : "none"}}>
+                  <div id="prefill" style={{display: fieldView ? "block" : "none"}}>
                     <DictionaryPrefilledForms fields={fields} setFields={setFields}/>
                     <DictionaryCustomForms />
                   </div>
 
-                  <div style={{display: fieldView ? "none" : "block"}}>
+                  <div id="custom" style={{display: fieldView ? "none" : "block"}}>
                     <DictionaryCustomForms />
                   </div>
 
@@ -146,7 +151,7 @@ export default function setup() {
                       type="primary"
                       htmlType="submit"
                       onClick={() => {
-                        saveDictionaryFields();
+                        saveDictionaryFields(fieldView);
                       }}
                       >
                       Create Dictionary

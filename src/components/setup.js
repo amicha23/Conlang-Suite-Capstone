@@ -13,6 +13,10 @@ import { useRouter } from 'next/navigation';
 // icons
 import { CheckCircleOutlined, CheckCircleTwoTone, InfoCircleOutlined, InfoCircleTwoTone } from '@ant-design/icons';
 
+// images
+import Image from 'next/image';
+import logo from '../../public/langtimelogo.png';
+
 // Components
 // import { DictionaryPrefilledForms } from './dictionaryPrefilled';
 // import { DictionaryCustomForms } from './dictionaryCustomFields';
@@ -57,6 +61,7 @@ export function SetUp({setUpView, changeSetUpView}) {
             <Sider style={{ padding: '0 20px', background: 'white'}}>
               {/* Will need to add in the css */}
               <div id='progress-sidebar'>
+                <Image src={ logo } alt='Logo placeholder' width={150} style={{'margin-bottom': '10px'}}/>
                 <CheckCircleTwoTone />
                 <p>Your Details</p>
                 <InfoCircleTwoTone />
@@ -91,9 +96,16 @@ export function SetUp({setUpView, changeSetUpView}) {
                 <br></br>
                 <Button
                   type="primary"
+                  id="cont-button"
                   onClick={
                     () => {
-                      changeSetUpView(false);
+                      if (!langName.trim().length) {
+                        console.log("no name")
+                        checkLangNameExists(langName)
+                      } else {
+                        checkLangNameExists(langName)
+                        changeSetUpView(false);
+                      }
                       // Response.Cache.SetCacheability(HttpCacheability.NoCache);
                       // Response.Cache.SetExpires(DateTime.Now);
                       // saveUserInfo({langName, langDesc})
@@ -108,9 +120,22 @@ export function SetUp({setUpView, changeSetUpView}) {
                     Continue
                  </Button>
               </div>
+              <div id="name-error" style={{display: "none"}}>
+                <p>Language Name must be filled!</p>
+              </div>
             </Content>
           </Layout>
       </div>
   );
 }
 
+// Do not allow continue button to be clicked if no language name
+function checkLangNameExists(langName) {
+  if (!langName.trim().length) {
+    let errormsg = document.getElementById("name-error")
+    errormsg.style.display="block"
+  } else {
+    let errormsg = document.getElementById("name-error")
+    errormsg.style.display="none"
+  }
+}

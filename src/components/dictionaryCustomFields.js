@@ -39,7 +39,7 @@ export function DictionaryCustomForms() {
                   rules={[
                     {
                       required: false,
-                      whitespace: true
+                      whitespace: false
                     },
                   ]}
                   noStyle
