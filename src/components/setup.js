@@ -14,11 +14,11 @@ import { useRouter } from 'next/navigation';
 import { CheckCircleOutlined, CheckCircleTwoTone, InfoCircleOutlined, InfoCircleTwoTone } from '@ant-design/icons';
 
 // Components
-import { DictionaryPrefilledForms } from '../components/dictionaryPrefilled';
-import { DictionaryCustomForms } from '../components/dictionaryCustomFields';
+// import { DictionaryPrefilledForms } from './dictionaryPrefilled';
+// import { DictionaryCustomForms } from './dictionaryCustomFields';
 
 // Functions
-import saveUserInfo from "../app/dictionary"
+// import saveUserInfo from "../app/dictionary"
 
 
 const { TextArea } = Input;
@@ -45,10 +45,11 @@ const props = {
 };
 
 
-export default function setup() {
+export function SetUp({setUpView, changeSetUpView}) {
   const [langName, setValue] = useState('');
   const [langDesc, setDesc] = useState('');
   const router = useRouter();
+  // const [setUpView, changeSetUpView] = useState(true);
 
   return (
       <div>
@@ -92,8 +93,17 @@ export default function setup() {
                   type="primary"
                   onClick={
                     () => {
-                      saveUserInfo({langName, langDesc})
-                      router.push('/setupFields')
+                      changeSetUpView(false);
+                      // Response.Cache.SetCacheability(HttpCacheability.NoCache);
+                      // Response.Cache.SetExpires(DateTime.Now);
+                      // saveUserInfo({langName, langDesc})
+
+                      // sessionStorage.langName = langName;
+                      // sessionStorage.langDesc = langDesc;
+
+                      // router.push('/setupFields')
+                      // console.log("Language Name: ", sessionStorage.langName);
+                      // console.log("Language Desc: ", sessionStorage.langName);
                     }}>
                     Continue
                  </Button>

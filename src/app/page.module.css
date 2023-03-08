@@ -39,6 +39,20 @@
   font-family: var(--font-mono);
 }
 
+.buttons {
+  display: flex;
+  align-items: center;
+}
+
+.buttonsChild {
+  flex: 0.6;
+  /* border: 2px solid yellow; */
+}
+
+.buttonsChild:first-child {
+  margin-top: 20px;
+}
+
 .grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(33%, auto));
