@@ -1,6 +1,6 @@
 import { Layout } from 'antd';
 import { useRouter } from 'next/router';
-import { Button, message, Upload } from 'antd';
+import { Button, Collapse } from 'antd';
 import React, { useEffect, useState } from "react";
 import Image from 'next/image'
 import Link from 'next/link';
@@ -13,24 +13,20 @@ import help from '../../public/help.png';
 // FUNCTIONS
 import getUserLanguages from '../app/getLanguages';
 
+// Constants
 const { Header, Footer, Sider, Content } = Layout;
+const Panel = Collapse.Panel;
 
 
 export default function Home() {
-    const [languages, setLanguages] = useState([]);
-    const router = useRouter();
+    const [languages, setLanguages] = useState();
 
     const createDict = () => {
         router.push('/setupFields');
     };
 
-
-    const responsejson = getUserLanguages();
-
-    // const tempLanguages = getLanguages();
-    // console.log('USER LANGUAGES: ' + tempLanguages);
-    // setLanguages(tempLanguages);
-
+    getUserLanguages();
+    
     return (
         <div>
             <Layout>
@@ -39,8 +35,8 @@ export default function Home() {
                         <Image src={ logo } alt='Logo placeholder' width={150}/>
                     </Link>
 
-                    <Button>Language 1</Button>
-                    <Button>Language 2</Button>
+                    <div id='buttons'>
+                    </div>
 
                     <Link href="/help">
                         <Image src={ help } alt='Help placeholder' width={200}/>
