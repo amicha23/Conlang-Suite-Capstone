@@ -8,20 +8,20 @@ export default function handler(req, res) {
   try {
     const data = JSON.parse(req.body);
     const dictFields = String(data.dictFields).slice(0, String(data.dictFields).length);
-    var _uid = 'user1';
-    // var langData = {
-    //   description: data.language_desc,
-    //   dictionary_fields: dictFields,
-    //   name: data.language_name,
-    //   uid: _uid,
-    // }
+    var _uid = 'OUnW07Np3VNFduMOCX1V1bvvsd22';
     var langData = {
-      description: "testing lang1",
-      dictionary_fields: '"Orthographic forms","Keystrokes for orthography","Head word","Inflected forms","Pronunciation","Proto-form","Politeness-register scale","English definition"',
-      name: "testing lang1",
+      description: data.language_desc,
+      dictionary_fields: dictFields,
+      name: data.language_name,
       uid: _uid,
-      dict: "",
     }
+    // var langData = {
+    //   description: "testing lang2",
+    //   dictionary_fields: '"Orthographic forms","Keystrokes for orthography","Head word","Inflected forms","Pronunciation","Proto-form","Politeness-register scale","English definition"',
+    //   name: "testing lang2",
+    //   uid: _uid,
+    //   dict: "",
+    // }
     console.log("langData", langData)
     const newLangKey = push(child(ref(db),'languages')).key;
 

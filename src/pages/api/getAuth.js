@@ -16,6 +16,7 @@ const createAccount = async () => {
   var userData = {
     username: _username, 
     lid: "",
+    lname: "",
   }
   // don't need manual generated user id, get the signed-in user's unique user ID from the auth variable 
   const newUserKey = push(child(ref(db),'users')).key;
