@@ -57,7 +57,6 @@ async function loginEmailPassword(data) {
   }
   catch(error) {
     console.log(error);
-
   }
 } 
 
@@ -87,7 +86,7 @@ async function resetPassword(error) {
     .catch((error) => {
       const errorCode = error.code;
       const errorMessage = error.message;
-      // ..
+      console.log(errorMessage);
     });
 }
 
