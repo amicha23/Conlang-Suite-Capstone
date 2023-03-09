@@ -38,6 +38,7 @@ export default function handler(req, res) {
 
     res.status(200).json("Sent dictionary data to the database!");
   } catch (err) {
+    console.error(err);
     res.status(500).json({ error: "failed to load data" });
   }
 }
