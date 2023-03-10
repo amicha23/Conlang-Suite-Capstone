@@ -47,7 +47,7 @@ export default async function saveDictionaryFields(fieldView :any) {
   console.log("Final Request Data: ", data);
 
   try {
-    let responseJson = await fetch(`api/word/updateWord`, {
+    let responseJson = await fetch(`api/language/createSetup`, {
       method: "POST",
       body: JSON.stringify({
         language_name: langName,

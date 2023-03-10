@@ -6,7 +6,7 @@ const Panel = Collapse.Panel;
 export default async function getUserLanguages() {
     // *** CHANGE UID TO NOT BE HARD CODED ***
     try {
-        let responseJson = await fetch(`api/getUserLanguages`, {
+        let responseJson = await fetch(`api/getUserLang`, {
              method: "GET"
         });
         var response = await responseJson.json();
