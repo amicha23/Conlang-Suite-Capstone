@@ -1,21 +1,18 @@
 import { db } from "../../../firebaseConfig/firebaseAdmin.js";
 import { get, ref } from "firebase/database";
-import { query, orderByChild, equalTo } from "firebase/database";
 
 
 export default function handler(req, res) {
-  const dictName = "testing 1";
   try {
-    const dictRef = ref(db, "languages");
-    const dictQuery = query(dictRef, orderByChild("name"), equalTo(dictName));
-    get(dictQuery).then((snapshot) => {
+    const _lid = "-NQ7OKjfHiyMPxLR2cXb"
+    const dictRef = ref(db, `languages/${_lid}`);
+    get(dictRef).then((snapshot) => {
       if (snapshot.exists()) {
         const data = snapshot.val();
-        const dictionaryFields = Object.values(data)[0].dictionary_fields;
-        console.log("dictionaryFields :>> ", dictionaryFields);
+        const dictionaryFields = data.dictionary_fields;
         res
           .status(200)
-          .json({ response: "successfully query dictionary fields" });
+          .json({ response: "successfully query dictionary fields", data: dictionaryFields });
       } else {
         console.log("No data available");
         res.status(200).json({ response: "No data available" });
