@@ -3,8 +3,9 @@ import { get, ref } from "firebase/database";
 
 export default async function handler(req, res) {
   const data = JSON.parse(req.body);
+  console.log("Request Language ID: ", data)
   var lid = data.lid; // TODO: replace with actual lid value
-  lid = "-NQ9AuH-xaR_k-NxzwcA"
+  // lid = "-NQ9AuH-xaR_k-NxzwcA"
   const dictRef = ref(db, `languages/${lid}`);
 
   try {
@@ -31,6 +32,17 @@ export default async function handler(req, res) {
         .filter(([key, value]) => value.del_status === 0)
         .map(([key, value]) => ({ [key]: value.value }));
     });
+
+    // Just return the column headers
+    if (Object.keys(result).length === 0) {
+      let cols = Object.keys(dict)
+      console.log(cols)
+      cols.forEach(element => {
+        result[element] = []
+      });
+      res.status(200).json(result);
+      return
+    }
 
     console.log(result);
     res.status(200).json(result);
