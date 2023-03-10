@@ -1,29 +1,23 @@
-import db from "../../../firebaseConfig/firebaseConfig.js";
+import { db } from "../../../firebaseConfig/firebaseAdmin.js";
+import { get, ref } from "firebase/database";
+
 
 export default function handler(req, res) {
-  console.log(JSON.parse(req.body));
   try {
-    // const dictName = req.body.name;
-    const dictName = "test dict 2";
-    db.ref()
-      .child("languages")
-      .orderByChild("name")
-      .equalTo(dictName)
-      .get()
-      .then((snapshot) => {
-        if (snapshot.exists()) {
-          const data = snapshot.val();
-          const dictionaryFields = Object.values(data)[0].dictionary_fields;
-          console.log('dictionaryFields :>> ', dictionaryFields);
-          return dictionaryFields
-        } else {
-          console.log("No data available");
-        }
-      });
-
-    res
-      .status(200)
-      .json({ response: "successfully query dictionary fields" });
+    const _lid = "-NQ7OKjfHiyMPxLR2cXb"
+    const dictRef = ref(db, `languages/${_lid}`);
+    get(dictRef).then((snapshot) => {
+      if (snapshot.exists()) {
+        const data = snapshot.val();
+        const dictionaryFields = data.dictionary_fields;
+        res
+          .status(200)
+          .json({ response: "successfully query dictionary fields", data: dictionaryFields });
+      } else {
+        console.log("No data available");
+        res.status(200).json({ response: "No data available" });
+      }
+    });
   } catch (e) {
     res.status(500).json({ error: e });
   }
