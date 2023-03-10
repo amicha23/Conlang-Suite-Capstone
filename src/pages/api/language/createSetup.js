@@ -1,21 +1,29 @@
-import { db } from "../../../firebaseConfig/firebaseAdmin.js";
+import { db } from "../../../../firebaseConfig/firebaseAdmin.js";
 import { get, ref, child, push, update } from "firebase/database";
 
 export default async function handler(req, res) {
-  console.log('req.body :>> ', JSON.parse(req.body));
+  console.log("req.body :>> ", JSON.parse(req.body));
   try {
     const data = JSON.parse(req.body);
-    const dictFields = String(data.dictFields);
+    const dictFields = data.dictFields;
     var uid = data.uid; // TODO: include uid in req.body
 
-    uid = 'OUnW07Np3VNFduMOCX1V1bvvsd22'
+    uid = "OUnW07Np3VNFduMOCX1V1bvvsd22";
 
     const langData = {
       description: data.language_desc,
-      dictionary_fields: dictFields,
+      // dictionary_fields: String(data.dictFields),
       name: data.language_name,
       uid: uid,
+      del_status: 0,
     };
+
+    const dict = {};
+
+    for (const field of dictFields) {
+      dict[field] = { del_status: 0 };
+    }
+    langData["dict"] = dict;
 
     const newLangKey = push(child(ref(db), "languages")).key;
 
@@ -28,7 +36,9 @@ export default async function handler(req, res) {
       const lname = userData.lname || "";
 
       const newLid = lid ? `${lid},${newLangKey}` : newLangKey;
-      const newLname = lname ? `${lname},${data.language_name}` : data.language_name;
+      const newLname = lname
+        ? `${lname},${data.language_name}`
+        : data.language_name;
 
       const updates = {};
       updates[`/languages/${newLangKey}`] = langData;
@@ -37,7 +47,7 @@ export default async function handler(req, res) {
 
       await update(ref(db), updates);
       console.log("Data pushed successfully");
-      res.status(200).json("Sent dictionary data to the database!");
+      res.status(200).json("Succes");
     } else {
       console.log("No data available");
       res.status(200).json({ response: "No data available" });
