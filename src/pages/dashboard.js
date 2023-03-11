@@ -1,3 +1,4 @@
+// PACKAGES
 import { Layout } from 'antd';
 import { useRouter } from 'next/router';
 import { Button, Collapse } from 'antd';
@@ -15,6 +16,7 @@ import getUserLanguages from '../app/getLanguages';
 
 // Components
 import DictionaryTable from '../components/dictTable';
+import { SideBar } from '../components/sidebar';
 
 // Constants
 const { Header, Footer, Sider, Content } = Layout;
@@ -29,33 +31,14 @@ export default function Home() {
         router.push('/setupFields');
     };
 
-    getUserLanguages();
+    const buttonList = getUserLanguages();
+    // console.log("BUTTON LIST2:", buttonList);
     // addClick();
 
     return (
         <div>
+            <SideBar buttonList={ buttonList }/>
             <Layout>
-                <Sider style={{ padding: '0 20px', background: 'white'}}>
-                    <Link href="/dashboard">
-                        <Image src={ logo } alt='Logo placeholder' width={150}/>
-                    </Link>
-                    <div>
-                        <Button
-                            id="dashbord-btn"
-                            onClick={() => changeDashboardView(true)}>Dashboard
-                        </Button>
-                    </div>
-
-                    <div id='buttons'>
-                    </div>
-
-                    <Link href="/help">
-                        <Image src={ help } alt='Help placeholder' width={200}/>
-                    </Link>
-                    <Link href="/logout">
-                        <Image src={ logout } alt='Logout placeholder' width={200}/>
-                    </Link>
-                </Sider>
                 <Content>
                     <div id="view-create-dashboard" style={{display: viewDict ? "block" : "none"}} >
                         <h1>Dashboard</h1>
@@ -69,6 +52,30 @@ export default function Home() {
         </div>
     );
 }
+
+
+/* 
+                <Sider style={{ padding: '0 20px', background: 'white'}}>
+                    <Link href="/dashboard">
+                        <Image src={ logo } alt='Logo placeholder' width={150}/>
+                    </Link>
+                    <div>
+                        <Button
+                            id="dashbord-btn"
+                            onClick={() => changeDashboardView(true)}>Dashboard
+                        </Button>
+                    </div>
+
+                    {buttonList}
+
+                    <Link href="/help">
+                        <Image src={ help } alt='Help placeholder' width={200}/>
+                    </Link>
+                    <Link href="/logout">
+                        <Image src={ logout } alt='Logout placeholder' width={200}/>
+                    </Link>
+                </Sider>
+*/
 
 
 function addClick() {
