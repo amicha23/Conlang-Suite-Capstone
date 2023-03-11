@@ -16,7 +16,7 @@ import getUserLanguages from '../app/getLanguages';
 
 // Components
 import DictionaryTable from '../components/dictTable';
-import { SideBar } from '../components/sidebar';
+import SideBar from '../components/SideBar';
 
 // Constants
 const { Header, Footer, Sider, Content } = Layout;
@@ -31,13 +31,19 @@ export default function Home() {
         router.push('/setupFields');
     };
 
-    const buttonList = getUserLanguages();
+
+
+    // const buttonList = getUserLanguages();
     // console.log("BUTTON LIST2:", buttonList);
     // addClick();
 
     return (
         <div>
-            <SideBar buttonList={ buttonList }/>
+            <div id="sidebar-div">
+                <Sider >
+                <SideBar />
+                </Sider>
+            </div>
             <Layout>
                 <Content>
                     <div id="view-create-dashboard" style={{display: viewDict ? "block" : "none"}} >
@@ -54,7 +60,7 @@ export default function Home() {
 }
 
 
-/* 
+/*
                 <Sider style={{ padding: '0 20px', background: 'white'}}>
                     <Link href="/dashboard">
                         <Image src={ logo } alt='Logo placeholder' width={150}/>
