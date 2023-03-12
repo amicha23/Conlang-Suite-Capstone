@@ -1,7 +1,9 @@
 // Create a table to hold all dictionary information
 
 import { Button, Form, Input, Popconfirm, Table } from 'antd';
+import { set } from 'firebase/database';
 import React, { useContext, useEffect, useRef, useState } from 'react';
+import { useRouter } from 'next/router';
 
 const EditableContext = React.createContext(null);
 const EditableRow = ({ index, ...props }) => {
@@ -80,7 +82,15 @@ const EditableCell = ({
   }
   return <td {...restProps}>{childNode}</td>;
 };
-const DictionaryTable = () => {
+
+const DictionaryTable = ({lid}) => {
+  const router = useRouter()
+  let query=router.query['lid']
+  console.log("Query Param: ", query);
+
+  console.log("Dictionary Table: ", lid)
+  const [data, setData] = useState(null);
+
   const [dataSource, setDataSource] = useState([
     {
       key: '0',
@@ -95,27 +105,52 @@ const DictionaryTable = () => {
       address: 'London, Park Lane no. 1',
     },
   ]);
+
+
   const [count, setCount] = useState(2);
-  const handleDelete = (key) => {
-    const newData = dataSource.filter((item) => item.key !== key);
-    setDataSource(newData);
-  };
-  const defaultColumns = [
-    {
-      title: 'name',
-      dataIndex: 'name',
-      width: '30%',
-      editable: true,
-    },
-    {
-      title: 'age',
-      dataIndex: 'age',
-    },
-    {
-      title: 'address',
-      dataIndex: 'address',
-    },
-    {
+  // Make call to language's dictionary
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        // WIP: why do you need to go back to dashboard if you want a different table?
+        console.log("LID", query.replace(/\s+/g, ''))
+        let responseJson = await fetch(`api/word/getWords`, {
+          method: "POST",
+          body: JSON.stringify(
+            {"lid": query.replace(/\s+/g, '')
+            })
+        });
+        const newData = await responseJson.json();
+        console.log("response dictionary: ", newData);
+        setData(newData);
+      } catch(e) {
+        console.log("Error getting dictionary table: ", e)
+      }
+    };
+    fetchData();
+
+  }, []);
+
+
+  if (data) {
+    console.log("Dictionary Table Component Response Data: ", data)
+
+    const handleDelete = (key) => {
+      const newData = dataSource.filter((item) => item.key !== key);
+      setDataSource(newData);
+    };
+
+    const defaultColumns = []
+    for (var key of Object.keys(data)) {
+      console.log(key + " -> " + data[key])
+      defaultColumns.push(      {
+        title: key,
+        dataIndex: key,
+        width: '30%',
+        editable: true,
+      })
+    }
+    defaultColumns.push({
       title: 'operation',
       dataIndex: 'operation',
       render: (_, record) =>
@@ -124,69 +159,102 @@ const DictionaryTable = () => {
             <a>Delete</a>
           </Popconfirm>
         ) : null,
-    },
-  ];
-  const handleAdd = () => {
-    const newData = {
-      key: count,
-      name: `Edward King ${count}`,
-      age: '32',
-      address: `London, Park Lane no. ${count}`,
+    })
+
+    // !!!!!!!!!!!===+=== Orignal columns set by antd  below ===+===!!!!!!!!!!!!!
+
+
+    //  defaultColumns = [
+      // {
+      //   title: 'name',
+      //   dataIndex: 'name',
+      //   width: '30%',
+      //   editable: true,
+      // },
+      // {
+      //   title: 'age',
+      //   dataIndex: 'age',
+      // },
+      // {
+      //   title: 'address',
+      //   dataIndex: 'address',
+      // },
+    //   {
+    //     title: 'operation',
+    //     dataIndex: 'operation',
+    //     render: (_, record) =>
+    //       dataSource.length >= 1 ? (
+    //         <Popconfirm title="Sure to delete?" onConfirm={() => handleDelete(record.key)}>
+    //           <a>Delete</a>
+    //         </Popconfirm>
+    //       ) : null,
+    //   },
+    // ];
+
+    const handleAdd = () => {
+      const newData = {
+        key: count,
+        name: `Edward King ${count}`,
+        age: '32',
+        address: `London, Park Lane no. ${count}`,
+      };
+      setDataSource([...dataSource, newData]);
+      setCount(count + 1);
     };
-    setDataSource([...dataSource, newData]);
-    setCount(count + 1);
-  };
-  const handleSave = (row) => {
-    const newData = [...dataSource];
-    const index = newData.findIndex((item) => row.key === item.key);
-    const item = newData[index];
-    newData.splice(index, 1, {
-      ...item,
-      ...row,
+    const handleSave = (row) => {
+      const newData = [...dataSource];
+      const index = newData.findIndex((item) => row.key === item.key);
+      const item = newData[index];
+      newData.splice(index, 1, {
+        ...item,
+        ...row,
+      });
+      setDataSource(newData);
+    };
+    const components = {
+      body: {
+        row: EditableRow,
+        cell: EditableCell,
+      },
+    };
+    const columns = defaultColumns.map((col) => {
+      if (!col.editable) {
+        return col;
+      }
+      return {
+        ...col,
+        onCell: (record) => ({
+          record,
+          editable: col.editable,
+          dataIndex: col.dataIndex,
+          title: col.title,
+          handleSave,
+        }),
+      };
     });
-    setDataSource(newData);
-  };
-  const components = {
-    body: {
-      row: EditableRow,
-      cell: EditableCell,
-    },
-  };
-  const columns = defaultColumns.map((col) => {
-    if (!col.editable) {
-      return col;
-    }
-    return {
-      ...col,
-      onCell: (record) => ({
-        record,
-        editable: col.editable,
-        dataIndex: col.dataIndex,
-        title: col.title,
-        handleSave,
-      }),
-    };
-  });
-  return (
-    <div>
-      <Button
-        onClick={handleAdd}
-        type="primary"
-        style={{
-          marginBottom: 16,
-        }}
-      >
-        Add a row
-      </Button>
-      <Table
-        components={components}
-        rowClassName={() => 'editable-row'}
-        bordered
-        dataSource={dataSource}
-        columns={columns}
-      />
-    </div>
-  );
-};
+    return (
+      <div>
+        <Button
+          onClick={handleAdd}
+          type="primary"
+          style={{
+            marginBottom: 16,
+          }}
+        >
+          Add a row
+        </Button>
+        <Table
+          components={components}
+          rowClassName={() => 'editable-row'}
+          bordered
+          dataSource={dataSource}
+          columns={columns}
+        />
+      </div>
+    );
+  } else {
+    return <div>Error loading dictionary</div>
+  }
+}
 
 export default DictionaryTable;
