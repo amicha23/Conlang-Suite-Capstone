@@ -50,10 +50,12 @@ export async function loginUser() {
   // step 2: add error handling
   try {
     await signInWithEmailAndPassword(auth, loginEmail, loginPassword)
-    console.log("Successful logged in HERE!")
+    console.log("Successful logged in HERE!");
+    alert("Welcome! You are now logged in.");
   }
   catch(error) {
-    console.log(`There was an error: ${error}`)
+    console.log(`There was an error: ${error}`);
+    alert("There was an error: Please make sure your Email and/or password are correct.");
   }
 }
 
