@@ -3,11 +3,11 @@ import { get, ref } from "firebase/database";
 
 export default async function handler(req, res) {
   try {
-    var { uid } = JSON.parse(req.body); // TODO: include uid in req.body
-    uid = "OUnW07Np3VNFduMOCX1V1bvvsd22"
+    // var { uid } = JSON.parse(req.body); // TODO: include uid in req.body, uncomment when able to do this
+    var uid = "OUnW07Np3VNFduMOCX1V1bvvsd22"
     const userRef = ref(db, `users/${uid}`);
     const snapshot = await get(userRef);
-    
+
     if (snapshot.exists()) {
       const data = snapshot.val();
       const { lid, lname } = data;

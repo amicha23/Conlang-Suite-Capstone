@@ -12,16 +12,14 @@ const { Header, Footer, Sider, Content } = Layout;
 //icons
 import { CheckCircleOutlined, CheckCircleTwoTone, InfoCircleOutlined, InfoCircleTwoTone } from '@ant-design/icons';
 
-import {saveUserInfo} from "src/app/user"
+import {loginUser, googleLogin, resetPassword} from "src/app/user"
+import { db, auth } from "firebaseConfig/firebaseAdmin";
 
 
 const { TextArea } = Input;
 
 
 export default function login() {
-  const [email, setValue] = useState('');
-  const [password, setPassword] = useState('');
-
 
   return (
       <div className="container">
@@ -32,15 +30,15 @@ export default function login() {
               <p >Welcome! Please enter your details</p>
               <div  id="first-page-setup">
                 <p>Email</p>
-                <Input id="email" placeholder="Email" onChange={e => { setValue(e.currentTarget.value); }}/>
+                <Input id="email" placeholder="Email"/>
                 <p>Password</p>
-                <Input id="password" placeholder="Password" onChange={e => { setPassword(e.currentTarget.value); }}/>
+                <Input id="password" placeholder="Password"/>
 
-                <p>Forgot password?</p>
+                <p onClick={() => resetPassword()}>Forgot password?</p>
                 
                 <div id="signin-button">
                 <br></br>
-                <Button type="primary" onClick={() => saveUserInfo(email, password)}>Sign in</Button>
+                <Button type="primary" onClick={() => loginUser()}>Sign in</Button>
                 </div>
                 <Button icon={<GoogleOutlined />}>Sign in with Google</Button>
               </div>              
