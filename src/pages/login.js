@@ -1,5 +1,5 @@
 // import 'antd/dist/antd.css';
-// import ScriptTag from 'react-script-tag';
+import { library } from '@fortawesome/fontawesome-svg-core'; //this is for the eye icon show/hide password switch
 import 'bootstrap/dist/css/bootstrap.css';
 import { Input } from 'antd';
 import { GoogleOutlined, UploadOutlined } from '@ant-design/icons';
@@ -14,10 +14,19 @@ import { CheckCircleOutlined, CheckCircleTwoTone, InfoCircleOutlined, InfoCircle
 
 import {loginUser, googleLogin, resetPassword} from "src/app/user"
 import { db, auth } from "firebaseConfig/firebaseAdmin";
-
-
 const { TextArea } = Input;
 
+//function to toggle hide/show password
+function showPwd(id, el) {
+  let x = document.getElementById(id);
+  if (x.type === "password") {
+    x.type = "text";
+    el.className = 'fa fa-eye-slash showpwd';
+  } else {
+    x.type = "password";
+    el.className = 'fa fa-eye showpwd';
+  }
+}
 
 export default function login() {
 
@@ -34,7 +43,8 @@ export default function login() {
                 <p>Email</p>
                 <Input id="email" placeholder="Email"/>
                 <p>Password</p>
-                <Input id="password" placeholder="Password"/>
+                <Input type ="password" id="password" placeholder="Password"/>
+                <i className='fa fa-eye showpd'/>
 
                 <p onClick={() => resetPassword()}>Forgot password?</p>
                 
