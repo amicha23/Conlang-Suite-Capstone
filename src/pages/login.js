@@ -6,14 +6,20 @@ import { GoogleOutlined, UploadOutlined } from '@ant-design/icons';
 import { Button, message, Upload } from 'antd';
 import React, { useEffect, useState } from "react";
 import { Layout } from 'antd';
+import { db, auth } from "firebaseConfig/firebaseAdmin";
+import { getDatabase, ref, set as firebaseSet, onValue } from 'firebase/database';
+import {loginUser, googleLogin, resetPassword} from "src/app/user"
+import { CheckCircleOutlined, CheckCircleTwoTone, InfoCircleOutlined, InfoCircleTwoTone } from '@ant-design/icons'; // icons
+
+function writeUserData(userId, name, email) {
+  const db = getDatabase();
+  set(ref(db, 'users/' + userId), {
+    username: name,
+    email: email,
+  });
+}
 
 const { Header, Footer, Sider, Content } = Layout;
-
-//icons
-import { CheckCircleOutlined, CheckCircleTwoTone, InfoCircleOutlined, InfoCircleTwoTone } from '@ant-design/icons';
-
-import {loginUser, googleLogin, resetPassword} from "src/app/user"
-import { db, auth } from "firebaseConfig/firebaseAdmin";
 const { TextArea } = Input;
 
 //function to toggle hide/show password
@@ -38,21 +44,25 @@ export default function login() {
               <img src="./img/eiffel.jpg"/>
 
               <h1>Log in to your account</h1>
-              <p >Welcome! Please enter your details</p>
+              <p className='text-secondary text-center pb-3'>Welcome! Please enter your details</p>
               <div id="first-page-setup">
-                <p>Email</p>
+                <p class="mb-1">Email</p>
                 <Input id="email" placeholder="Email"/>
-                <p>Password</p>
-                <Input type ="password" id="password" placeholder="Password"/>
+                <p class="mt-3 mb-1">Password</p>
+                <Input className = "mb-2"type ="password" id="password" placeholder="Password"/>
                 <i className='fa fa-eye showpd'/>
 
-                <p onClick={() => resetPassword()}>Forgot password?</p>
+                <p onClick={() => resetPassword()} className = "text-end text-primary fw-semibold mb-5">Forgot password?</p>
                 
-                <div id="signin-button">
-                <br></br>
-                <Button type="primary" onClick={() => loginUser()}>Sign in</Button>
+                <div className = "d-grid gap-1" id="signin-button">
+                  <Button type="primary" onClick={() => loginUser()}>Sign in</Button>
+                  <Button icon={<GoogleOutlined/>}>Sign in with Google</Button>
+                  <div class="g-signin2" data-onsuccess="onSignIn"></div>
                 </div>
-                <Button icon={<GoogleOutlined />}>Sign in with Google</Button>
+
+                <p class="mt-4 text-center">Don't have an account? <span className="text-primary fw-semibold">Sign up</span> </p>
+               
+
               </div>              
             </div >
         </section>
