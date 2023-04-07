@@ -10,7 +10,7 @@ import { db, auth } from "firebaseConfig/firebaseAdmin";
 import { getDatabase, ref, set as firebaseSet, onValue } from 'firebase/database';
 import {loginUser, googleLogin, resetPassword} from "src/app/user"
 import { CheckCircleOutlined, CheckCircleTwoTone, InfoCircleOutlined, InfoCircleTwoTone } from '@ant-design/icons'; // icons
-
+import Link from 'next/link';
 function writeUserData(userId, name, email) {
   const db = getDatabase();
   set(ref(db, 'users/' + userId), {
@@ -60,7 +60,7 @@ export default function login() {
                   <div class="g-signin2" data-onsuccess="onSignIn"></div>
                 </div>
 
-                <p class="mt-4 text-center">Don't have an account? <span className="text-primary fw-semibold">Sign up</span> </p>
+                <p class="mt-4 text-center">Don't have an account? <Link href="register" className="text-primary fw-semibold">Sign up</Link> </p>
                
 
               </div>              
