@@ -6,7 +6,7 @@ import React, { useContext, useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/router';
 
 //icons
-import { SearchOutlined, EditTwoTone, DeleteOutlined } from '@ant-design/icons';
+import { SearchOutlined, EditTwoTone, EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import '../app/globals.css';
 const { Search } = Input;
 
@@ -157,14 +157,31 @@ const DictionaryTable = ({lid}) => {
           cols.push(col);
         }
         cols.push({
-          title: '',
-          dataIndex: 'operation',
-          render: (_, record) =>
-            // data.length >= 1 ? (
-              <Popconfirm title="Are you sure delete this row?" onConfirm={() => handleDelete(record.key, record)}>
-                <a><DeleteOutlined /></a>
-              </Popconfirm>
-            // ) : null,
+          // title: '',
+          // dataIndex: 'operation',
+          // render: (_, record) => {
+          //   // data.length >= 1 ? (
+          //     <Popconfirm title="Are you sure delete this row?" onConfirm={() => handleDelete(record.key, record)}>
+          //       <a><DeleteOutlined /></a>
+          //     </Popconfirm>
+          //   // ) : null,
+          // }
+          render: (_,  record) => {
+            return (
+              <>
+                <Popconfirm title="Save this row?" onConfirm={() => handleToDatabase(record)}>
+                <a><EditOutlined/></a>
+                </Popconfirm>
+
+                <Popconfirm title="Are you sure delete this row?" onConfirm={() => handleDelete(record.key, record)}>
+                  <a><DeleteOutlined style={{ marginLeft: 12 }}/> </a>
+                </Popconfirm>
+
+                {/* /> */}
+              </>
+            );
+          },
+
         })
 
 
@@ -438,12 +455,12 @@ const DictionaryTable = ({lid}) => {
     };
 
     // press save button to save data to database
-    const handleToDatabase = () => {
-      console.log("SAVE THIS UPDATED DATA TO DATABASE: ", data);
+    const handleToDatabase = (record) => {
+      console.log("SAVE THIS UPDATED DATA TO DATABASE: ", record);
         fetch(`api/word/updateWord`, {
           method: "POST",
           body: JSON.stringify(
-            {"data": data
+            {"data": record
             })
           })
           .then(resp => {
