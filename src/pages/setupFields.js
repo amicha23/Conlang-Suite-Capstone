@@ -113,29 +113,13 @@ export default function setup() {
                         >
                         Pre-filled Fields
                   </Button>
-                  <Button
-                    type={fieldView ? "outline" : "primary"}
-                    onClick={() => setFieldView(false)}
-
-                        >
-                        Custom Fields
-                  </Button>
                 </div>
 
                 <div id="form-fields-setup">
                   <br></br>
                   <div id="prefill" style={{display: fieldView ? "block" : "none"}}>
                     <DictionaryPrefilledForms fields={fields} setFields={setFields}/>
-                    <DictionaryCustomForms />
                   </div>
-
-                  <div id="custom" style={{display: fieldView ? "none" : "block"}}>
-                    <DictionaryCustomForms />
-                  </div>
-
-                  {/* <ShowField fieldView={fieldView} /> */}
-                  {/* { fieldView ? <DictionaryPrefilledForms /> : null } */}
-
 
                 </div>
                 <div id="buttons" className={styles.buttons}>
