@@ -4,9 +4,9 @@ import { update, get, ref } from "firebase/database";
 export default async function handler(req, res) {
   const data = JSON.parse(req.body); // TODO
   var lid = data.lid;
-  var wid = data.wid;
-  lid = "-NQ9AuH-xaR_k-NxzwcA";
-  wid = "-NQ9JXBV_saywGNGQuci";
+  var wid = data.data.id;
+  // lid = "-NQ9AuH-xaR_k-NxzwcA";
+  // wid = "-NQ9JXBV_saywGNGQuci";
   const dictRef = ref(db, `languages/${lid}`);
 
   try {

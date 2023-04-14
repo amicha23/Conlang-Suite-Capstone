@@ -7,7 +7,7 @@ import React, { useEffect, useState } from "react";
 // Components
 import DictionaryTable from '../components/dictTable';
 import SideBar from '../components/SideBar';
-
+import '../app/globals.css';
 
 // Constants
 const { Header, Footer, Sider, Content } = Layout;

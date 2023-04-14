@@ -5,6 +5,13 @@ import { set } from 'firebase/database';
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/router';
 
+//icons
+import { SearchOutlined, EditTwoTone, DeleteOutlined } from '@ant-design/icons';
+import '../app/globals.css';
+const { Search } = Input;
+
+
+// Create editable cells
 const EditableContext = React.createContext(null);
 const EditableRow = ({ index, ...props }) => {
   const [form] = Form.useForm();
@@ -83,34 +90,44 @@ const EditableCell = ({
   return <td {...restProps}>{childNode}</td>;
 };
 
+
+// Create Dictionary Table Component
 const DictionaryTable = ({lid}) => {
   const router = useRouter()
   let query=router.query['lid']
   console.log("Query Param: ", query);
 
   console.log("Dictionary Table: ", lid)
-  const [data, setData] = useState(null);
-
+  const [data, setData] = useState([]);
+  const [dataCopy, setDataCopy] = useState(null);
+  const [defaultColumns, setColumns] = useState([]);
+  const [searchedText, setSearchedText] = useState("")
+  const [loading, setLoading] = useState(false);
+  const [tableParams, setTableParams] = useState({
+    pagination: {
+      current: 1,
+      pageSize: 10,
+    },
+  });
   const [dataSource, setDataSource] = useState([
     {
-      key: '0',
-      name: 'Edward King 0',
-      age: '32',
-      address: 'London, Park Lane no. 0',
+      id: '-NQ9MOINxEjSe_Wwitd3',
+      'Original form': 'sda',
+      'Parts of speech': 'noun'
     },
     {
-      key: '1',
-      name: 'Edward King 1',
-      age: '32',
-      address: 'London, Park Lane no. 1',
+      id: '-NQ9MOINxEjSe_Wwitd4',
+      'Original form': 'sample original form',
+      'Parts of speech': 'verb'
     },
   ]);
 
 
-  const [count, setCount] = useState(2);
+  const [count, setCount] = useState(0);
   // Make call to language's dictionary
   useEffect(() => {
     const fetchData = async () => {
+      setLoading(true);
       try {
         // WIP: why do you need to go back to dashboard if you want a different table?
         console.log("LID", query.replace(/\s+/g, ''))
@@ -122,44 +139,173 @@ const DictionaryTable = ({lid}) => {
         });
         const newData = await responseJson.json();
         console.log("response dictionary: ", newData);
+
+        let firstObject = newData[0] || {};
+        const cols = [];
+        for (const colHeader in Object.keys(firstObject)) {
+          console.log(Object.keys(firstObject)[colHeader])
+          const col = {
+              title: Object.keys(firstObject)[colHeader],
+              dataIndex: Object.keys(firstObject)[colHeader],
+              width: '20%',
+              editable: true,
+              filteredValue: [searchedText],
+              onFilter: (value, record) => {
+                return String(record[Object.keys(firstObject)[colHeader]]).includes(value);
+              }
+          }
+          cols.push(col);
+        }
+        cols.push({
+          title: '',
+          dataIndex: 'operation',
+          render: (_, record) =>
+            // data.length >= 1 ? (
+              <Popconfirm title="Are you sure delete this row?" onConfirm={() => handleDelete(record.key, record)}>
+                <a><DeleteOutlined /></a>
+              </Popconfirm>
+            // ) : null,
+        })
+
+
+        setColumns(cols)
         setData(newData);
+        setDataCopy(newData)
+        setLoading(false);
+        setCount(data.length)
+        setTableParams({
+          ...tableParams,
+          pagination: {
+            ...tableParams.pagination,
+            total: Object.keys(data).length,
+            // 200 is mock data, you should read it from server
+            // total: data.totalCount,
+            // Pagination changes based on size of data (Shows page dropdown at 200 rows)
+          },
+        });
+        console.log("Number of rows: ", Object.keys(data).length)
       } catch(e) {
         console.log("Error getting dictionary table: ", e)
       }
     };
     fetchData();
 
-  }, []);
+  }, [JSON.stringify(tableParams)]);
+
+  const handleTableChange = (pagination, filters, sorter) => {
+    console.log('params', pagination, filters, sorter);
+    setTableParams({
+      ...tableParams,
+      pagination: {
+        ...tableParams.pagination,
+        total: Object.keys(data).length,
+        // 200 is mock data, you should read it from server
+        // total: data.totalCount,
+        // Pagination changes based on size of data (Shows page dropdown at 200 rows)
+      },
+      filters,
+      ...sorter
+    });
+
+    // `dataSource` is useless since `pageSize` changed
+    if (pagination.pageSize !== tableParams.pagination?.pageSize) {
+      setData([]);
+      setDataCopy([]);
+    }
+  };
 
 
-  if (data) {
+  // if (data) {
     console.log("Dictionary Table Component Response Data: ", data)
 
-    const handleDelete = (key) => {
-      const newData = dataSource.filter((item) => item.key !== key);
-      setDataSource(newData);
+    const handleDelete = async (key, record) => {
+      console.log("FFFFFFFF", data)
+      const newData = [];
+      data.forEach((item) => {
+        console.log("item", item.id)
+        if (item.id !== record.id) {
+          newData.push(item);
+        }
+      });
+        console.log("HHHHHHHHHHHHH", newData)
+      setData(newData);
+      setDataCopy(newData);
+
+      console.log("DELETE THIS ROW FROM DATABASE: ", record);
+      await fetch(`api/word/deleteWord`, {
+        method: "POST",
+        body: JSON.stringify(
+          {"data": record,
+          "lid": query.replace(/\s+/g, '')
+          })
+        })
+        .then(resp => {
+          // console.log("Deleted word ", resp.json())
+          return resp.json();
+        })
+        .catch(err => {
+          console.log(err);
+        });
+
+
     };
 
-    const defaultColumns = []
-    for (var key of Object.keys(data)) {
-      console.log(key + " -> " + data[key])
-      defaultColumns.push(      {
-        title: key,
-        dataIndex: key,
-        width: '30%',
-        editable: true,
-      })
-    }
-    defaultColumns.push({
-      title: 'operation',
-      dataIndex: 'operation',
-      render: (_, record) =>
-        dataSource.length >= 1 ? (
-          <Popconfirm title="Sure to delete?" onConfirm={() => handleDelete(record.key)}>
-            <a>Delete</a>
-          </Popconfirm>
-        ) : null,
-    })
+    // const defaultColumns = []
+
+    // for (var col of Object.keys(data[0])) {
+    //   // console.log(key + " -> " + data[key])
+    //   console.log("Column name: ", col)
+    //   defaultColumns.push({
+    //     title: col,
+    //     dataIndex: col,
+    //     width: '20%',
+    //     editable: true,
+    //     filteredValue: [searchedText],
+    //     onFilter: (value, record) => {
+    //       return String(record[col]).includes(value);
+    //     }
+    //   })
+    // }
+    // data && Object.keys(data[0])?.map((col) => (
+    //   <span>{defaultColumns.push({
+    //       title: col, dataIndex: col,
+    //       //defaultSortOrder: 'descend',
+    //       sorter: true,
+    //       filteredValue: [searchedText],
+    //       onFilter: (value, record) => {
+    //         console.log("ASJLDHASDJ : ", record[col])
+    //         // for (var testcol of Object.keys(data[0])) {
+    //           // console.log("JASLADJDS ", testcol)
+    //         return String(record[col]).includes(value);
+    //         // }
+    //       }
+    //   })}
+    //   </span>))
+
+
+    // if (defaultColumns.length === Object.keys(data[0]).length) {
+    //   defaultColumns.push({
+    //     title: '',
+    //     dataIndex: 'operation',
+    //     render: (_, record) =>
+    //       data.length >= 1 ? (
+    //         <Popconfirm title="Are you sure delete this row?" onConfirm={() => handleDelete(record.key, record)}>
+    //           <a><DeleteOutlined /></a>
+    //         </Popconfirm>
+    //       ) : null,
+    //   })
+    // }
+
+    // const newData = []
+    // for (var key of Object.keys(data)) {
+    //   console.log(data.size)
+    //   for (let i = 0; i < 1; i++) {
+    //     console.log(key + " -> " + Object.keys(data[key][i]))
+    //     newData[key] = data[key][i][Object.keys(data[key][i])]
+    //     // newData.push(row)
+    //   }
+    // }
+    // console.log("NEW ", newData)
 
     // !!!!!!!!!!!===+=== Orignal columns set by antd  below ===+===!!!!!!!!!!!!!
 
@@ -191,25 +337,55 @@ const DictionaryTable = ({lid}) => {
     //   },
     // ];
 
-    const handleAdd = () => {
-      const newData = {
-        key: count,
-        name: `Edward King ${count}`,
-        age: '32',
-        address: `London, Park Lane no. ${count}`,
-      };
-      setDataSource([...dataSource, newData]);
-      setCount(count + 1);
+
+    // Add new table row
+    const handleAdd = async () => {
+      let newData = {}
+      for (const colHeader in Object.keys(data[0])) {
+        // const newData = {
+        //   key: count,
+        //   'Original form': `Insert data here`,
+        //   'Parts of speech': `Insert data here`
+        // };
+        newData[Object.keys(data[0])[colHeader]] = `Insert data here`;
+      }
+
+
+      let newword = await fetch(`api/word/addWord`, {
+        method: "POST",
+        body: JSON.stringify(
+          {"data": newData
+          })
+        })
+        .then(resp => {
+          // console.log("Added word ", resp.json())
+          return resp.json();
+        })
+        .catch(err => {
+          console.log(err);
+        });
+
+        console.log("Added Word to Database: ", newword);
+
+
+        newData.id= newword.newWordKey;
+        newData.key = data.length;
+        setData([...data, newData]);
+        setDataCopy([...data, newData]);
+        setCount(count + 1);
     };
+
+    // Save new table row to the data
     const handleSave = (row) => {
-      const newData = [...dataSource];
+      const newData = [...data];
       const index = newData.findIndex((item) => row.key === item.key);
       const item = newData[index];
       newData.splice(index, 1, {
         ...item,
         ...row,
       });
-      setDataSource(newData);
+      setData(newData);
+      setDataCopy(newData);
     };
     const components = {
       body: {
@@ -232,8 +408,56 @@ const DictionaryTable = ({lid}) => {
         }),
       };
     });
+
+    const handleSearch = (e) => {
+      console.log("Search Query: ", e)
+      setData(dataCopy)
+      let queryData = [];
+      for (var i = 0; i < data.length; i++){
+        console.log("row index: " + i);
+        var obj = data[i];
+        for (var key in obj) {
+          var value = obj[key];
+          if (String(value).includes(e)) {
+            console.log("cell - " + key + ": " + value);
+            queryData.push(obj)
+          }
+        }
+      }
+      setData(queryData);
+      console.log("Search Queried Data: ", data);
+    // input search filer
+      // let searchButton = document.getElementById("input-filter").parentElement.nextSibling;
+      // let searchQuery = document.getElementById("input-filter").value;
+      //   searchButton.onclick = function() { alert('blah'); };
+      //   console.log(searchQuery)
+      // const newData = data.filter((item) => item.key !== key);
+      // setData(newData);
+      // const newData = data.filter((item) => item.key !== key);
+      // setData(newData);
+    };
+
+    // press save button to save data to database
+    const handleToDatabase = () => {
+      console.log("SAVE THIS UPDATED DATA TO DATABASE: ", data);
+        fetch(`api/word/updateWord`, {
+          method: "POST",
+          body: JSON.stringify(
+            {"data": data
+            })
+          })
+          .then(resp => {
+            return resp.json();
+          })
+          .catch(err => {
+            console.log(err);
+          });
+    };
     return (
       <div>
+        <div id="lang-name-header" >
+          <h1>{router.query['lname']}</h1>
+        </div>
         <Button
           onClick={handleAdd}
           type="primary"
@@ -241,20 +465,37 @@ const DictionaryTable = ({lid}) => {
             marginBottom: 16,
           }}
         >
-          Add a row
+          + Add a row
+        </Button>
+        <Button onClick={handleToDatabase} type="primary" style={{ 'margin-left': '15px'}} ghost>
+          <EditTwoTone />
+          Save
+        </Button>
+        <Button style={{ 'margin-left': '15px'}}>
+          <SearchOutlined />
+          Find and Replace
+        </Button>
+        <Search id="input-filter" onSearch={(value) => {setSearchedText(value);}} placeholder="input search text" allowClear style={{ width: 200, 'margin-left': '35%'}} />
+        <Button>
+          Stats
         </Button>
         <Table
           components={components}
           rowClassName={() => 'editable-row'}
           bordered
-          dataSource={dataSource}
+          dataSource={data}
           columns={columns}
+          loading={loading}
+          pagination={tableParams.pagination}
+          onChange={handleTableChange}
+          scroll={{x:950,y:"calc(100vh - 220px)" }}
         />
       </div>
     );
-  } else {
-    return <div>Error loading dictionary</div>
   }
-}
+  // } else {
+  //   return <div>error loading dictionary</div>
+  // }
+// }
 
 export default DictionaryTable;

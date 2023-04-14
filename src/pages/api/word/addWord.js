@@ -26,8 +26,8 @@ export default function handler(req, res) {
     }
 
     update(ref(db), updates);
-    console.log("data pushed :>> ", word);
-    res.status(200).json("Success");
+    console.log("data pushed :>> ", newWordKey, wordData);
+    res.status(200).json({"newWordData": wordData, "newWordKey": newWordKey});
   } catch (err) {
     res.status(500).json({ error: "failed to load data" });
   }

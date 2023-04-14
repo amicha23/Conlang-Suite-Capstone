@@ -10,7 +10,7 @@ export default async function handler(req, res) {
     value: "sda"
   }
   const { lid, field, wid, value } = data;
-  
+
   try {
     const wordRef = ref(db, `languages/${lid}/dict/${field}/${wid}`);
     const snapshot = await get(wordRef);

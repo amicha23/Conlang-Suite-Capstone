@@ -88,7 +88,7 @@ export default function SideBar() {
         let query = e.item.props.langID.replace(/\s+/g, '')
 
         // WIP: Can only load one table at a time, clicking another button returns same data for some reason
-        Router.push({ pathname: '/langTable', query: { lid: e.item.props.langID } });
+        Router.push({ pathname: '/langTable', query: { lid: e.item.props.langID, lname: e.key } });
         // var newUrl = window.location.origin + '/langTable' + "?lid=" + query;
         // window.location.href = newUrl;
 
