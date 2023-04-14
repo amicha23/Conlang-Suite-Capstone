@@ -24,9 +24,20 @@ export default async function handler(req, res) {
         dict[key].hasOwnProperty("del_status") && dict[key]["del_status"] === 0
       )
     );
-
-    const result = [];
-    let i = 0 // Set iterable key value for each row
+    console.log(columns)
+    let result = [];
+    if (columns === undefined || columns.length == 0) {
+        result = {};
+        let cols = Object.keys(dict)
+        console.log(cols)
+        cols.forEach(element => {
+          result[element] = ''
+        });
+        console.log(result)
+        res.status(200).json([result]);
+        return
+    } else {
+      let i = 0 // Set iterable key value for each row
     // columns.forEach(column => {
       Object.entries(dict[columns[0]])
         .filter(([key, value]) => value.del_status === 0)
@@ -46,6 +57,8 @@ export default async function handler(req, res) {
           result.push(entry);
         });
     // });
+      }
+
 
     console.log(result);
     res.status(200).json(result);

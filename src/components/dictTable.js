@@ -47,6 +47,7 @@ const EditableCell = ({
     });
   };
   const save = async () => {
+    // console.log("Record ", record)
     try {
       const values = await form.validateFields();
       toggleEdit();
@@ -54,6 +55,19 @@ const EditableCell = ({
         ...record,
         ...values,
       });
+      // console.log("SAVE THIS UPDATED DATA TO DATABASE: ", record);
+      // await fetch(`api/word/updateWord`, {
+      //   method: "POST",
+      //   body: JSON.stringify(
+      //     {"data": record
+      //     })
+      //   })
+      //   .then(resp => {
+      //     return resp.json();
+      //   })
+      //   .catch(err => {
+      //     console.log(err);
+      //   });
     } catch (errInfo) {
       console.log('Save failed:', errInfo);
     }
@@ -89,7 +103,6 @@ const EditableCell = ({
   }
   return <td {...restProps}>{childNode}</td>;
 };
-
 
 // Create Dictionary Table Component
 const DictionaryTable = ({lid}) => {
@@ -143,6 +156,7 @@ const DictionaryTable = ({lid}) => {
         let firstObject = newData[0] || {};
         const cols = [];
         for (const colHeader in Object.keys(firstObject)) {
+          // if (Object.keys(firstObject)[colHeader] !== "id" && Object.keys(firstObject)[colHeader] !== "key") { // add to remove id and key columns -> for testing purposes only
           console.log(Object.keys(firstObject)[colHeader])
           const col = {
               title: Object.keys(firstObject)[colHeader],
@@ -153,8 +167,9 @@ const DictionaryTable = ({lid}) => {
               onFilter: (value, record) => {
                 return String(record[Object.keys(firstObject)[colHeader]]).includes(value);
               }
-          }
+            }
           cols.push(col);
+          // }
         }
         cols.push({
           // title: '',
@@ -176,8 +191,6 @@ const DictionaryTable = ({lid}) => {
                 <Popconfirm title="Are you sure delete this row?" onConfirm={() => handleDelete(record.key, record)}>
                   <a><DeleteOutlined style={{ marginLeft: 12 }}/> </a>
                 </Popconfirm>
-
-                {/* /> */}
               </>
             );
           },
@@ -358,14 +371,11 @@ const DictionaryTable = ({lid}) => {
     // Add new table row
     const handleAdd = async () => {
       let newData = {}
-      for (const colHeader in Object.keys(data[0])) {
-        // const newData = {
-        //   key: count,
-        //   'Original form': `Insert data here`,
-        //   'Parts of speech': `Insert data here`
-        // };
-        newData[Object.keys(data[0])[colHeader]] = `Insert data here`;
-      }
+      // console.log("HHHHH",defaultColumns)
+      // for (const colHeader in Object.keys(defaultColumns[0])) {
+      //   console.log("HERE", colHeader)
+      //   newData[Object.keys(defaultColumns[0])[colHeader].title] = `Insert data here`;
+      // }
 
 
       let newword = await fetch(`api/word/addWord`, {
@@ -375,7 +385,6 @@ const DictionaryTable = ({lid}) => {
           })
         })
         .then(resp => {
-          // console.log("Added word ", resp.json())
           return resp.json();
         })
         .catch(err => {
@@ -392,7 +401,7 @@ const DictionaryTable = ({lid}) => {
         setCount(count + 1);
     };
 
-    // Save new table row to the data
+    // Save new table row to data
     const handleSave = (row) => {
       const newData = [...data];
       const index = newData.findIndex((item) => row.key === item.key);
@@ -454,13 +463,14 @@ const DictionaryTable = ({lid}) => {
       // setData(newData);
     };
 
-    // press save button to save data to database
+    // press save button to save row to database
     const handleToDatabase = (record) => {
       console.log("SAVE THIS UPDATED DATA TO DATABASE: ", record);
         fetch(`api/word/updateWord`, {
           method: "POST",
           body: JSON.stringify(
-            {"data": record
+            {"data": record,
+            "lid": query.replace(/\s+/g, '')
             })
           })
           .then(resp => {
