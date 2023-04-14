@@ -42,8 +42,7 @@ export default function login() {
       <div className="container">
         <section className="d-flex justify-content-center" >
             <div /* </Layout>style={{ padding: '0 20px', background: 'white'}}*/>
-              <img src="https://www.iths.org/resources/wp-content/sabai/sites/9/File/files/0bb1f4cb5ff99dd034602ced0e2534fc.png" alt="test"/>
-              <img src="./img/eiffel.jpg"/>
+              <img src="/img/langtime_studio_logo-transformed.png" alt="langtime logo"/>
 
               <h1>Log in to your account</h1>
               <p className='text-secondary text-center pb-3'>Welcome! Please enter your details</p>
