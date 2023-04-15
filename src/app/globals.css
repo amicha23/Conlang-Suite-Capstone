@@ -121,6 +121,12 @@ a {
   padding-bottom: 2%;
 }
 
+.editable-row .ant-form-item-explain {
+  position: absolute;
+  top: 100%;
+  font-size: 12px;
+}
+
 @media (prefers-color-scheme: dark) {
   html {
     color-scheme: dark;
