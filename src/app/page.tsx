@@ -9,47 +9,58 @@ export default function Home() {
     <main className={styles.main}>
       <div className={styles.description}>
         <p>
-          By Conlangers & Pentalingo (UW Seattle '23)
+          Get started by editing&nbsp;
+          <code className={styles.code}>src/app/page.tsx</code>
         </p>
         <div>
-          <Image
-            src="/iSchoolPrimary_RGB_Purple.jpg"
-            alt="UW iSchool Logo"
-            className={styles.vercelLogo}
-            width={200}
-            height={37.525}
-            priority
-          />          
+          <a
+            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            By{' '}
+            <Image
+              src="/vercel.svg"
+              alt="Vercel Logo"
+              className={styles.vercelLogo}
+              width={100}
+              height={24}
+              priority
+            />
+          </a>
         </div>
       </div>
 
       <div className={styles.center}>
         <Image
           className={styles.logo}
-          src="/langtime_studio_logo-transformed.png"
-          alt="LangTime Logo"
-          width={400}
-          height={239.38}
+          src="/next.svg"
+          alt="Next.js Logo"
+          width={180}
+          height={37}
           priority
         />
+        <div className={styles.thirteen}>
+          <Image src="/thirteen.svg" alt="13" width={40} height={31} priority />
+        </div>
       </div>
 
       <div className={styles.grid}>
         <a
-          href="/login"
+          href="https://beta.nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
           className={styles.card}
           target="_blank"
           rel="noopener noreferrer"
         >
           <h2 className={inter.className}>
-            Log In <span>-&gt;</span>
+            Docs <span>-&gt;</span>
           </h2>
           <p className={inter.className}>
-            Create and manage the dictionary for your own Conlanguages.
+            Find in-depth information about Next.js features and API.
           </p>
         </a>
 
-        {/* <a
+        <a
           href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
           className={styles.card}
           target="_blank"
@@ -73,7 +84,7 @@ export default function Home() {
           <p className={inter.className}>
             Instantly deploy your Next.js site to a shareable URL with Vercel.
           </p>
-        </a> */}
+        </a>
       </div>
     </main>
   )
