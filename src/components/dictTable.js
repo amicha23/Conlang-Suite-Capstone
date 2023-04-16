@@ -120,7 +120,14 @@ const DictionaryTable = () => {
         key: Object.keys(firstObject)[colHeader],
         width: '20%',
         editable: true,
-        sorter: (a, b) => a[Object.keys(firstObject)[colHeader]].localeCompare(b[Object.keys(firstObject)[colHeader]]),
+        sorter: (a, b) => {
+          console.log(typeof(a[Object.keys(firstObject)[colHeader]]), typeof(b[Object.keys(firstObject)[colHeader]]))
+          if (typeof(a[Object.keys(firstObject)[colHeader]]) === 'number' && typeof(b[Object.keys(firstObject)[colHeader]]) === 'number') {
+            return a[Object.keys(firstObject)[colHeader]] - b[Object.keys(firstObject)[colHeader]];
+          } else {
+            return String(a[Object.keys(firstObject)[colHeader]]).localeCompare(String(b[Object.keys(firstObject)[colHeader]]))
+          }
+        },
         sortDirections: ['descend', 'ascend'],
         onFilter: (value, record) => {
           return String(record[Object.keys(firstObject)[colHeader]]).includes(value);
