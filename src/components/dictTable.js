@@ -54,6 +54,7 @@ const EditableCell = ({
 };
 const DictionaryTable = () => {
   const [queryParam, setQueryParam] = useState('');
+  const [queryName, setQueryName] = useState('');
   const [form] = Form.useForm();
   const [data, setData] = useState([]);
   const [editingKey, setEditingKey] = useState('');
@@ -119,6 +120,8 @@ const DictionaryTable = () => {
         key: Object.keys(firstObject)[colHeader],
         width: '20%',
         editable: true,
+        sorter: (a, b) => a[Object.keys(firstObject)[colHeader]].localeCompare(b[Object.keys(firstObject)[colHeader]]),
+        sortDirections: ['descend', 'ascend'],
         onFilter: (value, record) => {
           return String(record[Object.keys(firstObject)[colHeader]]).includes(value);
         }
@@ -146,9 +149,6 @@ const DictionaryTable = () => {
             <Popconfirm title="Sure to cancel?" onConfirm={cancel}>
               <a>Cancel</a>
             </Popconfirm>
-
-
-
           </span>
           </div>
         ) : (
@@ -156,9 +156,9 @@ const DictionaryTable = () => {
           <Typography.Link disabled={editingKey !== ''} onClick={() => edit(record)}>
             Edit
           </Typography.Link>
-          <Popconfirm title="Are you sure delete this row?" onConfirm={() => handleDelete(record.key, record)}>
-                  <a><DeleteOutlined style={{ marginLeft: 12 }}/> </a>
-                </Popconfirm>
+            <Popconfirm title="Are you sure delete this row?" onConfirm={() => handleDelete(record.key, record)}>
+              <a><DeleteOutlined style={{ marginLeft: 12 }}/> </a>
+            </Popconfirm>
           </div>
         );
 
@@ -186,8 +186,10 @@ const DictionaryTable = () => {
   useEffect(() => {
     const searchParams = new URLSearchParams(window.location.search);
     const queryParam = searchParams.get('lid');
+    const queryName = searchParams.get('lname');
     if (queryParam) {
       setQueryParam(queryParam.replace(/\s+/g, ''));
+      setQueryName(queryName);
       console.log("QUERY ", queryParam.replace(/\s+/g, ''));
     }
   }, []);
@@ -276,7 +278,10 @@ const DictionaryTable = () => {
   };
   return (
       <div>
-                <Button
+        <div id="lang-name-header" >
+          <h1>{queryName}</h1>
+        </div>
+        <Button
           onClick={handleAdd}
           type="primary"
           style={{
