@@ -1,9 +1,10 @@
 // Create a table to hold all dictionary information
 
 import { Button, Form, Input, InputNumber, Typography, Popconfirm, Table } from "antd";
-import { set } from "firebase/database";
+import { query, set } from "firebase/database";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/router";
+import { useLocation } from 'react-router-dom';
 
 //icons
 import {
@@ -13,6 +14,7 @@ import {
   DeleteOutlined,
 } from "@ant-design/icons";
 import "../app/globals.css";
+import { convertCompilerOptionsFromJson } from "typescript";
 const { Search } = Input;
 
 
@@ -51,6 +53,7 @@ const EditableCell = ({
   );
 };
 const DictionaryTable = () => {
+  const [queryParam, setQueryParam] = useState('');
   const [form] = Form.useForm();
   const [data, setData] = useState([]);
   const [editingKey, setEditingKey] = useState('');
@@ -85,6 +88,21 @@ const DictionaryTable = () => {
         setData(newData);
         setEditingKey('');
       }
+
+      console.log("EDIT THIS ROW IN THE DATABASE: ", newData[index]);
+      await fetch(`api/word/updateWord`, {
+        method: "POST",
+        body: JSON.stringify(
+          {"data": newData[index],
+          "lid": queryParam
+          })
+        })
+        .then(resp => {
+          return resp.json();
+        })
+        .catch(err => {
+          console.log(err);
+        });
     } catch (errInfo) {
       console.log('Validate Failed:', errInfo);
     }
@@ -108,29 +126,9 @@ const DictionaryTable = () => {
     cols.push(col);
     // }
   }
-
-  // const columns = [
-  //   {
-  //     title: 'name',
-  //     dataIndex: 'name',
-  //     width: '25%',
-  //     editable: true,
-  //   },
-  //   {
-  //     title: 'age',
-  //     dataIndex: 'age',
-  //     width: '15%',
-  //     editable: true,
-  //   },
-  //   {
-  //     title: 'address',
-  //     dataIndex: 'address',
-  //     width: '40%',
-  //     editable: true,
-  //   },
   cols.push(
     {
-      title: 'operation',
+      title: '',
       dataIndex: 'operation',
       render: (_, record) => {
         const editable = isEditing(record);
@@ -186,23 +184,37 @@ const DictionaryTable = () => {
 
 
   useEffect(() => {
-    fetch(`api/word/getWords`, {
-      method: "POST",
-      body: JSON.stringify({ lid: "-NQ9AuH-xaR_k-NxzwcA" }),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        const newData = data.map((item) => {
-          const newItem = {};
-          for (const key in item) {
-            newItem[key] = item[key];
-          }
-          return newItem;
-        });
-        console.log("READ DATA: ", data)
-        setData(newData);
-      });
+    const searchParams = new URLSearchParams(window.location.search);
+    const queryParam = searchParams.get('lid');
+    if (queryParam) {
+      setQueryParam(queryParam.replace(/\s+/g, ''));
+      console.log("QUERY ", queryParam.replace(/\s+/g, ''));
+    }
   }, []);
+
+  useEffect(() => {
+    if (queryParam) {
+      fetch(`api/word/getWords`, {
+        method: "POST",
+        body: JSON.stringify({ 'lid': queryParam }),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          const newData = data.map((item) => {
+            const newItem = {};
+            for (const key in item) {
+              newItem[key] = item[key];
+            }
+            return newItem;
+          });
+          console.log("READ DATA: ", data)
+          setData(newData);
+        })
+        .catch(error => {
+          console.log("Failed to fetch data: ", error);
+        });
+    }
+  }, [queryParam]);
 
   const handleDelete = async (key, record) => {
     console.log("FFFFFFFF", data)
@@ -213,7 +225,6 @@ const DictionaryTable = () => {
         newData.push(item);
       }
     });
-      console.log("HHHHHHHHHHHHH", newData)
     setData(newData);
 
     console.log("DELETE THIS ROW FROM DATABASE: ", record);
@@ -221,11 +232,10 @@ const DictionaryTable = () => {
       method: "POST",
       body: JSON.stringify(
         {"data": record,
-        "lid": JSON.stringify({ lid: "-NQ9AuH-xaR_k-NxzwcA" })
+        "lid": queryParam
         })
       })
       .then(resp => {
-        // console.log("Deleted word ", resp.json())
         return resp.json();
       })
       .catch(err => {
@@ -290,6 +300,7 @@ const DictionaryTable = () => {
         pagination={{
           onChange: cancel,
         }}
+        scroll={{x:950,y:"calc(100vh - 220px)" }}
       />
     </Form>
     </div>
