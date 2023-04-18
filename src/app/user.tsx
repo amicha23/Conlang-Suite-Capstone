@@ -102,8 +102,9 @@ export async function googleLogin() {
 
 }
 
-const logout = async () => {
+export async function logoutUser() {
   await signOut(auth);
+  alert('logged out');
 }
 
 export async function resetPassword() {

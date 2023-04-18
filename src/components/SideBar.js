@@ -1,6 +1,7 @@
 // // PACKAGES
 import { Layout } from 'antd';
-import { signOut } from "firebase/auth";
+// import { signOut } from "firebase/auth";
+import { logoutUser } from "src/app/user"
 // import Image from 'next/image'
 // import Link from 'next/link';
 // import React, { useState, useEffect } from 'react'
@@ -114,7 +115,7 @@ export default function SideBar() {
           <Link href="/help" >
             <Image src={ help } alt='Help placeholder' width={200}/>
           </Link>
-          <Link href="/" onClick={() => signOut()}>
+          <Link href="/" onClick={() => logoutUser()}>
             <Image src={ logout } alt='Logout placeholder' width={200}/>
           </Link>
         </Sider>
