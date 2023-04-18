@@ -56,14 +56,10 @@ export default function login() {
                   <Button icon={<GoogleOutlined/>}>Sign in with Google</Button>
                   <div class="g-signin2" data-onsuccess="onSignIn"></div>
                 </div>
-<<<<<<< HEAD
-                <p class="mt-4 text-center">Don't have an account? <span className="text-primary fw-semibold">Sign up</span> </p>
-=======
 
                 <p class="mt-4 text-center">Don't have an account? <Link href="register" className="text-primary fw-semibold">Sign up</Link> </p>
                
 
->>>>>>> 97c3032000e1259af8d8a0d596caac878ff7f18e
               </div>              
             </div >
         </section>
