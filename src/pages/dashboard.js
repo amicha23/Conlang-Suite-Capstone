@@ -18,7 +18,8 @@ export default function Home() {
     const [viewDict, changeDashboardView] = useState(true);
 
     const createDict = () => {
-        router.push('/setupFields');
+        window.location.href = '/setupFields';
+        // router.push('/setupFields');
     };
 
     return (
