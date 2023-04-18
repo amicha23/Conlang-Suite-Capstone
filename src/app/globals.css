@@ -127,6 +127,16 @@ a {
   font-size: 12px;
 }
 
+#components-layout-demo-side .logo {
+  height: 32px;
+  margin: 16px;
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.site-layout .site-layout-background {
+  background: #fff;
+}
+
 @media (prefers-color-scheme: dark) {
   html {
     color-scheme: dark;

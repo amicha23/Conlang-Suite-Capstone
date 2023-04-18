@@ -51,15 +51,37 @@ export default function Home() {
 
     return (
         <div>
-            <Layout>
+            <Layout style={{
+                        minHeight: '100vh',
+                    }}>
                 <div id="side-bar-div">
                     <SideBar/>
                 </div>
-                <Content>
-                    <div id="dict-table">
-                        <DictionaryTable queryParam={queryParam} setQueryParam={setQueryParam} queryName={queryName} setQueryName= {setQueryName}/>
-                    </div>
-                </Content>
+                <Layout className="site-layout">
+                    <Header
+                        className="site-layout-background"
+                        style={{
+                            padding: 0,
+                        }}
+                        />
+                    <Content style={{
+                                margin: '0 16px',
+                            }}>
+                        <div id="dict-table" className='site-layout-background' style={{
+                                                                                        padding: 24,
+                                                                                        minHeight: 360,
+                                                                                        }}>
+                            <DictionaryTable queryParam={queryParam} setQueryParam={setQueryParam} queryName={queryName} setQueryName= {setQueryName}/>
+                        </div>
+                    </Content>
+                    <Footer
+                        style={{
+                            textAlign: 'center',
+                        }}
+                        >
+                        Langtime ©2023 Created by Pentalingo & Conlangers
+                    </Footer>
+                </Layout>
             </Layout>
         </div>
     );

@@ -464,7 +464,7 @@ const DictionaryTable = ({queryParam, setQueryParam, queryName, setQueryName}) =
     setIsAddModalOpen(false);
   };
 
-  const handleAddColumn = () => {
+  const handleAddColumn = async () => {
     console.log("Add this column", AddColumn)
     for (const row in data) {
       console.log("HERE", data[row]);
@@ -493,6 +493,20 @@ const DictionaryTable = ({queryParam, setQueryParam, queryName, setQueryName}) =
     }
     mergedColumns.push(col)
     setColumns(mergedColumns)
+
+    await fetch(`api/dictField/addField`, {
+      method: "POST",
+      body: JSON.stringify(
+        {"fieldName": AddColumn.name,
+        "lid": queryParam
+        })
+      })
+      .then(resp => {
+        return resp.json();
+      })
+      .catch(err => {
+        console.log(err);
+      });
 
     // let newword = await fetch(`api/word/addWord`, {
     //   method: "POST",
