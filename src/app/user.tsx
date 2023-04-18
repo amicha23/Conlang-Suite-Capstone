@@ -53,7 +53,6 @@ export async function loginUser() {
   try {
     await signInWithEmailAndPassword(auth, loginEmail, loginPassword)
     console.log("Successful logged in HERE!");
-    alert("Welcome! You are now logged in.");
 
     window.location.href = '/dashboard';
     // router.push({pathname: '/dashboard'});
