@@ -3,11 +3,12 @@ import { get, ref, update } from "firebase/database";
 
 export default async function handler(req, res) {
   var data = JSON.parse(req.body); // TODO
-  data = {
-    lid: "-NQ9AuH-xaR_k-NxzwcA",
-    currFieldName: "Original", 
-    newFieldName: "Original form",
-  }
+  console.log("EDIT DATA ", data)
+  // data = {
+  //   lid: "-NQ9AuH-xaR_k-NxzwcA",
+  //   currFieldName: "Original",
+  //   newFieldName: "Original form",
+  // }
   const lid = data.lid;
   const currFieldName = data.currFieldName;
   const newFieldName = data.newFieldName;
@@ -15,7 +16,7 @@ export default async function handler(req, res) {
   try {
     const dictRef = ref(db, `languages/${lid}/dict/${currFieldName}`);
     const snapshot = await get(dictRef);
-    
+
     if (!snapshot.exists()) {
       console.log(`Field '${currFieldName}' does not exist`);
       return res.status(404).json({ error: `Field '${currFieldName}' does not exist` });
