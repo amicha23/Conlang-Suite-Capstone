@@ -1,489 +1,548 @@
 // Create a table to hold all dictionary information
 
-import { Button, Form, Input, Popconfirm, Table } from 'antd';
-import { set } from 'firebase/database';
-import React, { useContext, useEffect, useRef, useState } from 'react';
-import { useRouter } from 'next/router';
+import { Button, Form, Input, InputNumber, Typography, Popconfirm, Table, Modal, Space  } from "antd";
+import { query, set } from "firebase/database";
+import React, { useContext, useEffect, useRef, useState } from "react";
+import { useRouter } from "next/router";
+import { useLocation } from 'react-router-dom';
 
 //icons
-import { SearchOutlined, EditTwoTone, EditOutlined, DeleteOutlined } from '@ant-design/icons';
-import '../app/globals.css';
+import {
+  SearchOutlined,
+  EditTwoTone,
+  EditOutlined,
+  DeleteOutlined,
+  MenuOutlined
+} from "@ant-design/icons";
+import "../app/globals.css";
 const { Search } = Input;
 
 
-// Create editable cells
-const EditableContext = React.createContext(null);
-const EditableRow = ({ index, ...props }) => {
-  const [form] = Form.useForm();
-  return (
-    <Form form={form} component={false}>
-      <EditableContext.Provider value={form}>
-        <tr {...props} />
-      </EditableContext.Provider>
-    </Form>
-  );
-};
 const EditableCell = ({
-  title,
-  editable,
-  children,
+  editing,
   dataIndex,
+  title,
+  inputType,
   record,
-  handleSave,
+  index,
+  children,
   ...restProps
 }) => {
-  const [editing, setEditing] = useState(false);
-  const inputRef = useRef(null);
-  const form = useContext(EditableContext);
-  useEffect(() => {
-    if (editing) {
-      inputRef.current.focus();
-    }
-  }, [editing]);
-  const toggleEdit = () => {
-    setEditing(!editing);
-    form.setFieldsValue({
-      [dataIndex]: record[dataIndex],
-    });
-  };
-  const save = async () => {
-    // console.log("Record ", record)
-    try {
-      const values = await form.validateFields();
-      toggleEdit();
-      handleSave({
-        ...record,
-        ...values,
-      });
-      // console.log("SAVE THIS UPDATED DATA TO DATABASE: ", record);
-      // await fetch(`api/word/updateWord`, {
-      //   method: "POST",
-      //   body: JSON.stringify(
-      //     {"data": record
-      //     })
-      //   })
-      //   .then(resp => {
-      //     return resp.json();
-      //   })
-      //   .catch(err => {
-      //     console.log(err);
-      //   });
-    } catch (errInfo) {
-      console.log('Save failed:', errInfo);
-    }
-  };
-  let childNode = children;
-  if (editable) {
-    childNode = editing ? (
-      <Form.Item
-        style={{
-          margin: 0,
-        }}
-        name={dataIndex}
-        rules={[
-          {
-            required: true,
-            message: `${title} is required.`,
-          },
-        ]}
-      >
-        <Input ref={inputRef} onPressEnter={save} onBlur={save} />
-      </Form.Item>
-    ) : (
-      <div
-        className="editable-cell-value-wrap"
-        style={{
-          paddingRight: 24,
-        }}
-        onClick={toggleEdit}
-      >
-        {children}
-      </div>
-    );
-  }
-  return <td {...restProps}>{childNode}</td>;
+  const inputNode = inputType === 'number' ? <InputNumber /> : <Input />;
+  return (
+    <td {...restProps}>
+      {editing ? (
+        <Form.Item
+          name={dataIndex}
+          style={{
+            margin: 0,
+          }}
+          rules={[
+            {
+              required: true,
+              message: `Please Input ${title}!`,
+            },
+          ]}
+        >
+          {inputNode}
+        </Form.Item>
+      ) : (
+        children
+      )}
+    </td>
+  );
 };
-
-// Create Dictionary Table Component
-const DictionaryTable = ({lid}) => {
-  const router = useRouter()
-  let query=router.query['lid']
-  console.log("Query Param: ", query);
-
-  console.log("Dictionary Table: ", lid)
+const DictionaryTable = ({queryParam, setQueryParam, queryName, setQueryName}) => {
+  // const [queryParam, setQueryParam] = useState('');
+  // const [queryName, setQueryName] = useState('');
+  const [form] = Form.useForm();
+  const [columns, setColumns] = useState([]);
+  const [filterColumn, setFilterColumn] = useState('');
   const [data, setData] = useState([]);
-  const [dataCopy, setDataCopy] = useState(null);
-  const [defaultColumns, setColumns] = useState([]);
-  const [searchedText, setSearchedText] = useState("")
-  const [loading, setLoading] = useState(false);
-  const [tableParams, setTableParams] = useState({
-    pagination: {
-      current: 1,
-      pageSize: 10,
-    },
-  });
-  const [dataSource, setDataSource] = useState([
-    {
-      id: '-NQ9MOINxEjSe_Wwitd3',
-      'Original form': 'sda',
-      'Parts of speech': 'noun'
-    },
-    {
-      id: '-NQ9MOINxEjSe_Wwitd4',
-      'Original form': 'sample original form',
-      'Parts of speech': 'verb'
-    },
-  ]);
-
-
-  const [count, setCount] = useState(0);
-  // Make call to language's dictionary
-  useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      try {
-        // WIP: why do you need to go back to dashboard if you want a different table?
-        console.log("LID", query.replace(/\s+/g, ''))
-        let responseJson = await fetch(`api/word/getWords`, {
-          method: "POST",
-          body: JSON.stringify(
-            {"lid": query.replace(/\s+/g, '')
-            })
-        });
-        const newData = await responseJson.json();
-        console.log("response dictionary: ", newData);
-
-        let firstObject = newData[0] || {};
-        const cols = [];
-        for (const colHeader in Object.keys(firstObject)) {
-          // if (Object.keys(firstObject)[colHeader] !== "id" && Object.keys(firstObject)[colHeader] !== "key") { // add to remove id and key columns -> for testing purposes only
-          console.log(Object.keys(firstObject)[colHeader])
-          const col = {
-              title: Object.keys(firstObject)[colHeader],
-              dataIndex: Object.keys(firstObject)[colHeader],
-              width: '20%',
-              editable: true,
-              filteredValue: [searchedText],
-              onFilter: (value, record) => {
-                return String(record[Object.keys(firstObject)[colHeader]]).includes(value);
-              }
-            }
-          cols.push(col);
-          // }
-        }
-        cols.push({
-          // title: '',
-          // dataIndex: 'operation',
-          // render: (_, record) => {
-          //   // data.length >= 1 ? (
-          //     <Popconfirm title="Are you sure delete this row?" onConfirm={() => handleDelete(record.key, record)}>
-          //       <a><DeleteOutlined /></a>
-          //     </Popconfirm>
-          //   // ) : null,
-          // }
-          render: (_,  record) => {
-            return (
-              <>
-                <Popconfirm title="Save this row?" onConfirm={() => handleToDatabase(record)}>
-                <a><EditOutlined/></a>
-                </Popconfirm>
-
-                <Popconfirm title="Are you sure delete this row?" onConfirm={() => handleDelete(record.key, record)}>
-                  <a><DeleteOutlined style={{ marginLeft: 12 }}/> </a>
-                </Popconfirm>
-              </>
-            );
-          },
-
-        })
-
-
-        setColumns(cols)
-        setData(newData);
-        setDataCopy(newData)
-        setLoading(false);
-        setCount(data.length)
-        setTableParams({
-          ...tableParams,
-          pagination: {
-            ...tableParams.pagination,
-            total: Object.keys(data).length,
-            // 200 is mock data, you should read it from server
-            // total: data.totalCount,
-            // Pagination changes based on size of data (Shows page dropdown at 200 rows)
-          },
-        });
-        console.log("Number of rows: ", Object.keys(data).length)
-      } catch(e) {
-        console.log("Error getting dictionary table: ", e)
-      }
-    };
-    fetchData();
-
-  }, [JSON.stringify(tableParams)]);
-
-  const handleTableChange = (pagination, filters, sorter) => {
-    console.log('params', pagination, filters, sorter);
-    setTableParams({
-      ...tableParams,
-      pagination: {
-        ...tableParams.pagination,
-        total: Object.keys(data).length,
-        // 200 is mock data, you should read it from server
-        // total: data.totalCount,
-        // Pagination changes based on size of data (Shows page dropdown at 200 rows)
-      },
-      filters,
-      ...sorter
+  const [editingKey, setEditingKey] = useState('');
+  const isEditing = (record) => record.id === editingKey;
+  const edit = (record) => {
+    form.setFieldsValue({
+      name: '',
+      age: '',
+      address: '',
+      ...record,
     });
+    setEditingKey(record.id);
+  };
+  const cancel = () => {
+    setEditingKey('');
+  };
+  const save = async (id) => {
+    try {
+      const row = await form.validateFields();
+      const newData = [...data];
+      const index = newData.findIndex((item) => id === item.id);
+      if (index > -1) {
+        const item = newData[index];
+        newData.splice(index, 1, {
+          ...item,
+          ...row,
+        });
+        setData(newData);
+        setEditingKey('');
+      } else {
+        newData.push(row);
+        setData(newData);
+        setEditingKey('');
+      }
 
-    // `dataSource` is useless since `pageSize` changed
-    if (pagination.pageSize !== tableParams.pagination?.pageSize) {
-      setData([]);
-      setDataCopy([]);
+      console.log("EDIT THIS ROW IN THE DATABASE: ", newData[index]);
+      await fetch(`api/word/updateWord`, {
+        method: "POST",
+        body: JSON.stringify(
+          {"data": newData[index],
+          "lid": queryParam
+          })
+        })
+        .then(resp => {
+          return resp.json();
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    } catch (errInfo) {
+      console.log('Validate Failed:', errInfo);
     }
   };
 
 
-  // if (data) {
-    console.log("Dictionary Table Component Response Data: ", data)
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [EditColumn, setEditColumn] = useState(null);
+  const[prevEditColumn, setPrevEditColumn] =useState(null);
+  const showEditModal = () => {
+    setIsEditModalOpen(true);
+  };
 
-    const handleDelete = async (key, record) => {
-      console.log("FFFFFFFF", data)
-      const newData = [];
-      data.forEach((item) => {
-        console.log("item", item.id)
-        if (item.id !== record.id) {
-          newData.push(item);
-        }
+  const handleEditOk = async () => {
+    console.log("New column header name: ", EditColumn)
+    // mergedColumns = mergedColumns.filter(column => column.dataIndex !== dataIndex);
+    setIsEditModalOpen(false);
+
+    let updateData = await fetch(`api/dictField/updateFieldName`, {
+      method: "POST",
+      body: JSON.stringify(
+        {"currFieldName": prevEditColumn,
+        newFieldName: EditColumn.name,
+        "lid": queryParam
+        })
+      })
+      .then(resp => {
+        return resp.json();
+      })
+      .catch(err => {
+        console.log(err);
       });
-        console.log("HHHHHHHHHHHHH", newData)
-      setData(newData);
-      setDataCopy(newData);
+      console.log("Updated Column Data: ", updateData)
 
-      console.log("DELETE THIS ROW FROM DATABASE: ", record);
-      await fetch(`api/word/deleteWord`, {
+      fetch(`api/word/getWords`, {
         method: "POST",
-        body: JSON.stringify(
-          {"data": record,
-          "lid": query.replace(/\s+/g, '')
-          })
-        })
-        .then(resp => {
-          // console.log("Deleted word ", resp.json())
-          return resp.json();
-        })
-        .catch(err => {
-          console.log(err);
-        });
-
-
-    };
-
-    // const defaultColumns = []
-
-    // for (var col of Object.keys(data[0])) {
-    //   // console.log(key + " -> " + data[key])
-    //   console.log("Column name: ", col)
-    //   defaultColumns.push({
-    //     title: col,
-    //     dataIndex: col,
-    //     width: '20%',
-    //     editable: true,
-    //     filteredValue: [searchedText],
-    //     onFilter: (value, record) => {
-    //       return String(record[col]).includes(value);
-    //     }
-    //   })
-    // }
-    // data && Object.keys(data[0])?.map((col) => (
-    //   <span>{defaultColumns.push({
-    //       title: col, dataIndex: col,
-    //       //defaultSortOrder: 'descend',
-    //       sorter: true,
-    //       filteredValue: [searchedText],
-    //       onFilter: (value, record) => {
-    //         console.log("ASJLDHASDJ : ", record[col])
-    //         // for (var testcol of Object.keys(data[0])) {
-    //           // console.log("JASLADJDS ", testcol)
-    //         return String(record[col]).includes(value);
-    //         // }
-    //       }
-    //   })}
-    //   </span>))
-
-
-    // if (defaultColumns.length === Object.keys(data[0]).length) {
-    //   defaultColumns.push({
-    //     title: '',
-    //     dataIndex: 'operation',
-    //     render: (_, record) =>
-    //       data.length >= 1 ? (
-    //         <Popconfirm title="Are you sure delete this row?" onConfirm={() => handleDelete(record.key, record)}>
-    //           <a><DeleteOutlined /></a>
-    //         </Popconfirm>
-    //       ) : null,
-    //   })
-    // }
-
-    // const newData = []
-    // for (var key of Object.keys(data)) {
-    //   console.log(data.size)
-    //   for (let i = 0; i < 1; i++) {
-    //     console.log(key + " -> " + Object.keys(data[key][i]))
-    //     newData[key] = data[key][i][Object.keys(data[key][i])]
-    //     // newData.push(row)
-    //   }
-    // }
-    // console.log("NEW ", newData)
-
-    // !!!!!!!!!!!===+=== Orignal columns set by antd  below ===+===!!!!!!!!!!!!!
-
-
-    //  defaultColumns = [
-      // {
-      //   title: 'name',
-      //   dataIndex: 'name',
-      //   width: '30%',
-      //   editable: true,
-      // },
-      // {
-      //   title: 'age',
-      //   dataIndex: 'age',
-      // },
-      // {
-      //   title: 'address',
-      //   dataIndex: 'address',
-      // },
-    //   {
-    //     title: 'operation',
-    //     dataIndex: 'operation',
-    //     render: (_, record) =>
-    //       dataSource.length >= 1 ? (
-    //         <Popconfirm title="Sure to delete?" onConfirm={() => handleDelete(record.key)}>
-    //           <a>Delete</a>
-    //         </Popconfirm>
-    //       ) : null,
-    //   },
-    // ];
-
-
-    // Add new table row
-    const handleAdd = async () => {
-      let newData = {}
-      // console.log("HHHHH",defaultColumns)
-      // for (const colHeader in Object.keys(defaultColumns[0])) {
-      //   console.log("HERE", colHeader)
-      //   newData[Object.keys(defaultColumns[0])[colHeader].title] = `Insert data here`;
-      // }
-
-
-      let newword = await fetch(`api/word/addWord`, {
-        method: "POST",
-        body: JSON.stringify(
-          {"data": newData
-          })
-        })
-        .then(resp => {
-          return resp.json();
-        })
-        .catch(err => {
-          console.log(err);
-        });
-
-        console.log("Added Word to Database: ", newword);
-
-
-        newData.id= newword.newWordKey;
-        newData.key = data.length;
-        setData([...data, newData]);
-        setDataCopy([...data, newData]);
-        setCount(count + 1);
-    };
-
-    // Save new table row to data
-    const handleSave = (row) => {
-      const newData = [...data];
-      const index = newData.findIndex((item) => row.key === item.key);
-      const item = newData[index];
-      newData.splice(index, 1, {
-        ...item,
-        ...row,
-      });
-      setData(newData);
-      setDataCopy(newData);
-    };
-    const components = {
-      body: {
-        row: EditableRow,
-        cell: EditableCell,
-      },
-    };
-    const columns = defaultColumns.map((col) => {
-      if (!col.editable) {
-        return col;
-      }
-      return {
-        ...col,
-        onCell: (record) => ({
-          record,
-          editable: col.editable,
-          dataIndex: col.dataIndex,
-          title: col.title,
-          handleSave,
-        }),
-      };
-    });
-
-    const handleSearch = (e) => {
-      console.log("Search Query: ", e)
-      setData(dataCopy)
-      let queryData = [];
-      for (var i = 0; i < data.length; i++){
-        console.log("row index: " + i);
-        var obj = data[i];
-        for (var key in obj) {
-          var value = obj[key];
-          if (String(value).includes(e)) {
-            console.log("cell - " + key + ": " + value);
-            queryData.push(obj)
-          }
-        }
-      }
-      setData(queryData);
-      console.log("Search Queried Data: ", data);
-    // input search filer
-      // let searchButton = document.getElementById("input-filter").parentElement.nextSibling;
-      // let searchQuery = document.getElementById("input-filter").value;
-      //   searchButton.onclick = function() { alert('blah'); };
-      //   console.log(searchQuery)
-      // const newData = data.filter((item) => item.key !== key);
-      // setData(newData);
-      // const newData = data.filter((item) => item.key !== key);
-      // setData(newData);
-    };
-
-    // press save button to save row to database
-    const handleToDatabase = (record) => {
-      console.log("SAVE THIS UPDATED DATA TO DATABASE: ", record);
-        fetch(`api/word/updateWord`, {
-          method: "POST",
-          body: JSON.stringify(
-            {"data": record,
-            "lid": query.replace(/\s+/g, '')
-            })
-          })
-          .then(resp => {
-            return resp.json();
-          })
-          .catch(err => {
-            console.log(err);
+        body: JSON.stringify({ 'lid': queryParam }),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          const newData = data.map((item) => {
+            const newItem = {};
+            for (const key in item) {
+              newItem[key] = item[key];
+            }
+            return newItem;
           });
+          console.log("READ DATA: ", data)
+          setData(newData);
+        })
+        .catch(error => {
+          console.log("Failed to fetch data: ", error);
+        });
+    // handleAddColumn()
+  };
+
+  const handleEditCancel = () => {
+    setIsEditModalOpen(false);
+  };
+
+  // Edit a column header
+  const handleEditColumn = (dataIndex, close) => {
+    setPrevEditColumn(dataIndex);
+    close();
+    showEditModal();
+    // confirm();
+    // setSearchText(selectedKeys[0]);
+    // setSearchedColumn(dataIndex);
+  };
+
+  // Delete a column
+  const handleDeleteColumn = async (dataIndex) => {
+    mergedColumns = mergedColumns.filter(column => column.dataIndex !== dataIndex);
+    setColumns(mergedColumns)
+    setFilterColumn(dataIndex)
+    console.log("New columns after delete: ", mergedColumns)
+
+    for (const row in data) {
+      console.log("HERE", data[row]);
+      delete data[row][dataIndex];
+    }
+    setData(data)
+    console.log("Data after delete column", data)
+
+    await fetch(`api/dictField/deleteField`, {
+      method: "POST",
+      body: JSON.stringify(
+        {"field": dataIndex,
+        "lid": queryParam
+        })
+      })
+      .then(resp => {
+        return resp.json();
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  };
+
+  // Put delete and edit feature in column header
+  const getColumnSearchProps = (dataIndex) => ({
+    filterDropdown: ({ close }) => (
+      <div
+        style={{
+          padding: 8,
+        }}
+        onKeyDown={(e) => e.stopPropagation()}
+      >
+        <Space>
+          <Button
+            onClick={() => handleEditColumn(dataIndex, close)}
+            size="small"
+            type="link"
+          >
+            Edit
+          </Button>
+          <Button
+            onClick={() => handleDeleteColumn(dataIndex)}
+            type="link"
+            size="small"
+          >
+            Delete
+          </Button>
+          <Button
+            type="link"
+            size="small"
+            onClick={() => {
+              close();
+            }}
+          >
+            Close
+          </Button>
+        </Space>
+      </div>
+    ),
+    filterIcon: (filtered) => (
+      <MenuOutlined
+        style={{
+          color: filtered ? '#1890ff' : undefined,
+        }}
+      />
+    ),
+    render: (text) => text
+  });
+
+  let firstObject = data[0] || {};
+  let cols = [];
+  for (const colHeader in Object.keys(firstObject)) {
+    // if (Object.keys(firstObject)[colHeader] !== "id" && Object.keys(firstObject)[colHeader] !== "key") { // add to remove id and key columns -> for testing purposes only
+    console.log(Object.keys(firstObject)[colHeader])
+    const col = {
+        title: Object.keys(firstObject)[colHeader],
+        dataIndex: Object.keys(firstObject)[colHeader],
+        key: Object.keys(firstObject)[colHeader],
+        width: '20%',
+        editable: true,
+        sorter: (a, b) => {
+          console.log(typeof(a[Object.keys(firstObject)[colHeader]]), typeof(b[Object.keys(firstObject)[colHeader]]))
+          if (typeof(a[Object.keys(firstObject)[colHeader]]) === 'number' && typeof(b[Object.keys(firstObject)[colHeader]]) === 'number') {
+            return a[Object.keys(firstObject)[colHeader]] - b[Object.keys(firstObject)[colHeader]];
+          } else {
+            return String(a[Object.keys(firstObject)[colHeader]]).localeCompare(String(b[Object.keys(firstObject)[colHeader]]))
+          }
+        },
+        sortDirections: ['descend', 'ascend'],
+        ...getColumnSearchProps(Object.keys(firstObject)[colHeader]),
+        onFilter: (value, record) => {
+          return String(record[Object.keys(firstObject)[colHeader]]).includes(value);
+        }
+      }
+    cols.push(col);
+    // }
+  }
+  cols.push(
+    {
+      title: '',
+      dataIndex: 'operation',
+      render: (_, record) => {
+        const editable = isEditing(record);
+        return editable ? (
+          <div>
+          <span>
+            <Typography.Link
+              onClick={() => save(record.id)}
+              style={{
+                marginRight: 8,
+              }}
+            >
+              Save
+            </Typography.Link>
+            <Popconfirm title="Sure to cancel?" onConfirm={cancel}>
+              <a>Cancel</a>
+            </Popconfirm>
+          </span>
+          </div>
+        ) : (
+          <div>
+          <Typography.Link disabled={editingKey !== ''} onClick={() => edit(record)}>
+            Edit
+          </Typography.Link>
+            <Popconfirm title="Are you sure delete this row?" onConfirm={() => handleDelete(record.id, record)}>
+              <a><DeleteOutlined style={{ marginLeft: 12 }}/> </a>
+            </Popconfirm>
+          </div>
+        );
+
+      },
+    })
+
+  let mergedColumns = cols.map((col) => {
+    if (!col.editable) {
+      return col;
+    }
+    return {
+      ...col,
+      onCell: (record) => ({
+        record,
+        inputType: col.dataIndex === 'age' ? 'number' : 'text',
+        dataIndex: col.dataIndex,
+        title: col.title,
+        editing: isEditing(record),
+      }),
     };
-    return (
+  });
+
+  if (filterColumn) {
+    mergedColumns = mergedColumns.filter(column => column.dataIndex !== filterColumn);
+  }
+
+  // if (EditColumn) {
+  //   console.log("HHHHHHHHHHHHH", mergedColumns)
+    // if (mergedColumns.includes(prevEditColumn)) {
+    //   mergedColumns[prevEditColumn].title = EditColumn.name
+    //   console.log("nnnnnnnnnnnn", mergedColumns)
+    // }
+    // mergedColumns = mergedColumns.filter(column => column.dataIndex !== prevEditColumn);
+    // mergedColumns.push(EditColumn.name)
+
+
+    // var i;
+    // for(i = 0; i < data.length; i++){
+    //   console.log("ROW", data[i], EditColumn.name)
+    //   // data[i][EditColumn.name] = data[i][prevEditColumn];
+    //   // delete data[i].prevEditColumn;
+    // }
+  // }
+
+  // useEffect(() => {
+  //   const searchParams = new URLSearchParams(window.location.search);
+  //   const queryParam = searchParams.get('lid');
+  //   const queryName = searchParams.get('lname');
+  //   if (queryParam) {
+  //     setQueryParam(queryParam.replace(/\s+/g, ''));
+  //     setQueryName(queryName);
+  //     console.log("QUERY ", queryParam.replace(/\s+/g, ''));
+  //   }
+  // }, []);
+
+  useEffect(() => {
+    if (queryParam) {
+      fetch(`api/word/getWords`, {
+        method: "POST",
+        body: JSON.stringify({ 'lid': queryParam }),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          const newData = data.map((item) => {
+            const newItem = {};
+            for (const key in item) {
+              newItem[key] = item[key];
+            }
+            return newItem;
+          });
+          console.log("READ DATA: ", data)
+          setData(newData);
+        })
+        .catch(error => {
+          console.log("Failed to fetch data: ", error);
+        });
+    }
+  }, [queryParam]);
+
+  const handleDelete = async (key, record) => {
+    console.log("FFFFFFFF", data)
+    const newData = [];
+    data.forEach((item) => {
+      console.log("item", item.id)
+      if (item.id !== record.id) {
+        newData.push(item);
+      }
+    });
+    setData(newData);
+
+    console.log("DELETE THIS ROW FROM DATABASE: ", record);
+    await fetch(`api/word/deleteWord`, {
+      method: "POST",
+      body: JSON.stringify(
+        {"data": record,
+        "lid": queryParam
+        })
+      })
+      .then(resp => {
+        return resp.json();
+      })
+      .catch(err => {
+        console.log(err);
+      });
+
+
+  };
+
+  const handleAdd = async () => {
+    let newData = {};
+    // console.log("HHHHH",defaultColumns)
+    for (const colHeader in cols) {
+      console.log("HERE", cols[colHeader].title);
+      if (cols[colHeader].title === "" || cols[colHeader].title === "id") {
+        continue;
+      } else {
+        newData[cols[colHeader].title] = ``;
+      }
+    }
+    console.log("ADDDDDD", newData);
+
+    let newword = await fetch(`api/word/addWord`, {
+      method: "POST",
+      body: JSON.stringify({ data: newData, lid: queryParam }),
+    })
+      .then((resp) => {
+        return resp.json();
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+
+    console.log("Added Word to Database: ", newword);
+
+    newData.id = newword.newWordKey;
+    console.log("IDDDDDDDDD", newData.id)
+    newData.key = data.length;
+    setData([...data, newData]);
+  };
+
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [AddColumn, setAddColumn] = useState(null);
+  const showAddModal = () => {
+    setIsAddModalOpen(true);
+  };
+
+  const handleAddOk = () => {
+    setIsAddModalOpen(false);
+    handleAddColumn()
+  };
+
+  const handleAddCancel = () => {
+    setIsAddModalOpen(false);
+  };
+
+  const handleAddColumn = async () => {
+    console.log("Add this column", AddColumn)
+    for (const row in data) {
+      console.log("HERE", data[row]);
+      data[row][AddColumn.name] = ''
+    }
+    console.log("Data after adding column", data)
+
+    const col = {
+      title: AddColumn.name,
+      dataIndex: AddColumn.name,
+      key: AddColumn.name,
+      width: '20%',
+      editable: true,
+      sorter: (a, b) => {
+        console.log("TEST")
+        if (typeof(a[AddColumn.name]) === 'number' && typeof(b[AddColumn.name]) === 'number') {
+          return a[AddColumn.name] - b[AddColumn.name];
+        } else {
+          return String(a[AddColumn.name]).localeCompare(String(b[AddColumn.name]))
+        }
+      },
+      sortDirections: ['descend', 'ascend'],
+      onFilter: (value, record) => {
+        return String(record[AddColumn.name]).includes(value);
+      }
+    }
+    mergedColumns.push(col)
+    setColumns(mergedColumns)
+
+    await fetch(`api/dictField/addField`, {
+      method: "POST",
+      body: JSON.stringify(
+        {"fieldName": AddColumn.name,
+        "lid": queryParam
+        })
+      })
+      .then(resp => {
+        return resp.json();
+      })
+      .catch(err => {
+        console.log(err);
+      });
+
+    // let newword = await fetch(`api/word/addWord`, {
+    //   method: "POST",
+    //   body: JSON.stringify({ data: newData, lid: queryParam }),
+    // })
+    //   .then((resp) => {
+    //     return resp.json();
+    //   })
+    //   .catch((err) => {
+    //     console.log(err);
+    //   });
+    }
+
+    // const MyTable = () => {
+    //   // const updatedColumns = columns.filter(column => column.dataIndex !== 'column2');
+
+    //   return <Table
+    //   components={{
+    //     body: {
+    //       cell: EditableCell,
+    //     },
+    //   }}
+    //   bordered
+    //   dataSource={data}
+    //   columns={mergedColumns}
+    //   rowClassName="editable-row"
+    //   pagination={{
+    //     onChange: cancel,
+    //   }}
+    //   scroll={{x:950,y:"calc(100vh - 220px)" }}
+    // />;
+    // }
+  return (
       <div>
         <div id="lang-name-header" >
-          <h1>{router.query['lname']}</h1>
+          <h1>{queryName}</h1>
         </div>
         <Button
           onClick={handleAdd}
@@ -494,35 +553,66 @@ const DictionaryTable = ({lid}) => {
         >
           + Add a row
         </Button>
-        <Button onClick={handleToDatabase} type="primary" style={{ 'margin-left': '15px'}} ghost>
-          <EditTwoTone />
-          Save
+        <Button
+          onClick={showAddModal}
+          // onClick={handleAddColumn}
+          type="primary"
+          style={{
+            marginBottom: 16,
+            marginLeft: 8
+          }}
+        >
+          + Add a column
         </Button>
-        <Button style={{ 'margin-left': '15px'}}>
-          <SearchOutlined />
-          Find and Replace
-        </Button>
-        <Search id="input-filter" onSearch={(value) => {setSearchedText(value);}} placeholder="input search text" allowClear style={{ width: 200, 'margin-left': '35%'}} />
-        <Button>
-          Stats
-        </Button>
-        <Table
-          components={components}
-          rowClassName={() => 'editable-row'}
-          bordered
-          dataSource={data}
-          columns={columns}
-          loading={loading}
-          pagination={tableParams.pagination}
-          onChange={handleTableChange}
-          scroll={{x:950,y:"calc(100vh - 220px)" }}
-        />
-      </div>
-    );
-  }
-  // } else {
-  //   return <div>error loading dictionary</div>
-  // }
-// }
 
+        <Modal title="Add Column" open={isAddModalOpen} onOk={handleAddOk} onCancel={handleAddCancel}>
+          <Input
+            // value='Column Name'
+            onChange={(e) => {
+              setAddColumn(() => {
+                return { name: e.target.value };
+              });
+            }}
+            // onChange={(e) => {
+            //     return e.target.value ;
+            // }}
+          />
+        </Modal>
+
+        <Modal title="Edit Column Header" open={isEditModalOpen} onOk={handleEditOk} onCancel={handleEditCancel}>
+          <Input
+            // value='Column Name'
+            onChange={(e) => {
+              setEditColumn(() => {
+                return { name: e.target.value };
+              });
+            }}
+            // onChange={(e) => {
+            //     return e.target.value ;
+            // }}
+          />
+        </Modal>
+
+
+    <Form form={form} component={false}>
+
+     <Table
+      components={{
+        body: {
+          cell: EditableCell,
+        },
+      }}
+      bordered
+      dataSource={data}
+      columns={mergedColumns}
+      rowClassName="editable-row"
+      pagination={{
+        onChange: cancel,
+      }}
+      scroll={{x:950,y:"calc(100vh - 220px)" }}
+    />;
+    </Form>
+    </div>
+  );
+};
 export default DictionaryTable;

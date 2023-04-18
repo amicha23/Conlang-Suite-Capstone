@@ -3,6 +3,8 @@ import { Layout } from 'antd';
 import { useRouter } from 'next/router';
 import { Button, Collapse } from 'antd';
 import React, { useEffect, useState } from "react";
+import Router from 'next/router';
+
 
 // Components
 import DictionaryTable from '../components/dictTable';
@@ -18,8 +20,7 @@ export default function Home() {
     const [viewDict, changeDashboardView] = useState(true);
 
     const createDict = () => {
-        window.location.href = '/setupFields';
-        // router.push('/setupFields');
+        Router.push('/setupFields');
     };
 
     return (
@@ -33,9 +34,9 @@ export default function Home() {
                         <h1>Dashboard</h1>
                         <Button type='primary' onClick={ createDict }>Create New Dictionary</Button>
                     </div>
-                    <div id="dict-table" style={{display: viewDict ? "none" : "block"}}>
+                    {/* <div id="dict-table" style={{display: viewDict ? "none" : "block"}}>
                         <DictionaryTable />
-                    </div>
+                    </div> */}
                 </Content>
             </Layout>
         </div>

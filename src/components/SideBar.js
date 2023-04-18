@@ -26,6 +26,7 @@ import Link from 'next/link';
 import React, { useState, useEffect } from 'react'
 import { Menu } from 'antd';
 import Router from 'next/router';
+// import { useSearchParams } from "react-router-dom";
 
 // FILES
 import logo from '../../public/langtimelogo.png';
@@ -50,13 +51,15 @@ function getLanguageOptions(langName, num, langID) {
     getItem('Phonology', (num * 4) + 1, null, null, null,langID),
     getItem('Orthography', (num * 4) + 2, null, null, null,langID),
     getItem('Language Specific', (num * 4) + 3, null, null, null,langID),
-    getItem('Settings', (num * 4) + 4, null, null, null,langID)
+    getItem('Delete', (num * 4) + 4, null, null, null,langID)
   ];
   return langOptions;
 }
 
 export default function SideBar() {
   const [data, setData] = useState(null);
+  const [queryParam, setQueryParam] = useState('');
+  const [queryName, setQueryName] = useState('');
 
   useEffect(() => {
     const fetchData = async () => {
@@ -67,6 +70,21 @@ export default function SideBar() {
 
     fetchData();
   }, []);
+
+  useEffect(() => {
+    if (queryParam) {
+    // WIP: Can only load one table at a time, clicking another button returns same data for some reason
+    Router.push({ pathname: '/langTable', query: { lid: queryParam, lname: queryName } });
+    // var newUrl = window.location.origin + '/langTable' + "?lid=" + query;
+    // window.location.href = newUrl;
+    setQueryParam(null)
+    setQueryName(null);
+    // let params = serializeFormQuery(e.target);
+    // setSearchParams(params);
+    // console.log("PARAMS ", params)
+      return;
+    }
+  })
 
   if (data) {
       let langIDS = data.languageIDs.split(',')
@@ -86,15 +104,16 @@ export default function SideBar() {
       // Route to the language's table
       const onClick = (e) => {
         // console.log("LangID to push: ", e.item.props.langID)
-        console.log(Router.pathname)
+        // console.log(Router.pathname)
         let query = e.item.props.langID.replace(/\s+/g, '')
+        setQueryParam(query)
+        setQueryName(e.key);
+        console.log("QERRRY ", query)
 
-        // WIP: Can only load one table at a time, clicking another button returns same data for some reason
-        Router.push({ pathname: '/langTable', query: { lid: e.item.props.langID, lname: e.key } });
-        // var newUrl = window.location.origin + '/langTable' + "?lid=" + query;
-        // window.location.href = newUrl;
 
       };
+
+
 
       return (
         <div>

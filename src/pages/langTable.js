@@ -18,21 +18,70 @@ export default function Home() {
     const [languages, setLanguages] = useState();
     const [viewDict, changeDashboardView] = useState(true);
 
+    const [queryParam, setQueryParam] = useState('');
+    const [queryName, setQueryName] = useState('');
+    const [searchParams, setSearchParams] = useState('');
+
     const router = useRouter()
+
+    // router.reload(router.pathname);
     let query=router.query['lid']
     console.log("Query Param: ", query);
+    console.log("TEST ", router.asPath)
+    // router.push({ pathname: router.asPath });
+
+    useEffect(() => {
+        const searchParams = new URLSearchParams(window.location.search);
+
+
+        setSearchParams(searchParams);
+        if (searchParams) {
+            // const queryParam = searchParams.get('lid');
+            // const queryName = searchParams.get('lname');
+
+          setQueryParam(searchParams.get('lid').replace(/\s+/g, ''));
+          setQueryName(searchParams.get('lname'));
+          console.log("QUERY ", queryParam.replace(/\s+/g, ''));
+          return
+        }
+        // setQueryParam(null);
+        //   setQueryName(null);
+        return
+      }, []);
 
     return (
         <div>
-            <Layout>
+            <Layout style={{
+                        minHeight: '100vh',
+                    }}>
                 <div id="side-bar-div">
                     <SideBar/>
                 </div>
-                <Content>
-                    <div id="dict-table">
-                        <DictionaryTable lid={query}/>
-                    </div>
-                </Content>
+                <Layout className="site-layout">
+                    <Header
+                        className="site-layout-background"
+                        style={{
+                            padding: 0,
+                        }}
+                        />
+                    <Content style={{
+                                margin: '0 16px',
+                            }}>
+                        <div id="dict-table" className='site-layout-background' style={{
+                                                                                        padding: 24,
+                                                                                        minHeight: 360,
+                                                                                        }}>
+                            <DictionaryTable queryParam={queryParam} setQueryParam={setQueryParam} queryName={queryName} setQueryName= {setQueryName}/>
+                        </div>
+                    </Content>
+                    <Footer
+                        style={{
+                            textAlign: 'center',
+                        }}
+                        >
+                        Langtime ©2023 Created by Pentalingo & Conlangers
+                    </Footer>
+                </Layout>
             </Layout>
         </div>
     );

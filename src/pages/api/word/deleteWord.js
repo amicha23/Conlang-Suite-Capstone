@@ -1,12 +1,11 @@
 import { db } from "../../../../firebaseConfig/firebaseAdmin.js";
-import { update, get, ref } from "firebase/database";
+import { update, get, ref, remove } from "firebase/database";
 
 export default async function handler(req, res) {
   const data = JSON.parse(req.body); // TODO
+  console.log("DEL DATA", data)
   var lid = data.lid;
   var wid = data.data.id;
-  // lid = "-NQ9AuH-xaR_k-NxzwcA";
-  // wid = "-NQ9JXBV_saywGNGQuci";
   const dictRef = ref(db, `languages/${lid}`);
 
   try {
@@ -16,21 +15,20 @@ export default async function handler(req, res) {
       return res.status(200).json({ response: "No data available" });
     }
     const dict = snapshot.val().dict;
-
-    const updates = {};
+    console.log("DCTTTTTT", dict)
     for (const field of Object.keys(dict)) {
-      if (dict[field][wid]) {
-        updates[
-          `/languages/${lid}/dict/${field}/${wid}/del_status`
-        ] = 1;
-      }
+      console.log("FIEDL", dict[field]['-NTLRuZ8Ixeivi4R-l4r'])
+      // if (dict[field][wid]) {
+        console.log("TESTTTTTTTTTT", )
+        let wordRef = ref(db, `/languages/${lid}/dict/${field}/${wid}`);
+        remove(wordRef);
+      // }
     }
 
-    update(ref(db), updates);
-    console.log("del_status updated");
+    console.log(`word with lid ${wid} deleted`);
     res.status(200).json("Success");
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: "Failed to update del_status" });
+    res.status(500).json({ error: "Failed to delete" });
   }
 }

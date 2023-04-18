@@ -10,20 +10,21 @@
   },
   "dependencies": {
     "@ant-design/icons": "^5.0.1",
-    "@fortawesome/fontawesome-svg-core": "^6.3.0",
+    "@firebase/storage": "^0.11.2",
     "@next/font": "13.1.6",
     "@types/node": "18.13.0",
     "@types/react": "18.0.27",
     "@types/react-dom": "18.0.10",
     "antd": "^5.2.3",
-    "bootstrap": "^5.2.3",
+    "blob": "^0.1.0",
     "firebase": "^9.17.1",
     "firebase-admin": "^11.5.0",
     "next": "^13.3.0",
     "react": "18.2.0",
     "react-bootstrap": "^2.7.2",
     "react-dom": "18.2.0",
-    "react-router-dom": "^6.8.2",
+    "react-router-dom": "^6.10.0",
+    "request": "^2.79.0",
     "typescript": "4.9.5"
   }
 }
