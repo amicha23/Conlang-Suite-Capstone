@@ -8,9 +8,11 @@ import React, { useEffect, useState } from "react";
 import { Layout } from 'antd';
 import { db, auth } from "firebaseConfig/firebaseAdmin";
 import { getDatabase, ref, set as firebaseSet, onValue } from 'firebase/database';
-import {loginUser, googleLogin, resetPassword} from "src/app/user"
+import {loginUser, resetPassword} from "src/app/user"
 import { CheckCircleOutlined, CheckCircleTwoTone, InfoCircleOutlined, InfoCircleTwoTone } from '@ant-design/icons'; // icons
 import Link from 'next/link';
+import { useRouter } from 'next/router';
+
 function writeUserData(userId, name, email) {
   const db = getDatabase();
   set(ref(db, 'users/' + userId), {
@@ -35,29 +37,31 @@ function showPwd(id, el) {
 }
 
 export default function login() {
-
+  const router = useRouter();
   return (
       <div className="container">
         <section className="d-flex justify-content-center" >
             <div /* </Layout>style={{ padding: '0 20px', background: 'white'}}*/>
-              <img src="https://www.iths.org/resources/wp-content/sabai/sites/9/File/files/0bb1f4cb5ff99dd034602ced0e2534fc.png" alt="test"/>
-              <img src="./img/eiffel.jpg"/>
+              <img src="/img/langtime_studio_logo-transformed.png" alt="langtime logo"/>
+
               <h1>Log in to your account</h1>
               <p className='text-secondary text-center pb-3'>Welcome! Please enter your details</p>
               <div id="first-page-setup">
-                <p class="mb-1">Email</p>
+                <p className="mb-1">Email</p>
                 <Input id="email" placeholder="Email"/>
-                <p class="mt-3 mb-1">Password</p>
+                <p className="mt-3 mb-1">Password</p>
                 <Input className = "mb-2"type ="password" id="password" placeholder="Password"/>
                 <i className='fa fa-eye showpd'/>
-                <p onClick={() => resetPassword()} className = "text-end text-primary fw-semibold mb-5">Forgot password?</p>
+
+                <p className="text-primary fw-semibold" onClick={() => router.push('/forgetPassword')}>Forgot password?</p>
+                
                 <div className = "d-grid gap-1" id="signin-button">
                   <Button type="primary" onClick={() => loginUser()}>Sign in</Button>
                   <Button icon={<GoogleOutlined/>}>Sign in with Google</Button>
-                  <div class="g-signin2" data-onsuccess="onSignIn"></div>
+                  <div className="g-signin2" data-onsuccess="onSignIn"></div>
                 </div>
 
-                <p class="mt-4 text-center">Don't have an account? <Link href="register" className="text-primary fw-semibold">Sign up</Link> </p>
+                <p className="mt-4 text-center">Don't have an account? <Link href="register" className="text-primary fw-semibold">Sign up</Link> </p>
                
 
               </div>              
