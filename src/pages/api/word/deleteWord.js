@@ -3,6 +3,7 @@ import { update, get, ref, remove } from "firebase/database";
 
 export default async function handler(req, res) {
   const data = JSON.parse(req.body); // TODO
+  console.log("DEL DATA", data)
   var lid = data.lid;
   var wid = data.data.id;
   const dictRef = ref(db, `languages/${lid}`);
@@ -14,14 +15,17 @@ export default async function handler(req, res) {
       return res.status(200).json({ response: "No data available" });
     }
     const dict = snapshot.val().dict;
+    console.log("DCTTTTTT", dict)
     for (const field of Object.keys(dict)) {
-      if (dict[field][wid]) {
+      console.log("FIEDL", dict[field]['-NTLRuZ8Ixeivi4R-l4r'])
+      // if (dict[field][wid]) {
+        console.log("TESTTTTTTTTTT", )
         let wordRef = ref(db, `/languages/${lid}/dict/${field}/${wid}`);
         remove(wordRef);
-      }
+      // }
     }
 
-    console.log(`word with lid ${lid} deleted`);
+    console.log(`word with lid ${wid} deleted`);
     res.status(200).json("Success");
   } catch (err) {
     console.error(err);

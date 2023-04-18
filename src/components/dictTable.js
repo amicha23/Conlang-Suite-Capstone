@@ -425,7 +425,7 @@ const DictionaryTable = ({queryParam, setQueryParam, queryName, setQueryName}) =
       if (cols[colHeader].title === "" || cols[colHeader].title === "id") {
         continue;
       } else {
-        newData[cols[colHeader].title] = `Insert data here`;
+        newData[cols[colHeader].title] = ``;
       }
     }
     console.log("ADDDDDD", newData);
@@ -468,7 +468,7 @@ const DictionaryTable = ({queryParam, setQueryParam, queryName, setQueryName}) =
     console.log("Add this column", AddColumn)
     for (const row in data) {
       console.log("HERE", data[row]);
-      data[row][AddColumn.name] = 'insert data here'
+      data[row][AddColumn.name] = ''
     }
     console.log("Data after adding column", data)
 

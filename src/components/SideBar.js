@@ -49,7 +49,7 @@ function getLanguageOptions(langName, num, langID) {
     getItem('Phonology', (num * 4) + 1, null, null, null,langID),
     getItem('Orthography', (num * 4) + 2, null, null, null,langID),
     getItem('Language Specific', (num * 4) + 3, null, null, null,langID),
-    getItem('Settings', (num * 4) + 4, null, null, null,langID)
+    getItem('Delete', (num * 4) + 4, null, null, null,langID)
   ];
   return langOptions;
 }
