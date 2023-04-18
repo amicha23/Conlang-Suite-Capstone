@@ -16,68 +16,44 @@ export default async function handler(req, res) {
 
     const dict = snapshot.val().dict;
 
-    const columns = Object.keys(dict).filter(key =>
-      Object.values(dict[key]).some(value =>
-        typeof value === "object" && value !== null &&
-        value.hasOwnProperty("del_status") &&
-        value.hasOwnProperty("value") &&
-        dict[key].hasOwnProperty("del_status") && dict[key]["del_status"] === 0
-      )
-    );
-    console.log(columns)
+    console.log("dict :>> ", dict);
+
+    const firstCol = Object.values(dict)[0];
+    console.log("firstCol :>> ", firstCol);
+
     let result = [];
-    if (columns === undefined || columns.length == 0) {
-        result = {};
-        let cols = Object.keys(dict)
-        console.log(cols)
-        cols.forEach(element => {
-          result[element] = ''
-        });
-        console.log(result)
-        res.status(200).json([result]);
-        return
+    let word = {};
+
+    if (Object.keys(firstCol).length === 1) {
+      result = {};
+      let cols = Object.keys(dict);
+      cols.forEach((col) => {
+        result[col] = "";
+      });
+      console.log("no word data");
+      console.log("result :>> ", result);
+      res.status(200).json([result]);
     } else {
-      let i = 0 // Set iterable key value for each row
-    // columns.forEach(column => {
-      Object.entries(dict[columns[0]])
-        .filter(([key, value]) => value.del_status === 0)
-        .forEach(([key, value]) => {
-          const entry = {
-            id: key,
-            key: i
-          };
-          i++;
-          entry[columns[0]] = value.value;
-          columns.filter(c => c !== columns[0]).forEach(otherColumn => {
-            const otherValue = dict[otherColumn][key]?.value;
-            if (otherValue !== undefined && otherValue !== null) {
-              entry[otherColumn] = otherValue;
-            }
-          });
-          result.push(entry);
-        });
-    // });
+      for (let id of Object.keys(firstCol)) {
+        word = {}
+        if (id === "createTime") continue;
+        console.log('id :>> ', id);
+        word = { id: id };
+        for (let col of Object.keys(dict)) {
+          console.log('col :>> ', col);
+          console.log('word in :>> ', word);
+          word[col] = dict[col][id];
+        }
+        console.log('word after :>> ', word);
+        result.push(word);
       }
 
+      console.log("result :>> ", result);
 
-    console.log(result);
-    res.status(200).json(result);
+      res.status(200).json(result);
+    }
   } catch (e) {
     console.error(e);
     res.status(500).json({ error: e });
   }
 }
-
-
-
-
-    // // Just return the column headers
-    // if (Object.keys(result).length === 0) {
-    //   let cols = Object.keys(dict)
-    //   console.log(cols)
-    //   cols.forEach(element => {
-    //     result[element] = []
-    //   });
-    //   res.status(200).json(result);
-    //   return
-    // }

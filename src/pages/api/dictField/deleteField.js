@@ -10,8 +10,8 @@ export default async function handler(req, res) {
   const dictRef = ref(db, `languages/${lid}/dict/${field}`);
 
   try {
-    await update(dictRef, { del_status: 1 });
-    console.log(`Successfully updated del_status of ${field} to 1`);
+    remove(dictRef);
+    console.log(`Successfully delete field: ${field}`);
     res.status(200).json({ message: "Successfully updated dictionary entry" });
   } catch (e) {
     console.error(e);

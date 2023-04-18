@@ -52,13 +52,13 @@ const EditableCell = ({
     </td>
   );
 };
-const DictionaryTable = () => {
-  const [queryParam, setQueryParam] = useState('');
-  const [queryName, setQueryName] = useState('');
+const DictionaryTable = ({queryParam, setQueryParam, queryName, setQueryName}) => {
+  // const [queryParam, setQueryParam] = useState('');
+  // const [queryName, setQueryName] = useState('');
   const [form] = Form.useForm();
   const [data, setData] = useState([]);
   const [editingKey, setEditingKey] = useState('');
-  const isEditing = (record) => record.key === editingKey;
+  const isEditing = (record) => record.id === editingKey;
   const edit = (record) => {
     form.setFieldsValue({
       name: '',
@@ -66,16 +66,16 @@ const DictionaryTable = () => {
       address: '',
       ...record,
     });
-    setEditingKey(record.key);
+    setEditingKey(record.id);
   };
   const cancel = () => {
     setEditingKey('');
   };
-  const save = async (key) => {
+  const save = async (id) => {
     try {
       const row = await form.validateFields();
       const newData = [...data];
-      const index = newData.findIndex((item) => key === item.key);
+      const index = newData.findIndex((item) => id === item.id);
       if (index > -1) {
         const item = newData[index];
         newData.splice(index, 1, {
@@ -146,7 +146,7 @@ const DictionaryTable = () => {
           <div>
           <span>
             <Typography.Link
-              onClick={() => save(record.key)}
+              onClick={() => save(record.id)}
               style={{
                 marginRight: 8,
               }}
@@ -163,7 +163,7 @@ const DictionaryTable = () => {
           <Typography.Link disabled={editingKey !== ''} onClick={() => edit(record)}>
             Edit
           </Typography.Link>
-            <Popconfirm title="Are you sure delete this row?" onConfirm={() => handleDelete(record.key, record)}>
+            <Popconfirm title="Are you sure delete this row?" onConfirm={() => handleDelete(record.id, record)}>
               <a><DeleteOutlined style={{ marginLeft: 12 }}/> </a>
             </Popconfirm>
           </div>
@@ -190,16 +190,16 @@ const DictionaryTable = () => {
 
 
 
-  useEffect(() => {
-    const searchParams = new URLSearchParams(window.location.search);
-    const queryParam = searchParams.get('lid');
-    const queryName = searchParams.get('lname');
-    if (queryParam) {
-      setQueryParam(queryParam.replace(/\s+/g, ''));
-      setQueryName(queryName);
-      console.log("QUERY ", queryParam.replace(/\s+/g, ''));
-    }
-  }, []);
+  // useEffect(() => {
+  //   const searchParams = new URLSearchParams(window.location.search);
+  //   const queryParam = searchParams.get('lid');
+  //   const queryName = searchParams.get('lname');
+  //   if (queryParam) {
+  //     setQueryParam(queryParam.replace(/\s+/g, ''));
+  //     setQueryName(queryName);
+  //     console.log("QUERY ", queryParam.replace(/\s+/g, ''));
+  //   }
+  // }, []);
 
   useEffect(() => {
     if (queryParam) {
@@ -255,33 +255,35 @@ const DictionaryTable = () => {
   };
 
   const handleAdd = async () => {
-    let newData = {}
+    let newData = {};
     // console.log("HHHHH",defaultColumns)
-    // for (const colHeader in Object.keys(defaultColumns[0])) {
-    //   console.log("HERE", colHeader)
-    //   newData[Object.keys(defaultColumns[0])[colHeader].title] = `Insert data here`;
-    // }
-
+    for (const colHeader in cols) {
+      console.log("HERE", cols[colHeader].title);
+      if (cols[colHeader].title === "" || cols[colHeader].title === "id") {
+        continue;
+      } else {
+        newData[cols[colHeader].title] = `Insert data here`;
+      }
+    }
+    console.log("ADDDDDD", newData);
 
     let newword = await fetch(`api/word/addWord`, {
       method: "POST",
-      body: JSON.stringify(
-        {"data": newData
-        })
-      })
-      .then(resp => {
+      body: JSON.stringify({ data: newData, lid: queryParam }),
+    })
+      .then((resp) => {
         return resp.json();
       })
-      .catch(err => {
+      .catch((err) => {
         console.log(err);
       });
 
-      console.log("Added Word to Database: ", newword);
+    console.log("Added Word to Database: ", newword);
 
-
-      newData.id= newword.newWordKey;
-      newData.key = data.length;
-      setData([...data, newData]);
+    newData.id = newword.newWordKey;
+    console.log("IDDDDDDDDD", newData.id)
+    newData.key = data.length;
+    setData([...data, newData]);
   };
   return (
       <div>
