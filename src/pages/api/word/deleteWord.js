@@ -15,13 +15,13 @@ export default async function handler(req, res) {
     }
     const dict = snapshot.val().dict;
     for (const field of Object.keys(dict)) {
-      if (dict[field][wid]) {
+      // if (dict[field][wid]) {
         let wordRef = ref(db, `/languages/${lid}/dict/${field}/${wid}`);
         remove(wordRef);
-      }
+      // }
     }
 
-    console.log(`word with lid ${lid} deleted`);
+    console.log(`word with lid ${wid} deleted`);
     res.status(200).json("Success");
   } catch (err) {
     console.error(err);

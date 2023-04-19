@@ -203,6 +203,8 @@ const DictionaryTable = ({queryParam, setQueryParam, queryName, setQueryName}) =
       .catch(err => {
         console.log(err);
       });
+
+
   };
 
   // Put delete and edit feature in column header
@@ -306,7 +308,7 @@ const DictionaryTable = ({queryParam, setQueryParam, queryName, setQueryName}) =
           <Typography.Link disabled={editingKey !== ''} onClick={() => edit(record)}>
             Edit
           </Typography.Link>
-            <Popconfirm title="Are you sure delete this row?" onConfirm={() => handleDelete(record.id, record)}>
+            <Popconfirm title="Are you sure delete this row?" onConfirm={async () => await handleDelete(record.id, record)}>
               <a><DeleteOutlined style={{ marginLeft: 12 }}/> </a>
             </Popconfirm>
           </div>
@@ -397,7 +399,6 @@ const DictionaryTable = ({queryParam, setQueryParam, queryName, setQueryName}) =
         newData.push(item);
       }
     });
-    setData(newData);
 
     console.log("DELETE THIS ROW FROM DATABASE: ", record);
     await fetch(`api/word/deleteWord`, {
@@ -414,6 +415,31 @@ const DictionaryTable = ({queryParam, setQueryParam, queryName, setQueryName}) =
         console.log(err);
       });
 
+      // let test = fetch(`api/word/getWords`, {
+      //   method: "POST",
+      //   body: JSON.stringify({ 'lid': queryParam }),
+      // })
+      //   .then((response) => response.json())
+      //   .then((data) => {
+      //     const newData = data.map((item) => {
+      //       const newItem = {};
+      //       for (const key in item) {
+      //         newItem[key] = item[key];
+      //       }
+      //       return newItem;
+      //     });
+      //     console.log("READ DATA: ", data)
+
+      //     setData(newData);
+      //     return newData
+      //   })
+      //   .catch(error => {
+      //     console.log("Failed to fetch data: ", error);
+      //   });
+
+      setData(newData);
+      // Promise.resolve(test)
+        return
 
   };
 
@@ -425,7 +451,7 @@ const DictionaryTable = ({queryParam, setQueryParam, queryName, setQueryName}) =
       if (cols[colHeader].title === "" || cols[colHeader].title === "id") {
         continue;
       } else {
-        newData[cols[colHeader].title] = `Insert data here`;
+        newData[cols[colHeader].title] = ``;
       }
     }
     console.log("ADDDDDD", newData);
@@ -468,7 +494,7 @@ const DictionaryTable = ({queryParam, setQueryParam, queryName, setQueryName}) =
     console.log("Add this column", AddColumn)
     for (const row in data) {
       console.log("HERE", data[row]);
-      data[row][AddColumn.name] = 'insert data here'
+      data[row][AddColumn.name] = ''
     }
     console.log("Data after adding column", data)
 

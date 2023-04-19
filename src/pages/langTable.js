@@ -50,26 +50,27 @@ export default function Home() {
       }, []);
 
     return (
-        <div>
+        <div >
             <Layout style={{
                         minHeight: '100vh',
                     }}>
-                <div id="side-bar-div">
+                {/* <div id="side-bar-div"> */}
                     <SideBar/>
-                </div>
+                {/* </div> */}
                 <Layout className="site-layout">
-                    <Header
+                    {/* <Header
                         className="site-layout-background"
                         style={{
                             padding: 0,
                         }}
-                        />
+                        /> */}
+
                     <Content style={{
                                 margin: '0 16px',
                             }}>
                         <div id="dict-table" className='site-layout-background' style={{
                                                                                         padding: 24,
-                                                                                        minHeight: 360,
+                                                                                        minHeight: '100%'
                                                                                         }}>
                             <DictionaryTable queryParam={queryParam} setQueryParam={setQueryParam} queryName={queryName} setQueryName= {setQueryName}/>
                         </div>
@@ -84,5 +85,5 @@ export default function Home() {
                 </Layout>
             </Layout>
         </div>
-    );
+    )
 }

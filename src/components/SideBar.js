@@ -49,7 +49,7 @@ function getLanguageOptions(langName, num, langID) {
     getItem('Phonology', (num * 4) + 1, null, null, null,langID),
     getItem('Orthography', (num * 4) + 2, null, null, null,langID),
     getItem('Language Specific', (num * 4) + 3, null, null, null,langID),
-    getItem('Settings', (num * 4) + 4, null, null, null,langID)
+    getItem('Delete', (num * 4) + 4, null, null, null,langID)
   ];
   return langOptions;
 }
@@ -115,27 +115,29 @@ export default function SideBar() {
 
       return (
         <div>
-        <Sider theme='light'>
-          <Link class="test" href="/dashboard">
-            <Image src={ logo } alt='Logo placeholder' width={150}/>
-          </Link>
-          <Menu
-          onClick={onClick}
-          style={{
-            width: 'auto',
-          }}
-          defaultSelectedKeys={['1']}
-          defaultOpenKeys={['sub1']}
-          mode="inline"
-          items={items}
-          />
-          <Link href="/help" >
-            <Image src={ help } alt='Help placeholder' width={200}/>
-          </Link>
-          <Link href="/logout">
-            <Image src={ logout } alt='Logout placeholder' width={200}/>
-          </Link>
-        </Sider>
+          <Sider theme='light' style={{
+                  minHeight: '100%',
+                }}>
+            <Link class="test" href="/dashboard">
+              <Image src={ logo } alt='Logo placeholder' width={150}/>
+            </Link>
+            <Menu
+            onClick={onClick}
+            style={{
+              width: 'auto',
+            }}
+            defaultSelectedKeys={['1']}
+            defaultOpenKeys={['sub1']}
+            mode="inline"
+            items={items}
+            />
+            <Link href="/help" >
+              <Image src={ help } alt='Help placeholder' width={200}/>
+            </Link>
+            <Link href="/logout">
+              <Image src={ logout } alt='Logout placeholder' width={200}/>
+            </Link>
+          </Sider>
         </div>
       );
   } else {
