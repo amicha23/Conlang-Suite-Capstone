@@ -35,6 +35,7 @@ export default async function handler(req, res) {
     for (let id of Object.keys(firstCol)) {
       if (id === "createTime") {
         fieldData[id] = currentTime;
+        continue;
       }
       fieldData[id] = "";
     }

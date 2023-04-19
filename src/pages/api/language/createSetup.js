@@ -24,7 +24,6 @@ export default async function handler(req, res) {
     let date_ob = new Date();
 
     // current date
-    // adjust 0 before single digit date
     let date = ("0" + date_ob.getDate()).slice(-2);
 
     // current month
@@ -44,13 +43,12 @@ export default async function handler(req, res) {
 
     let currentTime = year + "-" + month + "-" + date + " " + hours + ":" + minutes + ":" + seconds;
 
-    console.log('currentTime :>> ', currentTime);
+    langData["createTime"] = currentTime;
 
     for (const field of dictFields) {
       dict[field] = { createTime: currentTime};
     }
     langData["dict"] = dict;
-    console.log("langData :>> ", langData);
 
     const newLangKey = push(child(ref(db), "languages")).key;
 
