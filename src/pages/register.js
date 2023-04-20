@@ -24,8 +24,7 @@ export default function register() {
         <div className="container">
             <section className="d-flex justify-content-center" >
                 <div /* </Layout>style={{ padding: '0 20px', background: 'white'}}*/>
-                {/* <img src="/img/langtime_studio_logo-transformed.png" alt="test"/> */}
-                <KeyOutlined style={{fontSize: '90px', color: '#096dd9'}}/>
+                <img src="/img/langtime_studio_logo-transformed.png" alt="test"/>
                 <h2 class="text-center">Create an account</h2>
                 <div id="first-page-setup">
                     <p class="mb-1">Name</p>
