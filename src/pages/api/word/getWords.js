@@ -3,9 +3,8 @@ import { get, ref } from "firebase/database";
 
 export default async function handler(req, res) {
   const data = JSON.parse(req.body);
-  console.log("Request Language ID: ", data)
-  var lid = data.lid; // TODO: replace with actual lid value
-  // lid = "-NQ9AuH-xaR_k-NxzwcA"
+  console.log("Request Language ID: ", data);
+  const lid = data.lid; // TODO: replace with actual lid value
   const dictRef = ref(db, `languages/${lid}`);
 
   try {
@@ -17,35 +16,42 @@ export default async function handler(req, res) {
 
     const dict = snapshot.val().dict;
 
-    const columns = Object.keys(dict).filter(key =>
-      Object.values(dict[key]).some(value =>
-        typeof value === "object" && value !== null &&
-        value.hasOwnProperty("del_status") &&
-        value.hasOwnProperty("value") &&
-        dict[key].hasOwnProperty("del_status") && dict[key]["del_status"] === 0
-      )
-    );
+    console.log("dict :>> ", dict);
 
-    const result = {};
-    columns.forEach(column => {
-      result[column] = Object.entries(dict[column])
-        .filter(([key, value]) => value.del_status === 0)
-        .map(([key, value]) => ({ [key]: value.value }));
-    });
+    const firstCol = Object.values(dict)[0];
+    console.log("firstCol :>> ", firstCol);
 
-    // Just return the column headers
-    if (Object.keys(result).length === 0) {
-      let cols = Object.keys(dict)
-      console.log(cols)
-      cols.forEach(element => {
-        result[element] = []
+    let result = [];
+    let word = {};
+
+    if (Object.keys(firstCol).length === 1) {
+      result = {};
+      let cols = Object.keys(dict);
+      cols.forEach((col) => {
+        result[col] = "";
       });
-      res.status(200).json(result);
-      return
-    }
+      console.log("no word data");
+      console.log("result :>> ", result);
+      res.status(200).json([result]);
+    } else {
+      for (let id of Object.keys(firstCol)) {
+        word = {}
+        if (id === "createTime") continue;
+        console.log('id :>> ', id);
+        word = { id: id };
+        for (let col of Object.keys(dict)) {
+          console.log('col :>> ', col);
+          console.log('word in :>> ', word);
+          word[col] = dict[col][id];
+        }
+        console.log('word after :>> ', word);
+        result.push(word);
+      }
 
-    console.log(result);
-    res.status(200).json(result);
+      console.log("result :>> ", result);
+
+      res.status(200).json(result);
+    }
   } catch (e) {
     console.error(e);
     res.status(500).json({ error: e });

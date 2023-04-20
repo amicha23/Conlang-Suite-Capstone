@@ -100,6 +100,42 @@ a {
   text-decoration: none;
 }
 
+/* langTable.js styles */
+.editable-cell {
+  position: relative;
+}
+
+.editable-cell-value-wrap {
+  padding: 5px 12px;
+  cursor: pointer;
+}
+
+.editable-row:hover .editable-cell-value-wrap {
+  padding: 4px 11px;
+  border: 1px solid #d9d9d9;
+  border-radius: 2px;
+}
+
+#lang-name-header {
+  padding-left: 2%;
+  padding-bottom: 2%;
+}
+
+.editable-row .ant-form-item-explain {
+  position: absolute;
+  top: 100%;
+  font-size: 12px;
+}
+
+#components-layout-demo-side .logo {
+  height: 32px;
+  margin: 16px;
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.site-layout .site-layout-background {
+  background: #fff;
+}
 
 @media (prefers-color-scheme: dark) {
   html {

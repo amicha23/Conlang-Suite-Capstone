@@ -6,9 +6,9 @@ import {
   sendPasswordResetEmail,
   GoogleAuthProvider,
   signInWithPopup } from "firebase/auth";
-import { ref, child, push, update, set } from "firebase/database";
+import { ref, child, update, set } from "firebase/database";
 import { db, auth } from "firebaseConfig/firebaseAdmin";
-
+import { useRouter } from 'next/router';
 // var testAuth = {
 //   email: "test@test.me",
 //   password: "Test1234"
@@ -46,12 +46,17 @@ export async function registerUser() {
 export async function loginUser() {
   const loginEmail = (document.getElementById("email") as HTMLInputElement).value;
   const loginPassword = (document.getElementById("password") as HTMLInputElement).value;
+  // const router = useRouter();
+
 
   // step 2: add error handling
   try {
     await signInWithEmailAndPassword(auth, loginEmail, loginPassword)
     console.log("Successful logged in HERE!");
-    alert("Welcome! You are now logged in.");
+
+    window.location.href = '/dashboard';
+    // router.push({pathname: '/dashboard'});
+    
   }
   catch(error) {
     console.log(`There was an error: ${error}`);
@@ -97,29 +102,70 @@ export async function googleLogin() {
 
 }
 
-const logout = async () => {
+export async function logoutUser() {
   await signOut(auth);
+  alert('logged out');
 }
 
 export async function resetPassword() {
   const email = (document.getElementById("email") as HTMLInputElement).value;
+  // try {
+  //   await sendPasswordResetEmail(auth, email);
+  //   console.log("Password reset email sent");
+  // }
+  // catch(error) {
+  //   console.log(`There was an error: ${error}`)
+  // }
+  // sendPasswordResetEmail(auth, email)
+  //   .then(() => {
+  //     // Password reset email sent!
+  //     // ..
+  //   })
+  //   .catch((error) => {
+  //     const errorCode = error.code;
+  //     const errorMessage = error.message;
+  //     console.log(errorMessage);
+  //   });
 
-  try {
-    await sendPasswordResetEmail(auth, email);
-    console.log("Password reset email sent");
-  }
-  catch(error) {
-    console.log(`There was an error: ${error}`)
-  }
-  sendPasswordResetEmail(auth, email)
-    .then(() => {
-      // Password reset email sent!
-      // ..
-    })
-    .catch((error) => {
-      const errorCode = error.code;
-      const errorMessage = error.message;
-      console.log(errorMessage);
-    });
+    const handleForgot = () => {
+      try {
+        sendPasswordResetEmail(auth, email);
+        console.log("Password reset email sent");
+      }
+      catch(error) {
+        console.log(`There was an error: ${error}`)
+      }
+      sendPasswordResetEmail(auth, email)
+        .then(() => {
+          // Password reset email sent!
+          // ..
+        })
+        .catch((error) => {
+          const errorCode = error.code;
+          const errorMessage = error.message;
+          console.log(errorMessage);
+        });
+    }
+
+    return (
+      <div>
+        <form onSubmit={handleForgot} className="reset-password">
+          <h1>Forgot Password</h1>
+          <p>You are not alone. We’ve all been here at some point.</p>
+          <div>
+            <label htmlFor="email">Email address</label>
+            <input
+              type="email"
+              name="email"
+              id="email"
+              placeholder= 'your email address'
+              required
+            />
+          </div>
+          <button name="reset-pwd-button" className="reset-pwd">
+          </button>
+        </form>
+      </div>
+    )
 }
 
