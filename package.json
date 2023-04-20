@@ -17,6 +17,7 @@
     "@types/react-dom": "18.0.10",
     "antd": "^5.2.3",
     "blob": "^0.1.0",
+    "bootstrap": "^5.2.3",
     "firebase": "^9.17.1",
     "firebase-admin": "^11.5.0",
     "next": "^13.2.3",
