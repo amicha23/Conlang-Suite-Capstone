@@ -1,6 +1,6 @@
 import React, { useEffect, useState} from 'react';
 import { Button, Input } from "antd";
-import { GoogleOutlined, UploadOutlined } from '@ant-design/icons';
+import { GoogleOutlined, KeyOutlined, UploadOutlined } from '@ant-design/icons';
 import {registerUser, monitorAuthState} from "src/app/user"
 import { auth } from "firebaseConfig/firebaseAdmin";
 import 'bootstrap/dist/css/bootstrap.css';
@@ -24,8 +24,8 @@ export default function register() {
         <div className="container">
             <section className="d-flex justify-content-center" >
                 <div /* </Layout>style={{ padding: '0 20px', background: 'white'}}*/>
-                <img src="/img/langtime_studio_logo-transformed.png" alt="test"/>
-                {/* <img src="./img/eiffel.jpg"/> */}
+                {/* <img src="/img/langtime_studio_logo-transformed.png" alt="test"/> */}
+                <KeyOutlined style={{fontSize: '90px', color: '#096dd9'}}/>
                 <h2 class="text-center">Create an account</h2>
                 <div id="first-page-setup">
                     <p class="mb-1">Name</p>
