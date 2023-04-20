@@ -2,14 +2,13 @@
 import 'bootstrap/dist/css/bootstrap.css';
 import { Input } from 'antd';
 import { GoogleOutlined, UploadOutlined } from '@ant-design/icons';
-import { Button, message, Upload } from 'antd';
-import React, { useEffect, useState } from "react";
+import { Button } from 'antd';
+import { React } from "react";
 import { Layout } from 'antd';
 import { db, auth } from "firebaseConfig/firebaseAdmin";
-import { getDatabase, ref, set as firebaseSet, onValue } from 'firebase/database';
+import { getDatabase, ref, set } from 'firebase/database';
 import { loginUser, googleLogin, resetPassword } from "src/app/user"
 import { CheckCircleOutlined, CheckCircleTwoTone, InfoCircleOutlined, InfoCircleTwoTone } from '@ant-design/icons'; // icons
-import Link from 'next/link';
 import { useRouter } from 'next/router';
 
 function writeUserData(userId, name, email) {
@@ -35,15 +34,21 @@ function showPwd(id, el) {
   }
 }
 
+const linkStyle = {
+  pointerEvents: 'auto',
+  cursor: 'pointer',
+}
+
 export default function login() {
   const router = useRouter();
   return (
+    
       <div className="container">
         <section className="d-flex justify-content-center" >
             <div /* </Layout>style={{ padding: '0 20px', background: 'white'}}*/>
               <img src="/img/langtime_studio_logo-transformed.png" alt="langtime logo"/>
 
-              <h1>Log in to your account</h1>
+              <h1 style={{marginLeft: '75px'}}>Log in to your account</h1>
               <p className='text-secondary text-center pb-3'>Welcome! Please enter your details</p>
               <div id="first-page-setup">
                 <p className="mb-1">Email</p>
@@ -52,7 +57,8 @@ export default function login() {
                 <Input className = "mb-2"type ="password" id="password" placeholder="Password"/>
                 <i className='fa fa-eye showpd'/>
 
-                <p className = "text-end text-primary fw-semibold mb-5" onClick={() => router.push('forgetPassword')}>Forgot password?</p>
+                <p className = "text-end text-primary fw-semibold mb-5" style={{  pointerEvents: 'auto',
+  cursor: 'pointer'}} onClick={() => router.push('forgetPassword')}>Forgot password?</p>
                 
                 <div className = "d-grid gap-1" id="signin-button">
                   <Button type="primary" onClick={() => loginUser()}>Sign in</Button>
