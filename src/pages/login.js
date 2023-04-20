@@ -1,4 +1,5 @@
 // import 'antd/dist/antd.css';
+import { library } from '@fortawesome/fontawesome-svg-core'; //this is for the eye icon show/hide password switch
 import 'bootstrap/dist/css/bootstrap.css';
 import { Input } from 'antd';
 import { GoogleOutlined, UploadOutlined } from '@ant-design/icons';
@@ -23,6 +24,12 @@ function writeUserData(userId, name, email) {
 const { Header, Footer, Sider, Content } = Layout;
 const { TextArea } = Input;
 
+const linkStyle = {
+  pointerEvents: 'auto',
+  cursor: 'pointer',
+}
+
+
 //function to toggle hide/show password
 function showPwd(id, el) {
   let x = document.getElementById(id);
@@ -43,7 +50,7 @@ export default function login() {
             <div /* </Layout>style={{ padding: '0 20px', background: 'white'}}*/>
               <img src="/img/langtime_studio_logo-transformed.png" alt="langtime logo"/>
 
-              <h1>Log in to your account</h1>
+              <h1 style={{marginLeft: '75px'}}>Log in to your account</h1>
               <p className='text-secondary text-center pb-3'>Welcome! Please enter your details</p>
               <div id="first-page-setup">
                 <p className="mb-1">Email</p>
@@ -52,7 +59,7 @@ export default function login() {
                 <Input className = "mb-2"type ="password" id="password" placeholder="Password"/>
                 <i className='fa fa-eye showpd'/>
 
-                <p className = "text-end text-primary fw-semibold mb-5" onClick={() => router.push('forgetPassword')}>Forgot password?</p>
+                <p style={linkStyle} className = "text-end text-primary fw-semibold mb-5" onClick={() => router.push('forgetPassword')}>Forgot password?</p>
                 
                 <div className = "d-grid gap-1" id="signin-button">
                   <Button type="primary" onClick={() => loginUser()}>Sign in</Button>

@@ -1,7 +1,7 @@
 import React, { useEffect, useState} from 'react';
 import { Button, Input } from "antd";
 import { GoogleOutlined, KeyOutlined, UploadOutlined } from '@ant-design/icons';
-import {registerUser, monitorAuthState} from "src/app/user"
+import {registerUser, googleLogin, monitorAuthState} from "src/app/user"
 import { auth } from "firebaseConfig/firebaseAdmin";
 import 'bootstrap/dist/css/bootstrap.css';
 {/* <link rel="stylesheet" href="styles.css"></link> */}
@@ -36,7 +36,7 @@ export default function register() {
                     <i className='fa fa-eye showpd'/>
                     <div className = "d-grid gap-1" id="signin-button">
                     <Button type="primary" onClick={() => registerUser()}>Sign up</Button>
-                    <Button icon={<GoogleOutlined/>}>Sign in with Google</Button>
+                    <Button icon={<GoogleOutlined/>} onClick={() => googleLogin()}>Sign in with Google</Button>
                     <div class="g-signin2" data-onsuccess="onSignIn"></div>
                     </div>
                     <p class="mt-4 text-center">Already have an account? <span className="text-primary fw-semibold">Sign in</span> </p>
