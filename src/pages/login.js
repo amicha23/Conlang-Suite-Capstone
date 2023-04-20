@@ -42,7 +42,7 @@ export default function login() {
             <div /* </Layout>style={{ padding: '0 20px', background: 'white'}}*/>
               <img src="https://www.iths.org/resources/wp-content/sabai/sites/9/File/files/0bb1f4cb5ff99dd034602ced0e2534fc.png" alt="test"/>
               <img src="./img/eiffel.jpg"/>
-              <h1>Log in to your account</h1>
+              <h2 class="text-center">Log in to your account</h2>
               <p className='text-secondary text-center pb-3'>Welcome! Please enter your details</p>
               <div id="first-page-setup">
                 <p class="mb-1">Email</p>
@@ -56,14 +56,8 @@ export default function login() {
                   <Button icon={<GoogleOutlined/>}>Sign in with Google</Button>
                   <div class="g-signin2" data-onsuccess="onSignIn"></div>
                 </div>
-<<<<<<< HEAD
-                <p class="mt-4 text-center">Don't have an account? <span className="text-primary fw-semibold">Sign up</span> </p>
-=======
 
                 <p class="mt-4 text-center">Don't have an account? <Link href="register" className="text-primary fw-semibold">Sign up</Link> </p>
-               
-
->>>>>>> 97c3032000e1259af8d8a0d596caac878ff7f18e
               </div>              
             </div >
         </section>
