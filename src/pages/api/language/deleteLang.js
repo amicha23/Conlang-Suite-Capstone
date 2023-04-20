@@ -1,10 +1,9 @@
 import { update, ref, get, set } from "firebase/database";
-import { db } from "../../../firebaseConfig/firebaseAdmin.js";
+import { db } from "../../../../firebaseConfig/firebaseAdmin.js";
 
-export default async function handler(req, res) {
-  const data = JSON.parse(req.body); // TODO
+export default async function deleteLang(data) {
   var lid = data.lid;
-  lid = "-NTI9g4l17bcQqpzegwZ";
+  // lid = "-NTI9g4l17bcQqpzegwZ";
   var uid = "OUnW07Np3VNFduMOCX1V1bvvsd22";
 
   try {
@@ -12,8 +11,7 @@ export default async function handler(req, res) {
     const snapshot = await get(langRef);
 
     if (!snapshot.exists()) {
-      console.log(`lang with id ${lid} does not exist`);
-      return res.status(404).json({ error: `Lang '${lid}' does not exist` });
+      return `Lang '${lid}' does not exist`;
     }
     const langData = snapshot.val();
     const lname = langData.name;
@@ -49,10 +47,8 @@ export default async function handler(req, res) {
     set(ref(db, `deleteRecord/${uid}/${lid}`), { langData });
 
     await update(ref(db), updates);
-    console.log("Language deleted successfully");
-    res.status(200).json({ message: "Language deleted successfully" });
+    return "Success"
   } catch (e) {
-    console.error(e);
-    res.status(500).json({ error: e });
+    return e;
   }
 }

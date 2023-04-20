@@ -1,4 +1,5 @@
 // Send all dictionary setup form fields to the server
+import createSetup from '../pages/api/language/createSetup'
 
 export default async function saveDictionaryFields(fieldView :any) {
 
@@ -46,20 +47,33 @@ export default async function saveDictionaryFields(fieldView :any) {
 
   console.log("Final Request Data: ", data);
 
-  try {
-    let responseJson = await fetch(`api/language/createSetup`, {
-      method: "POST",
-      body: JSON.stringify({
-        language_name: langName,
-        language_desc: desc,
-        dictFields: filter_data
-      })
-    })
-    console.log(await responseJson.json());
-    console.log("Sent dictionary data to the database")
-  } catch(err) {
-      // add proper error handling later
-      console.error(err);
+  let createSetupData = await createSetup({
+    language_name: langName,
+    language_desc: desc,
+    dictFields: filter_data,
+    uid : "OUnW07Np3VNFduMOCX1V1bvvsd22"
+  })
+
+  if (createSetupData === "Success") {
+    console.log('sent dictionary fields :>> ', createSetupData);
+  } else {
+    console.log("failed to create dictionary ", createSetupData)
   }
+
+  // try {
+  //   let responseJson = await fetch(`api/language/createSetup`, {
+  //     method: "POST",
+  //     body: JSON.stringify({
+  //       language_name: langName,
+  //       language_desc: desc,
+  //       dictFields: filter_data
+  //     })
+  //   })
+  //   console.log(await responseJson.json());
+  //   console.log("Sent dictionary data to the database")
+  // } catch(err) {
+  //     // add proper error handling later
+  //     console.error(err);
+  // }
 
 }

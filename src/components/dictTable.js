@@ -1,10 +1,23 @@
 // Create a table to hold all dictionary information
 
-import { Button, Form, Input, InputNumber, Typography, Popconfirm, Table, Modal, Space  } from "antd";
+import { Button, Form, Input, InputNumber, Typography, Popconfirm, Table, Modal, Space } from "antd";
 import { query, set } from "firebase/database";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/router";
 import { useLocation } from 'react-router-dom';
+import exportHTML from "./exportFile"
+import addField from "../pages/api/dictField/addField";
+import deleteField from "../pages/api/dictField/deleteField";
+import updateField from "../pages/api/dictField/updateFieldName";
+import addWord from "../pages/api/word/addWord";
+import deleteWord from "../pages/api/word/deleteWord";
+import getWords from "../pages/api/word/getWords";
+import updateWord from "../pages/api/word/updateWord";
+
+import { update, ref, get, remove, child, push, onValue, off } from "firebase/database";
+import { db } from "../../firebaseConfig/firebaseAdmin.js";
+import firebase from 'firebase/app';
+import 'firebase/database';
 
 //icons
 import {
@@ -52,7 +65,7 @@ const EditableCell = ({
     </td>
   );
 };
-const DictionaryTable = ({queryParam, setQueryParam, queryName, setQueryName}) => {
+const DictionaryTable = ({ queryParam, setQueryParam, queryName, setQueryName }) => {
   // const [queryParam, setQueryParam] = useState('');
   // const [queryName, setQueryName] = useState('');
   const [form] = Form.useForm();
@@ -93,19 +106,14 @@ const DictionaryTable = ({queryParam, setQueryParam, queryName, setQueryName}) =
       }
 
       console.log("EDIT THIS ROW IN THE DATABASE: ", newData[index]);
-      await fetch(`api/word/updateWord`, {
-        method: "POST",
-        body: JSON.stringify(
-          {"data": newData[index],
-          "lid": queryParam
-          })
-        })
-        .then(resp => {
-          return resp.json();
-        })
-        .catch(err => {
-          console.log(err);
-        });
+      let updateWordData = await updateWord({'lid' : queryParam, 'data' : newData[index] });
+
+      if (updateWordData === "Success") {
+        console.log('updated row success :>> ', newData[index]);
+        await fetchData()
+      } else {
+        console.log("updated row failed ", updateWordData)
+      }
     } catch (errInfo) {
       console.log('Validate Failed:', errInfo);
     }
@@ -114,52 +122,27 @@ const DictionaryTable = ({queryParam, setQueryParam, queryName, setQueryName}) =
 
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [EditColumn, setEditColumn] = useState(null);
-  const[prevEditColumn, setPrevEditColumn] =useState(null);
+  const [prevEditColumn, setPrevEditColumn] = useState(null);
   const showEditModal = () => {
     setIsEditModalOpen(true);
   };
 
   const handleEditOk = async () => {
     console.log("New column header name: ", EditColumn)
-    // mergedColumns = mergedColumns.filter(column => column.dataIndex !== dataIndex);
     setIsEditModalOpen(false);
 
-    let updateData = await fetch(`api/dictField/updateFieldName`, {
-      method: "POST",
-      body: JSON.stringify(
-        {"currFieldName": prevEditColumn,
-        newFieldName: EditColumn.name,
-        "lid": queryParam
-        })
-      })
-      .then(resp => {
-        return resp.json();
-      })
-      .catch(err => {
-        console.log(err);
-      });
-      console.log("Updated Column Data: ", updateData)
+    let updateFieldData = await updateField({
+      "currFieldName": prevEditColumn,
+      'newFieldName': EditColumn.name,
+      "lid": queryParam
+    });
 
-      fetch(`api/word/getWords`, {
-        method: "POST",
-        body: JSON.stringify({ 'lid': queryParam }),
-      })
-        .then((response) => response.json())
-        .then((data) => {
-          const newData = data.map((item) => {
-            const newItem = {};
-            for (const key in item) {
-              newItem[key] = item[key];
-            }
-            return newItem;
-          });
-          console.log("READ DATA: ", data)
-          setData(newData);
-        })
-        .catch(error => {
-          console.log("Failed to fetch data: ", error);
-        });
-    // handleAddColumn()
+    if (updateFieldData === "Success") {
+      console.log('updated column called :>> ', EditColumn.name);
+      await fetchData()
+    } else {
+      console.log("updated column failed ", updateFieldData)
+    }
   };
 
   const handleEditCancel = () => {
@@ -178,33 +161,18 @@ const DictionaryTable = ({queryParam, setQueryParam, queryName, setQueryName}) =
 
   // Delete a column
   const handleDeleteColumn = async (dataIndex) => {
-    mergedColumns = mergedColumns.filter(column => column.dataIndex !== dataIndex);
-    setColumns(mergedColumns)
-    setFilterColumn(dataIndex)
-    console.log("New columns after delete: ", mergedColumns)
-
-    for (const row in data) {
-      console.log("HERE", data[row]);
-      delete data[row][dataIndex];
-    }
-    setData(data)
     console.log("Data after delete column", data)
-
-    await fetch(`api/dictField/deleteField`, {
-      method: "POST",
-      body: JSON.stringify(
-        {"field": dataIndex,
-        "lid": queryParam
-        })
-      })
-      .then(resp => {
-        return resp.json();
-      })
-      .catch(err => {
-        console.log(err);
-      });
-
-
+    let delParam = {
+      "field": dataIndex,
+      "lid": queryParam
+    }
+    let delFieldData = await deleteField(delParam);
+    if (delFieldData === "Success") {
+      console.log('added column called :>> ', dataIndex);
+      await fetchData()
+    } else {
+      console.log("Add column failed ", delFieldData)
+    }
   };
 
   // Put delete and edit feature in column header
@@ -259,25 +227,25 @@ const DictionaryTable = ({queryParam, setQueryParam, queryName, setQueryName}) =
     // if (Object.keys(firstObject)[colHeader] !== "id" && Object.keys(firstObject)[colHeader] !== "key") { // add to remove id and key columns -> for testing purposes only
     console.log(Object.keys(firstObject)[colHeader])
     const col = {
-        title: Object.keys(firstObject)[colHeader],
-        dataIndex: Object.keys(firstObject)[colHeader],
-        key: Object.keys(firstObject)[colHeader],
-        width: '20%',
-        editable: true,
-        sorter: (a, b) => {
-          console.log(typeof(a[Object.keys(firstObject)[colHeader]]), typeof(b[Object.keys(firstObject)[colHeader]]))
-          if (typeof(a[Object.keys(firstObject)[colHeader]]) === 'number' && typeof(b[Object.keys(firstObject)[colHeader]]) === 'number') {
-            return a[Object.keys(firstObject)[colHeader]] - b[Object.keys(firstObject)[colHeader]];
-          } else {
-            return String(a[Object.keys(firstObject)[colHeader]]).localeCompare(String(b[Object.keys(firstObject)[colHeader]]))
-          }
-        },
-        sortDirections: ['descend', 'ascend'],
-        ...getColumnSearchProps(Object.keys(firstObject)[colHeader]),
-        onFilter: (value, record) => {
-          return String(record[Object.keys(firstObject)[colHeader]]).includes(value);
+      title: Object.keys(firstObject)[colHeader],
+      dataIndex: Object.keys(firstObject)[colHeader],
+      key: Object.keys(firstObject)[colHeader],
+      width: '20%',
+      editable: true,
+      sorter: (a, b) => {
+        console.log(typeof (a[Object.keys(firstObject)[colHeader]]), typeof (b[Object.keys(firstObject)[colHeader]]))
+        if (typeof (a[Object.keys(firstObject)[colHeader]]) === 'number' && typeof (b[Object.keys(firstObject)[colHeader]]) === 'number') {
+          return a[Object.keys(firstObject)[colHeader]] - b[Object.keys(firstObject)[colHeader]];
+        } else {
+          return String(a[Object.keys(firstObject)[colHeader]]).localeCompare(String(b[Object.keys(firstObject)[colHeader]]))
         }
+      },
+      sortDirections: ['descend', 'ascend'],
+      ...getColumnSearchProps(Object.keys(firstObject)[colHeader]),
+      onFilter: (value, record) => {
+        return String(record[Object.keys(firstObject)[colHeader]]).includes(value);
       }
+    }
     cols.push(col);
     // }
   }
@@ -289,27 +257,27 @@ const DictionaryTable = ({queryParam, setQueryParam, queryName, setQueryName}) =
         const editable = isEditing(record);
         return editable ? (
           <div>
-          <span>
-            <Typography.Link
-              onClick={() => save(record.id)}
-              style={{
-                marginRight: 8,
-              }}
-            >
-              Save
-            </Typography.Link>
-            <Popconfirm title="Sure to cancel?" onConfirm={cancel}>
-              <a>Cancel</a>
-            </Popconfirm>
-          </span>
+            <span>
+              <Typography.Link
+                onClick={() => save(record.id)}
+                style={{
+                  marginRight: 8,
+                }}
+              >
+                Save
+              </Typography.Link>
+              <Popconfirm title="Sure to cancel?" onConfirm={cancel}>
+                <a>Cancel</a>
+              </Popconfirm>
+            </span>
           </div>
         ) : (
           <div>
-          <Typography.Link disabled={editingKey !== ''} onClick={() => edit(record)}>
-            Edit
-          </Typography.Link>
+            <Typography.Link disabled={editingKey !== ''} onClick={() => edit(record)}>
+              Edit
+            </Typography.Link>
             <Popconfirm title="Are you sure delete this row?" onConfirm={async () => await handleDelete(record.id, record)}>
-              <a><DeleteOutlined style={{ marginLeft: 12 }}/> </a>
+              <a><DeleteOutlined style={{ marginLeft: 12 }} /> </a>
             </Popconfirm>
           </div>
         );
@@ -337,142 +305,80 @@ const DictionaryTable = ({queryParam, setQueryParam, queryName, setQueryName}) =
     mergedColumns = mergedColumns.filter(column => column.dataIndex !== filterColumn);
   }
 
-  // if (EditColumn) {
-  //   console.log("HHHHHHHHHHHHH", mergedColumns)
-    // if (mergedColumns.includes(prevEditColumn)) {
-    //   mergedColumns[prevEditColumn].title = EditColumn.name
-    //   console.log("nnnnnnnnnnnn", mergedColumns)
-    // }
-    // mergedColumns = mergedColumns.filter(column => column.dataIndex !== prevEditColumn);
-    // mergedColumns.push(EditColumn.name)
-
-
-    // var i;
-    // for(i = 0; i < data.length; i++){
-    //   console.log("ROW", data[i], EditColumn.name)
-    //   // data[i][EditColumn.name] = data[i][prevEditColumn];
-    //   // delete data[i].prevEditColumn;
-    // }
-  // }
-
-  // useEffect(() => {
-  //   const searchParams = new URLSearchParams(window.location.search);
-  //   const queryParam = searchParams.get('lid');
-  //   const queryName = searchParams.get('lname');
-  //   if (queryParam) {
-  //     setQueryParam(queryParam.replace(/\s+/g, ''));
-  //     setQueryName(queryName);
-  //     console.log("QUERY ", queryParam.replace(/\s+/g, ''));
-  //   }
-  // }, []);
 
   useEffect(() => {
+
     if (queryParam) {
-      fetch(`api/word/getWords`, {
-        method: "POST",
-        body: JSON.stringify({ 'lid': queryParam }),
-      })
-        .then((response) => response.json())
-        .then((data) => {
-          const newData = data.map((item) => {
-            const newItem = {};
-            for (const key in item) {
-              newItem[key] = item[key];
-            }
-            return newItem;
-          });
-          console.log("READ DATA: ", data)
-          setData(newData);
-        })
-        .catch(error => {
-          console.log("Failed to fetch data: ", error);
-        });
+      fetchData();
     }
   }, [queryParam]);
 
+  async function fetchData() {
+    let getWordData = await getWords({'lid' : queryParam});
+
+    if (typeof(getWordData) !== String ) {
+      console.log('fetched data');
+      setData(getWordData)
+    } else {
+      console.log("failed to fetch data ", getWordData)
+    }
+
+  }
+
+  // useEffect(() => {
+  //   if (queryParam) {
+  //     const dictRef = ref(db, `languages/${queryParam}`);
+
+  //     // Attach an event listener for real-time updates
+  //     dictRef.on(`languages${queryParam}`, (snapshot) => {
+  //       const fetchedData = snapshot.val();
+  //       setData(fetchedData);
+  //     });
+
+  //     // Detach the event listener when the component unmounts
+  //     return () => dictRef.off();
+  //   }
+  // }, []);
+
+
+  // delete a row
   const handleDelete = async (key, record) => {
-    console.log("FFFFFFFF", data)
-    const newData = [];
-    data.forEach((item) => {
-      console.log("item", item.id)
-      if (item.id !== record.id) {
-        newData.push(item);
-      }
-    });
-
     console.log("DELETE THIS ROW FROM DATABASE: ", record);
-    await fetch(`api/word/deleteWord`, {
-      method: "POST",
-      body: JSON.stringify(
-        {"data": record,
-        "lid": queryParam
-        })
-      })
-      .then(resp => {
-        return resp.json();
-      })
-      .catch(err => {
-        console.log(err);
-      });
+    let deleteWordData = await deleteWord({
+      "data": record,
+      "lid": queryParam
+    })
 
-      // let test = fetch(`api/word/getWords`, {
-      //   method: "POST",
-      //   body: JSON.stringify({ 'lid': queryParam }),
-      // })
-      //   .then((response) => response.json())
-      //   .then((data) => {
-      //     const newData = data.map((item) => {
-      //       const newItem = {};
-      //       for (const key in item) {
-      //         newItem[key] = item[key];
-      //       }
-      //       return newItem;
-      //     });
-      //     console.log("READ DATA: ", data)
-
-      //     setData(newData);
-      //     return newData
-      //   })
-      //   .catch(error => {
-      //     console.log("Failed to fetch data: ", error);
-      //   });
-
-      setData(newData);
-      // Promise.resolve(test)
-        return
-
+    if (deleteWordData === "Success") {
+      console.log('delete row success');
+      await fetchData()
+    } else {
+      console.log("delete row failed ", deleteWordData)
+    }
   };
 
+  // Add a row
   const handleAdd = async () => {
     let newData = {};
-    // console.log("HHHHH",defaultColumns)
     for (const colHeader in cols) {
-      console.log("HERE", cols[colHeader].title);
       if (cols[colHeader].title === "" || cols[colHeader].title === "id") {
         continue;
       } else {
         newData[cols[colHeader].title] = ``;
       }
     }
-    console.log("ADDDDDD", newData);
+    console.log("ADD ROW", newData);
+    let addRowData = await addWord({
+      'lid': queryParam,
+      'wordData': newData
+    });
 
-    let newword = await fetch(`api/word/addWord`, {
-      method: "POST",
-      body: JSON.stringify({ data: newData, lid: queryParam }),
-    })
-      .then((resp) => {
-        return resp.json();
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-
-    console.log("Added Word to Database: ", newword);
-
-    newData.id = newword.newWordKey;
-    console.log("IDDDDDDDDD", newData.id)
-    newData.key = data.length;
-    setData([...data, newData]);
+    if (addRowData === "Success") {
+      console.log('add row success');
+      await fetchData()
+    } else {
+      console.log("add row failed ", addRowData)
+    }
   };
 
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -490,154 +396,129 @@ const DictionaryTable = ({queryParam, setQueryParam, queryName, setQueryName}) =
     setIsAddModalOpen(false);
   };
 
+  // Add column
   const handleAddColumn = async () => {
-    console.log("Add this column", AddColumn)
-    for (const row in data) {
-      console.log("HERE", data[row]);
-      data[row][AddColumn.name] = ''
-    }
-    console.log("Data after adding column", data)
-
-    const col = {
-      title: AddColumn.name,
-      dataIndex: AddColumn.name,
-      key: AddColumn.name,
-      width: '20%',
-      editable: true,
-      sorter: (a, b) => {
-        console.log("TEST")
-        if (typeof(a[AddColumn.name]) === 'number' && typeof(b[AddColumn.name]) === 'number') {
-          return a[AddColumn.name] - b[AddColumn.name];
-        } else {
-          return String(a[AddColumn.name]).localeCompare(String(b[AddColumn.name]))
-        }
-      },
-      sortDirections: ['descend', 'ascend'],
-      onFilter: (value, record) => {
-        return String(record[AddColumn.name]).includes(value);
-      }
-    }
-    mergedColumns.push(col)
-    setColumns(mergedColumns)
-
-    await fetch(`api/dictField/addField`, {
-      method: "POST",
-      body: JSON.stringify(
-        {"fieldName": AddColumn.name,
+    let addCol = await addField(
+      {
+        "fieldName": AddColumn.name,
         "lid": queryParam
-        })
       })
-      .then(resp => {
-        return resp.json();
-      })
-      .catch(err => {
-        console.log(err);
-      });
-
-    // let newword = await fetch(`api/word/addWord`, {
-    //   method: "POST",
-    //   body: JSON.stringify({ data: newData, lid: queryParam }),
-    // })
-    //   .then((resp) => {
-    //     return resp.json();
-    //   })
-    //   .catch((err) => {
-    //     console.log(err);
-    //   });
+    if (addCol === "Success") {
+      console.log('added column called :>> ', AddColumn.name);
+      await fetchData()
+    } else {
+      console.log("Add column failed ", addCol)
     }
+  }
 
-    // const MyTable = () => {
-    //   // const updatedColumns = columns.filter(column => column.dataIndex !== 'column2');
+  // const MyTable = () => {
+  //   // const updatedColumns = columns.filter(column => column.dataIndex !== 'column2');
 
-    //   return <Table
-    //   components={{
-    //     body: {
-    //       cell: EditableCell,
-    //     },
-    //   }}
-    //   bordered
-    //   dataSource={data}
-    //   columns={mergedColumns}
-    //   rowClassName="editable-row"
-    //   pagination={{
-    //     onChange: cancel,
-    //   }}
-    //   scroll={{x:950,y:"calc(100vh - 220px)" }}
-    // />;
-    // }
+  //   return <Table
+  //   components={{
+  //     body: {
+  //       cell: EditableCell,
+  //     },
+  //   }}
+  //   bordered
+  //   dataSource={data}
+  //   columns={mergedColumns}
+  //   rowClassName="editable-row"
+  //   pagination={{
+  //     onChange: cancel,
+  //   }}
+  //   scroll={{x:950,y:"calc(100vh - 220px)" }}
+  // />;
+  // }
+  const handleExport = async () => {
+    exportHTML(queryParam)
+  };
+
   return (
-      <div>
-        <div id="lang-name-header" >
-          <h1>{queryName}</h1>
-        </div>
-        <Button
-          onClick={handleAdd}
-          type="primary"
-          style={{
-            marginBottom: 16,
+    <div>
+      <div id="lang-name-header" >
+        <h1>{queryName}</h1>
+      </div>
+      <Button
+        onClick={handleAdd}
+        type="primary"
+        style={{
+          marginBottom: 16,
+        }}
+      >
+        + Add a row
+      </Button>
+      <Button
+        onClick={showAddModal}
+        // onClick={handleAddColumn}
+        type="primary"
+        style={{
+          marginBottom: 16,
+          marginLeft: 8
+        }}
+      >
+        + Add a column
+      </Button>
+
+      <Button
+        onClick={handleExport}
+        // onClick={handleAddColumn}
+        type="primary"
+        style={{
+          marginBottom: 16,
+          marginLeft: 8
+        }}
+      >
+        + Export
+      </Button>
+
+      <Modal title="Add Column" open={isAddModalOpen} onOk={handleAddOk} onCancel={handleAddCancel}>
+        <Input
+          // value='Column Name'
+          onChange={(e) => {
+            setAddColumn(() => {
+              return { name: e.target.value };
+            });
           }}
-        >
-          + Add a row
-        </Button>
-        <Button
-          onClick={showAddModal}
-          // onClick={handleAddColumn}
-          type="primary"
-          style={{
-            marginBottom: 16,
-            marginLeft: 8
+        // onChange={(e) => {
+        //     return e.target.value ;
+        // }}
+        />
+      </Modal>
+
+      <Modal title="Edit Column Header" open={isEditModalOpen} onOk={handleEditOk} onCancel={handleEditCancel}>
+        <Input
+          // value='Column Name'
+          onChange={(e) => {
+            setEditColumn(() => {
+              return { name: e.target.value };
+            });
           }}
-        >
-          + Add a column
-        </Button>
-
-        <Modal title="Add Column" open={isAddModalOpen} onOk={handleAddOk} onCancel={handleAddCancel}>
-          <Input
-            // value='Column Name'
-            onChange={(e) => {
-              setAddColumn(() => {
-                return { name: e.target.value };
-              });
-            }}
-            // onChange={(e) => {
-            //     return e.target.value ;
-            // }}
-          />
-        </Modal>
-
-        <Modal title="Edit Column Header" open={isEditModalOpen} onOk={handleEditOk} onCancel={handleEditCancel}>
-          <Input
-            // value='Column Name'
-            onChange={(e) => {
-              setEditColumn(() => {
-                return { name: e.target.value };
-              });
-            }}
-            // onChange={(e) => {
-            //     return e.target.value ;
-            // }}
-          />
-        </Modal>
+        // onChange={(e) => {
+        //     return e.target.value ;
+        // }}
+        />
+      </Modal>
 
 
-    <Form form={form} component={false}>
+      <Form form={form} component={false}>
 
-     <Table
-      components={{
-        body: {
-          cell: EditableCell,
-        },
-      }}
-      bordered
-      dataSource={data}
-      columns={mergedColumns}
-      rowClassName="editable-row"
-      pagination={{
-        onChange: cancel,
-      }}
-      scroll={{x:950,y:"calc(100vh - 220px)" }}
-    />;
-    </Form>
+        <Table
+          components={{
+            body: {
+              cell: EditableCell,
+            },
+          }}
+          bordered
+          dataSource={data}
+          columns={mergedColumns}
+          rowClassName="editable-row"
+          pagination={{
+            onChange: cancel,
+          }}
+          scroll={{ x: 950, y: "calc(100vh - 220px)" }}
+        />
+      </Form>
     </div>
   );
 };

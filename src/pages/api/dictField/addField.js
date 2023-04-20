@@ -1,9 +1,7 @@
 import { db } from "../../../../firebaseConfig/firebaseAdmin.js";
 import { get, ref, update } from "firebase/database";
 
-export default async function handler(req, res) {
-  const data = JSON.parse(req.body);
-
+export default async function addField(data) {
   const { lid, fieldName } = data;
 
   const dictRef = ref(db, `languages/${lid}`);
@@ -23,7 +21,7 @@ export default async function handler(req, res) {
     const snapshot = await get(dictRef);
     if (!snapshot.exists()) {
       console.log("No data available");
-      return res.status(200).json({ response: "No data available" });
+      return "No data available";
     }
 
     const dict = snapshot.val().dict;
@@ -40,12 +38,14 @@ export default async function handler(req, res) {
       fieldData[id] = "";
     }
 
-    await update(ref(db, `languages/${lid}/dict/${fieldName}`), { ...fieldData });
+    await update(ref(db, `languages/${lid}/dict/${fieldName}`), {
+      ...fieldData,
+    });
 
     console.log("Language deleted successfully");
-    return res.status(200).json({ message: "Language deleted successfully" });
+    return "Success";
   } catch (e) {
     console.error(e);
-    return res.status(500).json({ error: e });
+    return e;
   }
 }

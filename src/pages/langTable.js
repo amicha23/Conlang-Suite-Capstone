@@ -35,7 +35,7 @@ export default function Home() {
 
 
         setSearchParams(searchParams);
-        if (searchParams) {
+        if (searchParams !== undefined) {
             // const queryParam = searchParams.get('lid');
             // const queryName = searchParams.get('lname');
 
@@ -55,7 +55,7 @@ export default function Home() {
                         minHeight: '100vh',
                     }}>
                 {/* <div id="side-bar-div"> */}
-                    <SideBar/>
+                    <SideBar queryParam={queryParam} setQueryParam={setQueryParam} queryName={queryName} setQueryName= {setQueryName}/>
                 {/* </div> */}
                 <Layout className="site-layout">
                     {/* <Header
