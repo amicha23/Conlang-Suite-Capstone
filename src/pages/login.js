@@ -1,51 +1,73 @@
 // import 'antd/dist/antd.css';
+import { library } from '@fortawesome/fontawesome-svg-core'; //this is for the eye icon show/hide password switch
+import 'bootstrap/dist/css/bootstrap.css';
 import { Input } from 'antd';
 import { GoogleOutlined, UploadOutlined } from '@ant-design/icons';
 import { Button, message, Upload } from 'antd';
 import React, { useEffect, useState } from "react";
 import { Layout } from 'antd';
-const { Header, Footer, Sider, Content } = Layout;
-
-//icons
-import { CheckCircleOutlined, CheckCircleTwoTone, InfoCircleOutlined, InfoCircleTwoTone } from '@ant-design/icons';
-
-import {loginUser, googleLogin, resetPassword} from "src/app/user"
 import { db, auth } from "firebaseConfig/firebaseAdmin";
+import { getDatabase, ref, set as firebaseSet, onValue } from 'firebase/database';
+import { loginUser, googleLogin, resetPassword } from "src/app/user"
+import { CheckCircleOutlined, CheckCircleTwoTone, InfoCircleOutlined, InfoCircleTwoTone } from '@ant-design/icons'; // icons
+import Link from 'next/link';
+import { useRouter } from 'next/router';
 
+function writeUserData(userId, name, email) {
+  const db = getDatabase();
+  set(ref(db, 'users/' + userId), {
+    username: name,
+    email: email,
+  });
+}
 
+const { Header, Footer, Sider, Content } = Layout;
 const { TextArea } = Input;
 
+//function to toggle hide/show password
+function showPwd(id, el) {
+  let x = document.getElementById(id);
+  if (x.type === "password") {
+    x.type = "text";
+    el.className = 'fa fa-eye-slash showpwd';
+  } else {
+    x.type = "password";
+    el.className = 'fa fa-eye showpwd';
+  }
+}
 
 export default function login() {
-
+  const router = useRouter();
   return (
-      <div>
-          <Layout>            
-            <Content style={{ padding: '0 20px', background: 'white'}}>
+      <div className="container">
+        <section className="d-flex justify-content-center" >
+            <div /* </Layout>style={{ padding: '0 20px', background: 'white'}}*/>
+              <img src="/img/langtime_studio_logo-transformed.png" alt="langtime logo"/>
+
               <h1>Log in to your account</h1>
-              <p>Welcome! Please enter your details</p>
+              <p className='text-secondary text-center pb-3'>Welcome! Please enter your details</p>
               <div id="first-page-setup">
-                <p>Email</p>
+                <p className="mb-1">Email</p>
                 <Input id="email" placeholder="Email"/>
-                <p>Password</p>
-                <Input id="password" placeholder="Password"/>
+                <p className="mt-3 mb-1">Password</p>
+                <Input className = "mb-2"type ="password" id="password" placeholder="Password"/>
+                <i className='fa fa-eye showpd'/>
 
-                <p onClick={() => resetPassword()}>Forgot password?</p>
+                <p className = "text-end text-primary fw-semibold mb-5" onClick={() => router.push('forgetPassword')}>Forgot password?</p>
                 
-                <div id="signin-button">
-                <br></br>
-                <Button type="primary" onClick={() => loginUser()}>Sign in</Button>
+                <div className = "d-grid gap-1" id="signin-button">
+                  <Button type="primary" onClick={() => loginUser()}>Sign in</Button>
+                  <Button icon={<GoogleOutlined/>} onClick={() => googleLogin()}>Sign in with Google</Button>
+                  <div className="g-signin2" data-onsuccess="onSignIn"></div>
                 </div>
-                <Button icon={<GoogleOutlined />} 
-                        onClick={() => googleLogin()}>Sign in with Google</Button>
-                
 
-                
-              </div>
+                <p className="mt-4 text-center">Don't have an account? <Link href="register" className="text-primary fw-semibold">Sign up</Link> </p>
+               
 
-              
-            </Content>
-          </Layout>
+              </div>              
+            </div >
+        </section>
       </div>
+      
   );
 }
