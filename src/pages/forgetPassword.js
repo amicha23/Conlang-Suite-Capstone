@@ -11,6 +11,7 @@ import { useRouter } from 'next/router';
 import { resetPassword, monitorAuthState} from "src/app/user"
 import { auth } from "firebaseConfig/firebaseAdmin";
 
+
 const { Header, Footer, Sider, Content, Panel } = Layout;
 
 const contentStyle = {
@@ -25,6 +26,9 @@ const contentStyle = {
 };
 
 const returnLoginStyle = {
+  textAlign: 'center',
+  minHeight: 12,
+  lineHeight: '12px',
   display: 'flex',
   marginTop: '30px',
   justifyContent: 'center',
@@ -34,37 +38,58 @@ const returnLoginStyle = {
 }
 
 export default function forgetPassword() {
+  const [emailSentView, changeemailSentView] = useState(false);
   const router = useRouter();
 
     return (
-      <Space
-      direction="vertical"
-      style={{
-        width: '100%',
-      }}
-      size={[0, 48]}
-    >
-        <Content style={contentStyle}>
-            <div /* </Layout>style={{ padding: '0 20px', background: 'white'}}*/>
-              <center>
-                <img src="/img/keyoutlined.png" alt="test"/>
-              </center>
-              <h1>Forgot Password?</h1>
-              <p className='text-secondary text-center pb-3'>Reset by entering your email below</p>
+      <div>
+        {/* view after click resend */}
+        <div style={{ display: emailSentView ? 'block': 'none'}}>
+          <div>
+            <Content style={contentStyle} id="passwordreset1">
+              <div>
+                <center>
+                  <img src="/img/email.png" alt="test"/>
+                </center>
+                <h1 id="passwordtitle">Check your email</h1>
+                <p id='passwordsubtitle'className='text-secondary text-center pb-3'>We sent you a password resetlink to your email address</p>
+                <div>
+                  <p id='noemailreceived'className='text-secondary text-center pb-3'>Didn't receive an email?</p>
+                  <p>Click to resend</p>
+                </div>
+                <div>            
+                  <p style={returnLoginStyle} id="returnlogin" onClick={() => router.push('login')}><ArrowLeftOutlined style={{marginRight: '5px'}}/> Return to login</p>
+                </div>              
+              </div >
+            </Content>
+          </div>
+        </div>
+
+
+        {/* forgetpassword original view */}
+        <div style={{ display: emailSentView ? 'none': 'block'}}>
+          <Content style={contentStyle} id="passwordreset1">
+            <div>
+              <img src="/img/keyoutlined.png" alt="test"/>
+              <div>
+                <h1 id="passwordtitle">Forgot Password?</h1>
+                <p id='passwordsubtitle'className='text-secondary text-center pb-3'>Reset by entering your email below</p>
+              </div>
               <div id="first-page-setup">
                 <p style={{textAlign: 'left', marginLeft: '4px'}} className="mb-1">Email</p>
                 <Input style={{marginTop: '5px'}} id="email" placeholder="Email"/>
                 
                 <div className = "d-grid gap-1" style={{marginTop:'10px'}} id="pwreset-button">
-                  <Button type="primary"  onClick={() => resetPassword()}>Reset password</Button>
+                  <Button type="primary"  onClick={() => resetPassword(changeemailSentView)}>Reset password</Button>
                 </div> 
-
-                <div>            
-                  <p style={returnLoginStyle} id="returnlogin" onClick={() => router.push('login')}><ArrowLeftOutlined style={{marginRight: '10px'}}/> Return to login</p>
-                </div>              
               </div>              
+              <div>            
+               <p style={returnLoginStyle} id="returnlogin" onClick={() => router.push('login')}><ArrowLeftOutlined style={{marginRight: '5px'}}/> Return to login</p>
+              </div> 
             </div >
           </Content>
-      </Space>
+        </div>
+
+      </div>
     )
 }

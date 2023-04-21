@@ -110,20 +110,27 @@ export async function googleLogin() {
 export async function logoutUser() {
   await signOut(auth);
   alert('logged out');
+  window.location.href = '/';
 }
 
-export async function resetPassword() {
+export async function resetPassword(changeEmailSentView: (newValue: boolean) => void) {
   const email = (document.getElementById("email") as HTMLInputElement).value;
+  
   const auth = getAuth();
   sendPasswordResetEmail(auth, email)
     .then(() => {
       // Password reset email sent!
-      alert('Password reset email sent!')
+      changeEmailSentView(true);
+      console.log('Password reset email sent!');      
     })
     .catch((error) => {
       const errorCode = error.code;
       const errorMessage = error.message;
-      alert(errorCode + errorMessage)
+      if (errorCode === "auth/missing-email") {
+        alert("Please enter your email address");
+      } else {
+        alert(errorCode + errorMessage);
+      }
     });
 }
 
