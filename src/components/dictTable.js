@@ -3,9 +3,9 @@
 import { Button, Form, Input, InputNumber, Typography, Popconfirm, Table, Modal, Space } from "antd";
 import { query, set } from "firebase/database";
 import React, { useContext, useEffect, useRef, useState } from "react";
-import { useRouter } from "next/router";
+import Router from "next/router";
 import { useLocation } from 'react-router-dom';
-import exportHTML from "./exportFile"
+import ExportLangHtml from "../pages/exportLangHtml";
 import addField from "../pages/api/dictField/addField";
 import deleteField from "../pages/api/dictField/deleteField";
 import updateField from "../pages/api/dictField/updateFieldName";
@@ -224,13 +224,14 @@ const DictionaryTable = ({ queryParam, setQueryParam, queryName, setQueryName })
   let firstObject = data[0] || {};
   let cols = [];
   for (const colHeader in Object.keys(firstObject)) {
-    // if (Object.keys(firstObject)[colHeader] !== "id" && Object.keys(firstObject)[colHeader] !== "key") { // add to remove id and key columns -> for testing purposes only
+    if (Object.keys(firstObject)[colHeader] !== "id" &&  Object.keys(firstObject)[colHeader] !== "key") { // add to remove id and key columns -> for testing purposes only
     console.log(Object.keys(firstObject)[colHeader])
     const col = {
       title: Object.keys(firstObject)[colHeader],
       dataIndex: Object.keys(firstObject)[colHeader],
       key: Object.keys(firstObject)[colHeader],
-      width: '20%',
+      width: '10rem',
+      // minWidth: '10rem',
       editable: true,
       sorter: (a, b) => {
         console.log(typeof (a[Object.keys(firstObject)[colHeader]]), typeof (b[Object.keys(firstObject)[colHeader]]))
@@ -247,12 +248,13 @@ const DictionaryTable = ({ queryParam, setQueryParam, queryName, setQueryName })
       }
     }
     cols.push(col);
-    // }
+    }
   }
   cols.push(
     {
       title: '',
       dataIndex: 'operation',
+      width: '10rem',
       render: (_, record) => {
         const editable = isEditing(record);
         return editable ? (
@@ -272,7 +274,7 @@ const DictionaryTable = ({ queryParam, setQueryParam, queryName, setQueryName })
             </span>
           </div>
         ) : (
-          <div>
+          <div style={{ minWidth: '200%' }}>
             <Typography.Link disabled={editingKey !== ''} onClick={() => edit(record)}>
               Edit
             </Typography.Link>
@@ -431,7 +433,11 @@ const DictionaryTable = ({ queryParam, setQueryParam, queryName, setQueryName })
   // />;
   // }
   const handleExport = async () => {
-    exportHTML(queryParam)
+    console.log("OTHER", queryParam)
+    const q = queryParam
+    // ExportLangHtml(q);
+    // Router.push({pathname: '/exportLangHtml', query: { lid: queryParam}})
+    window.open(`/exportLangHtml?lid=`+ queryParam);
   };
 
   return (
@@ -464,6 +470,7 @@ const DictionaryTable = ({ queryParam, setQueryParam, queryName, setQueryName })
         onClick={handleExport}
         // onClick={handleAddColumn}
         type="primary"
+        // href="/exportLangHtml" target="_blank"
         style={{
           marginBottom: 16,
           marginLeft: 8
@@ -516,7 +523,7 @@ const DictionaryTable = ({ queryParam, setQueryParam, queryName, setQueryName })
           pagination={{
             onChange: cancel,
           }}
-          scroll={{ x: 950, y: "calc(100vh - 220px)" }}
+          scroll={{ x: 950}}
         />
       </Form>
     </div>
