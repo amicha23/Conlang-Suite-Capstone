@@ -1,8 +1,24 @@
 // Send all dictionary setup form fields to the server
 import createSetup from '../pages/api/language/createSetup'
 
-export default async function saveDictionaryFields(fieldView :any) {
+function init() {
+  (document.getElementById('uploadImg') as HTMLInputElement).addEventListener('change', handleFileSelect, false);
+}
 
+function handleFileSelect(event : any) {
+  const reader = new FileReader()
+  reader.onload = handleFileLoad;
+  reader.readAsText(event.target.files[0])
+}
+
+function handleFileLoad(event : any) {
+  console.log(event);
+  (document.getElementById('fileContent') as HTMLInputElement).textContent = event.target.result;
+}
+
+export default async function saveDictionaryFields(fieldView :any, file :any, blob :any) {
+  // init();
+  console.log("FILE IN SEND ", file)
   // Come back to this later -> is there a way to do this with no document elements?
   // let allInputs = document.querySelectorAll('input')
   let filter_data: any[] = []
@@ -28,6 +44,8 @@ export default async function saveDictionaryFields(fieldView :any) {
 
   let langName = (document.getElementById('langNameID') as HTMLInputElement).value
   let desc = (document.querySelectorAll('TextArea')[0] as HTMLInputElement).value
+  let img = (document.getElementById('uploadImg') as HTMLInputElement).textContent
+  console.log("IMG ", img)
 
 
   // let filter_data: any[] = []
@@ -42,7 +60,9 @@ export default async function saveDictionaryFields(fieldView :any) {
   let data = {
     lanugage_name: langName,
     language_desc: desc,
-    dictFields: filter_data
+    dictFields: filter_data,
+    coverFile : file,
+    coverBlob : blob
   }
 
   console.log("Final Request Data: ", data);
@@ -51,7 +71,9 @@ export default async function saveDictionaryFields(fieldView :any) {
     language_name: langName,
     language_desc: desc,
     dictFields: filter_data,
-    uid : "OUnW07Np3VNFduMOCX1V1bvvsd22"
+    uid : "OUnW07Np3VNFduMOCX1V1bvvsd22",
+    coverFile : file,
+    coverBlob : blob
   })
 
   if (createSetupData === "Success") {

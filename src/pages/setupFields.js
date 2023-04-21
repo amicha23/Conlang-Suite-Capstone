@@ -5,6 +5,7 @@ import { UploadOutlined, LeftOutlined } from '@ant-design/icons';
 import { Button, message, Upload } from 'antd';
 import React, { useRef, useEffect, useState } from "react";
 import { Layout } from 'antd';
+import Router from 'next/router';
 const { Header, Footer, Sider, Content } = Layout;
 
 // Router
@@ -73,11 +74,14 @@ export default function setup() {
     "English definition"
   ]);
 
+  const [file, setFile] = useState(null);
+  const [blob, setBlob] = useState(null);
+
 
   return (
       <div>
           <div id="LangInfo-Setup" style={{display: setUpView ? "block" : "none"}}>
-            <SetUp setUpView={setUpView} changeSetUpView={changeSetUpView}/>
+            <SetUp setUpView={setUpView} changeSetUpView={changeSetUpView} file={file} setFile={setFile} blob={blob} setBlob={setBlob}/>
           </div>
           <div id="Fields-Setup"  style={{display: setUpView ? "none" : "block"}}>
             <Layout>
@@ -135,7 +139,8 @@ export default function setup() {
                       type="primary"
                       htmlType="submit"
                       onClick={() => {
-                        saveDictionaryFields(fieldView);
+                        saveDictionaryFields(fieldView, file, blob);
+                        Router.push({pathname: '/dashboard'})
                       }}
                       >
                       Create Dictionary
