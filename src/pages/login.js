@@ -44,9 +44,9 @@ function showPwd(id, el) {
 export default function login() {
   const router = useRouter();
   return (
-      <div className="container">
-        <section className="d-flex justify-content-center" >
-            <div /* </Layout>style={{ padding: '0 20px', background: 'white'}}*/>
+      <div>
+        <Content className="d-flex justify-content-center" >
+            <div>
               <img src="/img/langtime_studio_logo-transformed.png" alt="langtime logo"/>
 
               <h1 style={{marginLeft: '75px'}}>Log in to your account</h1>
@@ -71,7 +71,7 @@ export default function login() {
 
               </div>              
             </div >
-        </section>
+        </Content>
       </div>
       
   );

@@ -32,7 +32,7 @@ import logout from '../../public/logout.png';
 import help from '../../public/help.png';
 import deleteLang from '../pages/api/language/deleteLang';
 import getUserLang from '../pages/api/getUserLang';
-
+import { logoutUser } from '../app/user';
 
 function getItem(label, key, icon, children, type, langID, func) {
   return {
@@ -216,9 +216,9 @@ export default function SideBar({queryParam, setQueryParam, queryName, setQueryN
             <Link href="/help" >
               <Image src={ help } alt='Help placeholder' width={200}/>
             </Link>
-            <Link href="/logout">
+            <a onClick={() => logoutUser()}>
               <Image src={ logout } alt='Logout placeholder' width={200}/>
-            </Link>
+            </a>
           </Sider>
         </div>
       );
