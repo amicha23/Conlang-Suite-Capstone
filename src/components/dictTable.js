@@ -97,11 +97,25 @@ const DictionaryTable = ({ queryParam, setQueryParam, queryName, setQueryName })
           ...item,
           ...row,
         });
-        setData(newData);
+        // setData(newData);
+        // await fetchData()
         setEditingKey('');
       } else {
-        newData.push(row);
-        setData(newData);
+        // newData.push(row);
+        console.log("EDUT tow", row)
+        let addRowData = await addWord({
+          'lid': queryParam,
+          'wordData': row
+        });
+
+        if (addRowData === "Success") {
+          console.log('add row success');
+          // await fetchData()
+        } else {
+          console.log("add row failed ", addRowData)
+        }
+        // setData(newData);
+        // await fetchData()
         setEditingKey('');
       }
 
@@ -110,7 +124,7 @@ const DictionaryTable = ({ queryParam, setQueryParam, queryName, setQueryName })
 
       if (updateWordData === "Success") {
         console.log('updated row success :>> ', newData[index]);
-        await fetchData()
+        // await fetchData()
       } else {
         console.log("updated row failed ", updateWordData)
       }
@@ -139,7 +153,7 @@ const DictionaryTable = ({ queryParam, setQueryParam, queryName, setQueryName })
 
     if (updateFieldData === "Success") {
       console.log('updated column called :>> ', EditColumn.name);
-      await fetchData()
+      // await fetchData()
     } else {
       console.log("updated column failed ", updateFieldData)
     }
@@ -169,88 +183,96 @@ const DictionaryTable = ({ queryParam, setQueryParam, queryName, setQueryName })
     let delFieldData = await deleteField(delParam);
     if (delFieldData === "Success") {
       console.log('added column called :>> ', dataIndex);
-      await fetchData()
+      // await fetchData()
     } else {
       console.log("Add column failed ", delFieldData)
     }
   };
 
-  // Put delete and edit feature in column header
-  const getColumnSearchProps = (dataIndex) => ({
-    filterDropdown: ({ close }) => (
-      <div
-        style={{
-          padding: 8,
-        }}
-        onKeyDown={(e) => e.stopPropagation()}
-      >
-        <Space>
-          <Button
-            onClick={() => handleEditColumn(dataIndex, close)}
-            size="small"
-            type="link"
-          >
-            Edit
-          </Button>
-          <Button
-            onClick={() => handleDeleteColumn(dataIndex)}
-            type="link"
-            size="small"
-          >
-            Delete
-          </Button>
-          <Button
-            type="link"
-            size="small"
-            onClick={() => {
-              close();
-            }}
-          >
-            Close
-          </Button>
-        </Space>
-      </div>
-    ),
-    filterIcon: (filtered) => (
-      <MenuOutlined
-        style={{
-          color: filtered ? '#1890ff' : undefined,
-        }}
-      />
-    ),
-    render: (text) => text
-  });
 
-  let firstObject = data[0] || {};
-  let cols = [];
-  for (const colHeader in Object.keys(firstObject)) {
-    if (Object.keys(firstObject)[colHeader] !== "id" &&  Object.keys(firstObject)[colHeader] !== "key") { // add to remove id and key columns -> for testing purposes only
-    console.log(Object.keys(firstObject)[colHeader])
-    const col = {
-      title: Object.keys(firstObject)[colHeader],
-      dataIndex: Object.keys(firstObject)[colHeader],
-      key: Object.keys(firstObject)[colHeader],
-      width: '10rem',
-      // minWidth: '10rem',
-      editable: true,
-      sorter: (a, b) => {
-        console.log(typeof (a[Object.keys(firstObject)[colHeader]]), typeof (b[Object.keys(firstObject)[colHeader]]))
-        if (typeof (a[Object.keys(firstObject)[colHeader]]) === 'number' && typeof (b[Object.keys(firstObject)[colHeader]]) === 'number') {
-          return a[Object.keys(firstObject)[colHeader]] - b[Object.keys(firstObject)[colHeader]];
-        } else {
-          return String(a[Object.keys(firstObject)[colHeader]]).localeCompare(String(b[Object.keys(firstObject)[colHeader]]))
+
+  // Set column headers
+  const [mergedColumns, setMergedColumns] = useState([])
+  useEffect(() => {
+
+    // Put delete and edit feature in column header
+    const getColumnSearchProps = (dataIndex) => ({
+      filterDropdown: ({ close }) => (
+        <div
+          style={{
+            padding: 8,
+          }}
+          onKeyDown={(e) => e.stopPropagation()}
+        >
+          <Space>
+            <Button
+              onClick={() => handleEditColumn(dataIndex, close)}
+              size="small"
+              type="link"
+            >
+              Edit
+            </Button>
+            <Button
+              onClick={() => handleDeleteColumn(dataIndex)}
+              type="link"
+              size="small"
+            >
+              Delete
+            </Button>
+            <Button
+              type="link"
+              size="small"
+              onClick={() => {
+                close();
+              }}
+            >
+              Close
+            </Button>
+          </Space>
+        </div>
+      ),
+      filterIcon: (filtered) => (
+        <MenuOutlined
+          style={{
+            color: filtered ? '#1890ff' : undefined,
+          }}
+        />
+      ),
+      render: (text) => text
+    });
+
+
+    let firstObject = data[0] || {};
+    let cols = [];
+    for (const colHeader in Object.keys(firstObject)) {
+      if (Object.keys(firstObject)[colHeader] !== "id" &&  Object.keys(firstObject)[colHeader] !== "key") { // add to remove id and key columns -> for testing purposes only
+      console.log(Object.keys(firstObject)[colHeader])
+      const col = {
+        title: Object.keys(firstObject)[colHeader],
+        dataIndex: Object.keys(firstObject)[colHeader],
+        key: Object.keys(firstObject)[colHeader],
+        width: '10rem',
+        // minWidth: '10rem',
+        editable: true,
+        sorter: (a, b) => {
+          console.log(typeof (a[Object.keys(firstObject)[colHeader]]), typeof (b[Object.keys(firstObject)[colHeader]]))
+          if (typeof (a[Object.keys(firstObject)[colHeader]]) === 'number' && typeof (b[Object.keys(firstObject)[colHeader]]) === 'number') {
+            return a[Object.keys(firstObject)[colHeader]] - b[Object.keys(firstObject)[colHeader]];
+          } else {
+            return String(a[Object.keys(firstObject)[colHeader]]).localeCompare(String(b[Object.keys(firstObject)[colHeader]]))
+          }
+        },
+        sortDirections: ['descend', 'ascend'],
+        ...getColumnSearchProps(Object.keys(firstObject)[colHeader]),
+        onFilter: (value, record) => {
+          return String(record[Object.keys(firstObject)[colHeader]]).includes(value);
         }
-      },
-      sortDirections: ['descend', 'ascend'],
-      ...getColumnSearchProps(Object.keys(firstObject)[colHeader]),
-      onFilter: (value, record) => {
-        return String(record[Object.keys(firstObject)[colHeader]]).includes(value);
+      }
+      cols.push(col);
       }
     }
-    cols.push(col);
-    }
-  }
-  cols.push(
+    // if (data.length > 0) {
+    cols.push(
     {
       title: '',
       dataIndex: 'operation',
@@ -285,47 +307,58 @@ const DictionaryTable = ({ queryParam, setQueryParam, queryName, setQueryName })
         );
 
       },
+
     })
+    // }
 
-  let mergedColumns = cols.map((col) => {
-    if (!col.editable) {
-      return col;
-    }
-    return {
-      ...col,
-      onCell: (record) => ({
-        record,
-        inputType: col.dataIndex === 'age' ? 'number' : 'text',
-        dataIndex: col.dataIndex,
-        title: col.title,
-        editing: isEditing(record),
-      }),
-    };
-  });
+    let mergedColumns = cols.map((col) => {
+      if (!col.editable) {
+        return col;
+      }
+      return {
+        ...col,
+        onCell: (record) => ({
+          record,
+          inputType: col.dataIndex === 'age' ? 'number' : 'text',
+          dataIndex: col.dataIndex,
+          title: col.title,
+          editing: isEditing(record),
+        }),
+      };
+    });
+    setMergedColumns(mergedColumns)
+  }, [data, editingKey])
 
-  if (filterColumn) {
-    mergedColumns = mergedColumns.filter(column => column.dataIndex !== filterColumn);
-  }
+  // if (filterColumn) {
+  //   mergedColumns = mergedColumns.filter(column => column.dataIndex !== filterColumn);
+  // }
 
 
-  useEffect(() => {
+  // useEffect(() => {
 
-    if (queryParam) {
-      fetchData();
-    }
-  }, [queryParam]);
+  //   if (queryParam) {
+  //     fetchData();
+  //   }
+  // }, [queryParam]);
 
-  async function fetchData() {
-    let getWordData = await getWords({'lid' : queryParam});
+  // useEffect(() => {
 
-    if (typeof(getWordData) !== String ) {
-      console.log('fetched data');
-      setData(getWordData)
-    } else {
-      console.log("failed to fetch data ", getWordData)
-    }
+  //   // if (data === []) {
+  //     fetchData();
+  //   // }
+  // }, []);
 
-  }
+  // async function fetchData() {
+  //   let getWordData = await getWords({'lid' : queryParam});
+
+  //   if (typeof(getWordData) !== String ) {
+  //     console.log('fetched data', getWordData);
+  //     setData(getWordData)
+  //   } else {
+  //     console.log("failed to fetch data ", getWordData)
+  //   }
+
+  // }
 
   // useEffect(() => {
   //   if (queryParam) {
@@ -334,6 +367,7 @@ const DictionaryTable = ({ queryParam, setQueryParam, queryName, setQueryName })
   //     // Attach an event listener for real-time updates
   //     dictRef.on(`languages${queryParam}`, (snapshot) => {
   //       const fetchedData = snapshot.val();
+  //       console.log("LOOOK", fetchData)
   //       setData(fetchedData);
   //     });
 
@@ -342,10 +376,206 @@ const DictionaryTable = ({ queryParam, setQueryParam, queryName, setQueryName })
   //   }
   // }, []);
 
+  // Refresh data on database change
+  useEffect(() => {
+    const dictRef = ref(db, `languages/${queryParam}/dict`);
+
+    //returns a function that will "unregister" (turn off) the listener
+    const unregisterFunction = onValue(dictRef, (snapshot) => {
+        const dict = snapshot.val();
+        console.log("LOOK DATA ", dict)
+        // setData(dict)
+
+
+        // if (queryParam) {
+        const firstCol = Object.values(dict)[0];
+        let result = [];
+        let word = {};
+
+        if (Object.keys(firstCol).length === 1) {
+          result = {};
+          let dcols = Object.keys(dict);
+          dcols.forEach((col) => {
+            result[col] = '';
+          });
+
+          const getColumnSearchProps = (dataIndex) => ({
+            filterDropdown: ({ close }) => (
+              <div
+                style={{
+                  padding: 8,
+                }}
+                onKeyDown={(e) => e.stopPropagation()}
+              >
+                <Space>
+                  <Button
+                    onClick={() => handleEditColumn(dataIndex, close)}
+                    size="small"
+                    type="link"
+                  >
+                    Edit
+                  </Button>
+                  <Button
+                    onClick={() => handleDeleteColumn(dataIndex)}
+                    type="link"
+                    size="small"
+                  >
+                    Delete
+                  </Button>
+                  <Button
+                    type="link"
+                    size="small"
+                    onClick={() => {
+                      close();
+                    }}
+                  >
+                    Close
+                  </Button>
+                </Space>
+              </div>
+            ),
+            filterIcon: (filtered) => (
+              <MenuOutlined
+                style={{
+                  color: filtered ? '#1890ff' : undefined,
+                }}
+              />
+            ),
+            render: (text) => text
+          });
+
+          // let data =  [{'English definition': 't', 'testf': 't'}]
+
+
+          let firstObject = data[0] || {};
+          let cols = [];
+          for (const colHeader in Object.keys(result)) {
+            if (Object.keys(result)[colHeader] !== "id" &&  Object.keys(result)[colHeader] !== "key") { // add to remove id and key columns -> for testing purposes only
+            console.log(Object.keys(result)[colHeader])
+            const col = {
+              title: Object.keys(result)[colHeader],
+              dataIndex: Object.keys(result)[colHeader],
+              key: Object.keys(result)[colHeader],
+              width: '10rem',
+              // minWidth: '10rem',
+              editable: true,
+              sorter: (a, b) => {
+                console.log(typeof (a[Object.keys(result)[colHeader]]), typeof (b[Object.keys(result)[colHeader]]))
+                if (typeof (a[Object.keys(result)[colHeader]]) === 'number' && typeof (b[Object.keys(result)[colHeader]]) === 'number') {
+                  return a[Object.keys(result)[colHeader]] - b[Object.keys(result)[colHeader]];
+                } else {
+                  return String(a[Object.keys(result)[colHeader]]).localeCompare(String(b[Object.keys(result)[colHeader]]))
+                }
+              },
+              sortDirections: ['descend', 'ascend'],
+              ...getColumnSearchProps(Object.keys(result)[colHeader]),
+              onFilter: (value, record) => {
+                return String(record[Object.keys(result)[colHeader]]).includes(value);
+              }
+            }
+            cols.push(col);
+            }
+          }
+          // if (data.length > 0) {
+          cols.push(
+          {
+            title: '',
+            dataIndex: 'operation',
+            width: '10rem',
+            render: (_, record) => {
+              const editable = isEditing(record);
+              return editable ? (
+                <div>
+                  <span>
+                    <Typography.Link
+                      onClick={() => save(record.id)}
+                      style={{
+                        marginRight: 8,
+                      }}
+                    >
+                      Save
+                    </Typography.Link>
+                    <Popconfirm title="Sure to cancel?" onConfirm={cancel}>
+                      <a>Cancel</a>
+                    </Popconfirm>
+                  </span>
+                </div>
+              ) : (
+                <div style={{ minWidth: '200%' }}>
+                  <Typography.Link disabled={editingKey !== ''} onClick={() => edit(record)}>
+                    Edit
+                  </Typography.Link>
+                  <Popconfirm title="Are you sure delete this row?" onConfirm={async () => await handleDelete(record.id, record)}>
+                    <a><DeleteOutlined style={{ marginLeft: 12 }} /> </a>
+                  </Popconfirm>
+                </div>
+              );
+
+            },
+
+          })
+          // }
+
+          let mergedColumns = cols.map((col) => {
+            if (!col.editable) {
+              return col;
+            }
+            return {
+              ...col,
+              onCell: (record) => ({
+                record,
+                inputType: col.dataIndex === 'age' ? 'number' : 'text',
+                dataIndex: col.dataIndex,
+                title: col.title,
+                editing: isEditing(record),
+              }),
+            };
+          });
+          console.log("TRY COLUMNS", mergedColumns)
+          setMergedColumns(mergedColumns)
+
+          // setData([]);
+        } else {
+          for (let id of Object.keys(firstCol)) {
+            word = {};
+            if (id === "createTime") continue;
+            word = { id: id };
+            for (let col of Object.keys(dict)) {
+              word[col] = dict[col][id];
+            }
+            result.push(word);
+          }
+          console.log("SSSSSS", result)
+          setData(result);
+        }
+      // }
+    })
+
+    //cleanup function for when component is removed
+    function cleanup() {
+      unregisterFunction(); //call the unregister function
+    }
+    return cleanup; //effect hook callback returns the cleanup function
+  }, [queryParam])
+
 
   // delete a row
   const handleDelete = async (key, record) => {
     console.log("DELETE THIS ROW FROM DATABASE: ", record);
+      for (let i = 0; i < data.length; i++) {
+        if (data[i].id === record.id) {
+          if (i === data.length - 1) {
+            console.log("no")
+            setData([]);
+            continue
+          } else {
+            console.log("check", data[i + 1])
+            edit(data[i + 1])
+            break
+          }
+        }
+      }
+
     let deleteWordData = await deleteWord({
       "data": record,
       "lid": queryParam
@@ -353,20 +583,26 @@ const DictionaryTable = ({ queryParam, setQueryParam, queryName, setQueryName })
 
     if (deleteWordData === "Success") {
       console.log('delete row success');
-      await fetchData()
+      // window.open(`/langTable?lid=`+ queryParam + `&lname=` + queryName, `_self`);
+      // await fetchData()
+
+      // edit(data[0])
+      setEditingKey('');
+      return
     } else {
       console.log("delete row failed ", deleteWordData)
     }
+    return
   };
 
   // Add a row
   const handleAdd = async () => {
     let newData = {};
-    for (const colHeader in cols) {
-      if (cols[colHeader].title === "" || cols[colHeader].title === "id") {
+    for (const colHeader in mergedColumns) {
+      if (mergedColumns[colHeader].title === "" || mergedColumns[colHeader].title === "id") {
         continue;
       } else {
-        newData[cols[colHeader].title] = ``;
+        newData[mergedColumns[colHeader].title] = ``;
       }
     }
     console.log("ADD ROW", newData);
@@ -377,7 +613,7 @@ const DictionaryTable = ({ queryParam, setQueryParam, queryName, setQueryName })
 
     if (addRowData === "Success") {
       console.log('add row success');
-      await fetchData()
+      // await fetchData()
     } else {
       console.log("add row failed ", addRowData)
     }
@@ -407,7 +643,7 @@ const DictionaryTable = ({ queryParam, setQueryParam, queryName, setQueryName })
       })
     if (addCol === "Success") {
       console.log('added column called :>> ', AddColumn.name);
-      await fetchData()
+      // await fetchData()
     } else {
       console.log("Add column failed ", addCol)
     }

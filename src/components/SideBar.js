@@ -58,11 +58,10 @@ function getLanguageOptions(langName, num, langID, handleDeleteLang) {
 }
 
 
-export default function SideBar({queryParam, setQueryParam, queryName, setQueryName}) {
+export default function SideBar() {
   const [data, setData] = useState(null);
-  // const [queryParam, setQueryParam] = useState('');
-  // const [queryName, setQueryName] = useState('');
 
+  // Get all user languages into the sidebar on load
   useEffect(() => {
     const fetchData = async () => {
         let getLandData = await getUserLang({'uid' : "OUnW07Np3VNFduMOCX1V1bvvsd22"});
@@ -72,73 +71,14 @@ export default function SideBar({queryParam, setQueryParam, queryName, setQueryN
     fetchData();
   }, []);
 
-  // useEffect(() => {
-  //   if (queryParam) {
-  //   // WIP: Can only load one table at a time, clicking another button returns same data for some reason
-  //   Router.push({ pathname: '/langTable', query: { lid: queryParam, lname: queryName } });
-  //   // var newUrl = window.location.origin + '/langTable' + "?lid=" + query;
-  //   // window.location.href = newUrl;
-  //   setQueryParam(null)
-  //   setQueryName(null);
-  //   // let params = serializeFormQuery(e.target);
-  //   // setSearchParams(params);
-  //   // console.log("PARAMS ", params)
-  //     return;
-  //   }
-  // })
-
-  // useEffect(() => {
-  //   const handleRouteChange = (url) => {
-  //     console.log(
-  //       `App is changing to ${url} `
-  //     )
-  //   }
-
-  //   Router.events.on('routeChangeStart', handleRouteChange)
-
-  //   // If the component is unmounted, unsubscribe
-  //   // from the event with the `off` method:
-  //   return () => {
-  //     Router.events.off('routeChangeStart', handleRouteChange)
-  //   }
-  // }, [Router])
-
+  // Route to specific table, given language id and language name
   const handleRoute = (e) => {
-    console.log(e)
-    // useEffect(() => {
-      // if (queryParam) {
-      // WIP: Can only load one table at a time, clicking another button returns same data for some reason
-
-      // Router.push({ pathname: window.location.origin + '/langTable', query: { lid: e.item.props.langID, lname: e.key } });
-      Router.push({pathname: '/langTable', query: { lid: e.item.props.langID, lname: e.key }})
-
-      // if (searchParams.lid !== undefined) {
-      //   let checkLID = searchParams.get('lid').replace(/\s+/g, '')
-      //   console.log("AAAAAAAAAA",checkLID, e.item.props.langID)
-      //   if ( e.item.props.langID !== checkLID) {
-      //     Router.reload()
-      //   }
-      // }
-      // Router.reload()
-      // var newUrl = window.location.origin + '/langTable' + "?lid=" + query;
-      // window.location.href = newUrl;
-      // setQueryParam(null)
-      // setQueryName(null);
-      // let params = serializeFormQuery(e.target);
-      // setSearchParams(params);
-      // console.log("PARAMS ", params)
-        return;
-      // }
-    // }
-
-
-
+      window.open(`/langTable?lid=`+ e.item.props.langID + `&lname=` + e.key, `_self`);
   };
 
   // Delete a language on the sidebar
   const handleDeleteLang = async (e) => {
     console.log("Delete language: ", e.item.props.langID)
-    console.log("TEST", data)
 
     let deleteLangData = await deleteLang({
       "lid": e.item.props.langID
@@ -162,11 +102,11 @@ export default function SideBar({queryParam, setQueryParam, queryName, setQueryN
       console.log("Lang Names: ", data.languageNames.split(','))
 
       const items = [getItem('Dashboard', 'dash')];
+      items[0].onClick = () => { window.open(`/dashboard`, `_self`); }
       for (let i = 0; i < langIDS.length; i++) {
         const langName = langNames[i];
         const langID = langIDS[i]
         const menuButton = getItem(langName, i, null, getLanguageOptions(langName, i, langID, handleDeleteLang), null, langID, null);
-        console.log(menuButton)
         for (let sideLabels of Object.values(menuButton.children)) {
           if (sideLabels["label"] === "View Language") {
             sideLabels.onClick = handleRoute
@@ -176,24 +116,8 @@ export default function SideBar({queryParam, setQueryParam, queryName, setQueryN
             sideLabels.onClick = handleDeleteLang
           }
         }
-        // console.log(menuButton)
-        // console.log("ITEM: ", menuButton)
         items.push(menuButton);
       }
-
-      // Route to the language's table
-      const onClick = (e) => {
-        // console.log("LangID to push: ", e.item.props.langID)
-        // console.log(Router.pathname)
-        let query = e.item.props.langID.replace(/\s+/g, '')
-        setQueryParam(query)
-        setQueryName(e.key);
-        console.log("QERRRY ", query)
-
-
-      };
-
-
 
       return (
         <div>

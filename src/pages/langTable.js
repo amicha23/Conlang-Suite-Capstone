@@ -55,7 +55,7 @@ export default function Home() {
                         minHeight: '100vh',
                     }}>
                 {/* <div id="side-bar-div"> */}
-                    <SideBar queryParam={queryParam} setQueryParam={setQueryParam} queryName={queryName} setQueryName= {setQueryName}/>
+                    <SideBar />
                 {/* </div> */}
                 <Layout className="site-layout">
                     {/* <Header
