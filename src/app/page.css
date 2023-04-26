@@ -1,0 +1,237 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+html, body {
+    margin: 0;
+    padding: 0;
+    background: #fff;
+    overflow: hidden;
+}
+.loader {
+    width: 100vw;
+    height: 100vh;
+}
+.loader-clip {
+    position: absolute;
+    width: 100vw;
+    height: 33.3vh;
+    overflow: clip;
+    z-index: 10000;
+}   
+.clip-top {
+    top: 0;
+    clip-path: inset(0 0 0 0);
+    background: #000;
+}
+.clip-bottom {
+    bottom: 0;
+    clip-path: inset(0 0 0 0);
+    background: #000;
+}
+.clip-center {
+    overflow: hidden;
+    position: relative;
+    width: 100vw;
+    height: 33.3vh;
+    top: 33.3vh;
+}
+.marquee {
+    position: absolute;
+    top: 200%;
+    left: 50%;
+    transform: translate(-50%, -50%) ;
+    width: 200vw;
+    color: #fff;
+    mix-blend-mode: difference;
+    font-size: 9vw;
+}
+.marquee-container {
+    width: 100%;
+    padding-top: 0.2em;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: "Moresby";
+}
+.container {
+    position: absolute;
+    top: 0;
+    width: 100%;
+    height: 100vh;
+    overflow: hidden;
+    z-index: 1;
+    font-family: "Neue Montreal";
+    text-transform: uppercase;
+    display: flex;
+    justify-content: space-between;
+    flex-direction: column;
+    font-size: 14px;
+}
+.container .nav,
+.container footer {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    text-align: center;
+    padding: 2em 4em;
+}
+.nav-items a {
+    text-decoration: none;
+    color: #000;
+}
+.nav-items a:not(:last-child) {
+    padding-right: 4em;
+}
+
+.textbox {
+    font-size: 80px;
+    font-family: sans-serif;
+    position: absolute;
+    top: 65%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    flex-direction: row;
+    gap: 35px;
+    opacity: 0;
+}
+.letter{
+    /* height: 10px; */
+    /* width: 5%; */
+    /* padding: 0 10px 0 10px; */
+    display:inline-block;
+    font-weight: bolder;
+    animation: mover 6s linear infinite;
+    color: #fff;
+    flex-grow: 1;
+}
+@keyframes mover{
+0%{
+    text-shadow: 0 0 30px rgba(0,0,0,0);
+}
+50%{
+    text-shadow: 0 0 30px rgba(0,0,0,0.3);
+    /* transform: translateY(30px) */
+}
+100%{
+    text-shadow: 0 0 30px rgba(0,0,0,0);
+}
+}
+.letter:nth-child(1){
+animation-delay: 1s;
+}
+.letter:nth-child(2){
+animation-delay: 1.5s;
+}
+.letter:nth-child(3){
+animation-delay: 2s;
+}
+.letter:nth-child(4){
+animation-delay: 2.5s;
+}
+.letter:nth-child(5){
+animation-delay: 3s;
+}
+.letter:nth-child(6){
+animation-delay: 3.5s;
+}
+
+.logo{
+    height: 31.3px;
+    width: 167px;
+}
+
+/* .showAfterXseconds {
+    display: none;
+    animation: showAnimation 0s ease-in 8s;
+    animation-fill-mode: forwards;
+  }
+  
+@keyframes showAnimation {
+    to {
+      display:block;
+    }
+  } */
+.stone{
+    position: absolute;
+    width: 5px;
+    height: 140px;
+    background: linear-gradient(to top, black, transparent);
+    top: 100px;
+    left: 100px;
+    border-radius: 50px;
+    opacity: 0;
+    z-index: 0; 
+    /* stone 7s ease 0s infinite,  */
+    /* animation: showAnimation 0s ease-in 8s; */
+    animation-fill-mode: forwards;
+}
+@keyframes stone{
+    from{
+        transform: translateY(-500%);
+        opacity: 1;
+    }
+    to{
+        transform: translateY(500%);
+        opacity: .3;
+    }
+}
+@keyframes showAnimation {
+    to {
+      opacity: 1;
+    }
+  } 
+.stone:nth-child(2){
+    top: 300px;
+    left: 400px;
+    animation-delay: .7s;
+    animation-duration: 6s;
+}
+.stone:nth-child(3){
+top: 500px;
+left: 200px;
+animation-delay: .5s;
+animation-duration: 3s;
+
+}
+.stone:nth-child(4){
+top: 100px;
+right: 100px;
+left: inherit;
+animation-delay: .2s;
+animation-duration: 4s;
+
+}
+.stone:nth-child(5){
+    top: 300px;
+    right: 400px;
+    left: inherit;
+    animation-delay: .8s;
+    animation-duration: 5s;
+
+}
+.stone:nth-child(6){
+    top: 500px;
+    right: 200px;
+    left: inherit;
+}
+
+.stone:nth-child(7){
+    top:  0px;
+    left: 45%;
+}
+.stone:nth-child(8){
+    top: 450px;
+    right: 300px;
+    animation-duration: 5.7s;
+
+    left: inherit;
+}
+.stone:nth-child(even){
+    background: linear-gradient(to top, #F8F8F8, transparent);
+    box-shadow: 0  4px 94px #F8F8F8; 
+}
+
+    
