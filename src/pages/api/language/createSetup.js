@@ -17,7 +17,9 @@ export default async function createSetup(data) {
     const langData = {
       description: data.language_desc,
       name: data.language_name,
-      uid: uid,
+      uid: data.uid,
+      vowels: data.vowels,
+      consonants: data.consonants,
     };
 
     const dict = {};
@@ -90,50 +92,6 @@ async function uploadCoverImg(file, lid) {
     throw error;
   }
 }
-
-
-// function uploadCoverImg(file, lid) {
-//   try {
-//     const metadata = {
-//       contentType: "image/jpg",
-//     };
-
-//     const storageRef = storeRef(storage, `coverImg/${lid}.jpg`);
-//     console.log(`coverImg/${lid}.jpg`)
-
-//     const uploadTask = uploadBytesResumable(storageRef, file, metadata);
-//     console.log("Upload task started:", uploadTask);
-
-//     uploadTask.on(
-//       "state_changed",
-//       (snapshot) => {
-//         // Get task progress
-//         const progress =
-//           (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-//         console.log("Upload progress:", progress + "%");
-//         switch (snapshot.state) {
-//           case "paused":
-//             console.log("Upload is paused");
-//             break;
-//           case "running":
-//             console.log("Upload is running");
-//             break;
-//         }
-//       },
-//       (error) => {
-//         console.error("Upload error:", error);
-//       },
-//       () => {
-//         // Upload completed successfully, get download URL
-//         getDownloadURL(uploadTask.snapshot.storeRef).then((downloadURL) => {
-//           return downloadURL;
-//         });
-//       }
-//     );
-//   } catch (e) {
-//     return e;
-//   }
-// }
 
 function getCurrTime() {
   let date_ob = new Date();

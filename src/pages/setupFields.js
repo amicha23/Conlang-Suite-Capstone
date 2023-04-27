@@ -65,13 +65,13 @@ export default function setup() {
 
   const [fields, setFields] = React.useState([
     "Orthographic forms",
+    "Pronunciation",
+    "English definition",
     "Keystrokes for orthography",
     "Head word",
     "Inflected forms",
-    "Pronunciation",
     "Proto-form",
-    "Politeness-register scale",
-    "English definition"
+    "Politeness-register scale"
   ]);
 
   const [file, setFile] = useState(null);

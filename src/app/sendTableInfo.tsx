@@ -44,28 +44,12 @@ export default async function saveDictionaryFields(fieldView :any, file :any, bl
 
   let langName = (document.getElementById('langNameID') as HTMLInputElement).value
   let desc = (document.querySelectorAll('TextArea')[0] as HTMLInputElement).value
+  let consonantList = (document.getElementById('langConsonantsID') as HTMLInputElement).value
+  let vowelList = (document.getElementById('langVowelsID') as HTMLInputElement).value
   let img = (document.getElementById('uploadImg') as HTMLInputElement).textContent
   console.log("IMG ", img)
-
-
-  // let filter_data: any[] = []
-  // allInputs.forEach(element => {
-  //   filter_data.push(element.value)
-  // });
-
-  // let langName = filter_data[0];
-  // let dict_data = filter_data.slice(3, filter_data.length);
-
-
-  let data = {
-    lanugage_name: langName,
-    language_desc: desc,
-    dictFields: filter_data,
-    coverFile : file,
-    coverBlob : blob
-  }
-
-  console.log("Final Request Data: ", data);
+  console.log('consonantList :>> ', consonantList.split(""));
+  console.log('vowelList :>> ', vowelList.split(""));
 
   let createSetupData = await createSetup({
     language_name: langName,
@@ -73,7 +57,9 @@ export default async function saveDictionaryFields(fieldView :any, file :any, bl
     dictFields: filter_data,
     uid : "OUnW07Np3VNFduMOCX1V1bvvsd22",
     coverFile : file,
-    coverBlob : blob
+    coverBlob : blob,
+    vowels: vowelList,
+    consonants: consonantList
   })
 
   if (createSetupData === "Success") {
@@ -81,21 +67,5 @@ export default async function saveDictionaryFields(fieldView :any, file :any, bl
   } else {
     console.log("failed to create dictionary ", createSetupData)
   }
-
-  // try {
-  //   let responseJson = await fetch(`api/language/createSetup`, {
-  //     method: "POST",
-  //     body: JSON.stringify({
-  //       language_name: langName,
-  //       language_desc: desc,
-  //       dictFields: filter_data
-  //     })
-  //   })
-  //   console.log(await responseJson.json());
-  //   console.log("Sent dictionary data to the database")
-  // } catch(err) {
-  //     // add proper error handling later
-  //     console.error(err);
-  // }
 
 }
