@@ -100,6 +100,7 @@ export default function SideBar() {
       let langNames = data.languageNames.split(',')
       console.log("Lang IDs: ", data.languageIDs.split(','))
       console.log("Lang Names: ", data.languageNames.split(','))
+      console.log('data.languageCovers :>> ', data.languageCovers);
 
       const items = [getItem('Dashboard', 'dash')];
       items[0].onClick = () => { window.open(`/dashboard`, `_self`); }

@@ -33,9 +33,11 @@ export default async function createSetup(data) {
 
     const newLangKey = push(child(ref(db), "languages")).key;
 
-    const coverURL = uploadCoverImg(data.coverBlob, newLangKey);
+    console.log('data.coverFile.originFileObj :>> ', data.coverFile.originFileObj);
+    const coverURL = await uploadCoverImg(data.coverFile.originFileObj, newLangKey);
 
-    data["coverURL"] = coverURL;
+    langData["coverURL"] = coverURL;
+    console.log('coverURL :>> ', coverURL);
 
     // Update user data with new language ID and name
     const userRef = ref(db, `users/${uid}`);
@@ -65,48 +67,73 @@ export default async function createSetup(data) {
   }
 }
 
-function uploadCoverImg(file, lid) {
+async function uploadCoverImg(file, lid) {
   try {
     const metadata = {
       contentType: "image/jpg",
     };
 
     const storageRef = storeRef(storage, `coverImg/${lid}.jpg`);
-    console.log(`coverImg/${lid}.jpg`)
 
     const uploadTask = uploadBytesResumable(storageRef, file, metadata);
     console.log("Upload task started:", uploadTask);
 
-    uploadTask.on(
-      "state_changed",
-      (snapshot) => {
-        // Get task progress
-        const progress =
-          (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-        console.log("Upload progress:", progress + "%");
-        switch (snapshot.state) {
-          case "paused":
-            console.log("Upload is paused");
-            break;
-          case "running":
-            console.log("Upload is running");
-            break;
-        }
-      },
-      (error) => {
-        console.error("Upload error:", error);
-      },
-      () => {
-        // Upload completed successfully, get download URL
-        getDownloadURL(uploadTask.snapshot.storageRef).then((downloadURL) => {
-          return downloadURL;
-        });
-      }
-    );
-  } catch (e) {
-    return e;
+    // Wait for the upload task to complete
+    await uploadTask;
+
+    // Get the download URL for the uploaded file
+    const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
+    console.log('downloadURL :>> ', downloadURL);
+    return downloadURL;
+  } catch (error) {
+    console.error("Upload error:", error);
+    throw error;
   }
 }
+
+
+// function uploadCoverImg(file, lid) {
+//   try {
+//     const metadata = {
+//       contentType: "image/jpg",
+//     };
+
+//     const storageRef = storeRef(storage, `coverImg/${lid}.jpg`);
+//     console.log(`coverImg/${lid}.jpg`)
+
+//     const uploadTask = uploadBytesResumable(storageRef, file, metadata);
+//     console.log("Upload task started:", uploadTask);
+
+//     uploadTask.on(
+//       "state_changed",
+//       (snapshot) => {
+//         // Get task progress
+//         const progress =
+//           (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+//         console.log("Upload progress:", progress + "%");
+//         switch (snapshot.state) {
+//           case "paused":
+//             console.log("Upload is paused");
+//             break;
+//           case "running":
+//             console.log("Upload is running");
+//             break;
+//         }
+//       },
+//       (error) => {
+//         console.error("Upload error:", error);
+//       },
+//       () => {
+//         // Upload completed successfully, get download URL
+//         getDownloadURL(uploadTask.snapshot.storeRef).then((downloadURL) => {
+//           return downloadURL;
+//         });
+//       }
+//     );
+//   } catch (e) {
+//     return e;
+//   }
+// }
 
 function getCurrTime() {
   let date_ob = new Date();
