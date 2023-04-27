@@ -52,6 +52,7 @@ function getLanguageOptions(langName, num, langID, handleDeleteLang) {
     // getItem('Phonology', (num * 4) + 1, null, null, null,langID, null),
     // getItem('Orthography', (num * 4) + 2, null, null, null,langID, null),
     // getItem('Language Specific', (num * 4) + 3, null, null, null,langID, null),
+    getItem('Language Stats', langName, null, null, null, langID, null),
     getItem('Delete', (num * 4) + 4, null, null, null,langID, null)
   ];
   return langOptions;
@@ -75,6 +76,10 @@ export default function SideBar() {
   const handleRoute = (e) => {
       window.open(`/langTable?lid=`+ e.item.props.langID + `&lname=` + e.key, `_self`);
   };
+
+  const handleStats = (e) => {
+      window.open(`/stats?lid=`+ e.item.props.langID + `&lname=` + e.key, `_self`);
+  }
 
   // Delete a language on the sidebar
   const handleDeleteLang = async (e) => {
@@ -112,7 +117,9 @@ export default function SideBar() {
           if (sideLabels["label"] === "View Language") {
             sideLabels.onClick = handleRoute
           }
-
+          if (sideLabels["label"] === "Language Stats") {
+            sideLabels.onClick = handleStats
+          }
           if (sideLabels["label"] === "Delete") {
             sideLabels.onClick = handleDeleteLang
           }
