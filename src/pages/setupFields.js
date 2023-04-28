@@ -139,6 +139,8 @@ export default function setup() {
                       type="primary"
                       htmlType="submit"
                       onClick={() => {
+                        console.log("FILE: ", file)
+                        console.log("Blob: ", blob)
                         saveDictionaryFields(fieldView, file, blob);
                         Router.push({pathname: '/dashboard'})
                       }}

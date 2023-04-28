@@ -32,10 +32,12 @@ export default async function createSetup(data) {
     langData["dict"] = dict;
 
     const newLangKey = push(child(ref(db), "languages")).key;
+    if (data.coverFile) {
+      const coverURL = await uploadCoverImg(data.coverFile.originFileObj, newLangKey);
 
-    const coverURL = uploadCoverImg(data.coverBlob, newLangKey);
-
-    data["coverURL"] = coverURL;
+      console.log("COVERURL ", coverURL)
+      data["coverURL"] = coverURL;
+    }
 
     // Update user data with new language ID and name
     const userRef = ref(db, `users/${uid}`);

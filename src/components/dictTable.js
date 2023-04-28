@@ -13,6 +13,9 @@ import addWord from "../pages/api/word/addWord";
 import deleteWord from "../pages/api/word/deleteWord";
 import getWords from "../pages/api/word/getWords";
 import updateWord from "../pages/api/word/updateWord";
+import IPAKeyboard from "./IPAKeyboard";
+import vowels from "../data/vowels.json";
+import consonants from "../data/consonants.json";
 
 import { update, ref, get, remove, child, push, onValue, off } from "firebase/database";
 import { db } from "../../firebaseConfig/firebaseAdmin.js";
@@ -71,6 +74,8 @@ const DictionaryTable = ({ queryParam, setQueryParam, queryName, setQueryName })
   const [form] = Form.useForm();
   const [columns, setColumns] = useState([]);
   const [filterColumn, setFilterColumn] = useState('');
+  const [consonantList, setConsonantList] = useState([]);
+  const [vowelList, setVowelList] = useState([]);
   const [data, setData] = useState([]);
   const [editingKey, setEditingKey] = useState('');
   const isEditing = (record) => record.id === editingKey;
@@ -173,6 +178,52 @@ const DictionaryTable = ({ queryParam, setQueryParam, queryName, setQueryName })
     // setSearchedColumn(dataIndex);
   };
 
+
+  // Pronunciation Edits
+  const [isProModalOpen, setIsproModalOpen] = useState(false);
+  const [ProColumn, setProColumn] = useState(null);
+  const [prevProColumn, setPrevProColumn] = useState(null);
+  const showProModal = () => {
+    setIsproModalOpen(true);
+  };
+
+  const handleProOk = async () => {
+    console.log("New column header name: ", ProColumn)
+    setIsproModalOpen(false);
+
+    // let updateFieldData = await updateField({
+    //   "currFieldName": prevEditColumn,
+    //   'newFieldName': EditColumn.name,
+    //   "lid": queryParam
+    // });
+
+    // if (updateFieldData === "Success") {
+    //   console.log('updated column called :>> ', EditColumn.name);
+    //   // await fetchData()
+    // } else {
+    //   console.log("updated column failed ", updateFieldData)
+    // }
+  };
+
+  const handleProCancel = () => {
+    setIsproModalOpen(false);
+  };
+
+  // Edit a column header
+  const handleProColumn = (dataIndex, close) => {
+    setPrevProColumn(dataIndex);
+    close();
+    showProModal();
+    // confirm();
+    // setSearchText(selectedKeys[0]);
+    // setSearchedColumn(dataIndex);
+  };
+
+
+
+
+
+
   // Delete a column
   const handleDeleteColumn = async (dataIndex) => {
     console.log("Data after delete column", data)
@@ -247,6 +298,34 @@ const DictionaryTable = ({ queryParam, setQueryParam, queryName, setQueryName })
     for (const colHeader in Object.keys(firstObject)) {
       if (Object.keys(firstObject)[colHeader] !== "id" &&  Object.keys(firstObject)[colHeader] !== "key") { // add to remove id and key columns -> for testing purposes only
       console.log(Object.keys(firstObject)[colHeader])
+      if (Object.keys(firstObject)[colHeader] === "Pronunciation") {
+        console.log("Pronunciation Column Here")
+        const col = {
+          title: Object.keys(firstObject)[colHeader],
+          dataIndex: Object.keys(firstObject)[colHeader],
+          key: Object.keys(firstObject)[colHeader],
+          width: '10rem',
+          // minWidth: '10rem',
+          editable: true,
+          sorter: (a, b) => {
+            console.log(typeof (a[Object.keys(firstObject)[colHeader]]), typeof (b[Object.keys(firstObject)[colHeader]]))
+            if (typeof (a[Object.keys(firstObject)[colHeader]]) === 'number' && typeof (b[Object.keys(firstObject)[colHeader]]) === 'number') {
+              return a[Object.keys(firstObject)[colHeader]] - b[Object.keys(firstObject)[colHeader]];
+            } else {
+              return String(a[Object.keys(firstObject)[colHeader]]).localeCompare(String(b[Object.keys(firstObject)[colHeader]]))
+            }
+          },
+          sortDirections: ['descend', 'ascend'],
+          ...getColumnSearchProps(Object.keys(firstObject)[colHeader]),
+          onFilter: (value, record) => {
+            return String(record[Object.keys(firstObject)[colHeader]]).includes(value);
+          },
+          render: (text, record) => (
+            <Button onClick={() => showProModal()}>{text}</Button>
+          ),
+        }
+        cols.push(col);
+      } else {
       const col = {
         title: Object.keys(firstObject)[colHeader],
         dataIndex: Object.keys(firstObject)[colHeader],
@@ -269,6 +348,8 @@ const DictionaryTable = ({ queryParam, setQueryParam, queryName, setQueryName })
         }
       }
       cols.push(col);
+    }
+
       }
     }
     // if (data.length > 0) {
@@ -729,6 +810,8 @@ const DictionaryTable = ({ queryParam, setQueryParam, queryName, setQueryName })
         />
       </Modal>
 
+
+
       <Modal title="Edit Column Header" open={isEditModalOpen} onOk={handleEditOk} onCancel={handleEditCancel}>
         <Input
           // value='Column Name'
@@ -741,6 +824,42 @@ const DictionaryTable = ({ queryParam, setQueryParam, queryName, setQueryName })
         //     return e.target.value ;
         // }}
         />
+      </Modal>
+
+      <Modal title="Edit Pronunciation" open={isProModalOpen} onOk={handleProOk} onCancel={handleProCancel}>
+        <Input
+          // value='Column Name'
+          onChange={(e) => {
+            setProColumn(() => {
+              return { name: e.target.value };
+            });
+          }}
+        // onChange={(e) => {
+        //     return e.target.value ;
+        // }}
+        />
+        {/* {showConsonantKeyboard && ( */}
+        <IPAKeyboard
+              list={consonants}
+              soundList={consonantList}
+              setSoundList={setConsonantList}
+            />
+            {/* )} */}
+            <p>Vowels of Language</p>
+            <Input
+              id="langVowelsID"
+              placeholder="Vowels of Language"
+              value={vowelList.join("")}
+              onChange={(e) => setVowelList(e.target.value.split(""))}
+            />
+
+            {/* {showVowelKeyboard && ( */}
+            <IPAKeyboard
+              list={vowels}
+              soundList={vowelList}
+              setSoundList={setVowelList}
+            />
+            {/* )} */}
       </Modal>
 
 

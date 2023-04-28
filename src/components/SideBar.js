@@ -52,7 +52,8 @@ function getLanguageOptions(langName, num, langID, handleDeleteLang) {
     // getItem('Phonology', (num * 4) + 1, null, null, null,langID, null),
     // getItem('Orthography', (num * 4) + 2, null, null, null,langID, null),
     // getItem('Language Specific', (num * 4) + 3, null, null, null,langID, null),
-    getItem('Delete', (num * 4) + 4, null, null, null,langID, null)
+    getItem('Delete', (num * 4) + 4, null, null, null,langID, null),
+    getItem('Settings', langName, null, null, null,langID, null)
   ];
   return langOptions;
 }
@@ -75,6 +76,12 @@ export default function SideBar() {
   const handleRoute = (e) => {
       window.open(`/langTable?lid=`+ e.item.props.langID + `&lname=` + e.key, `_self`);
   };
+
+  // Route to settings for a specific table, given language id and language name
+  const handleSettings = (e) => {
+    window.open(`/dictSettings?lid=`+ e.item.props.langID + `&lname=` + e.key, `_self`);
+};
+
 
   // Delete a language on the sidebar
   const handleDeleteLang = async (e) => {
@@ -115,6 +122,10 @@ export default function SideBar() {
           if (sideLabels["label"] === "Delete") {
             sideLabels.onClick = handleDeleteLang
           }
+
+          if (sideLabels["label"] === "Settings") {
+            sideLabels.onClick = handleSettings
+          }
         }
         items.push(menuButton);
       }
@@ -132,8 +143,8 @@ export default function SideBar() {
             style={{
               width: 'auto',
             }}
-            defaultSelectedKeys={['1']}
-            defaultOpenKeys={['sub1']}
+            // defaultSelectedKeys={['1']}
+            // defaultOpenKeys={['sub1']}
             mode="inline"
             items={items}
             />

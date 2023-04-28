@@ -5,6 +5,9 @@ import { UploadOutlined } from '@ant-design/icons';
 import { Button, message, Upload } from 'antd';
 import React, { useEffect, useState } from "react";
 import { Layout } from 'antd';
+import IPAKeyboard from "./IPAKeyboard";
+import vowels from "../data/vowels.json";
+import consonants from "../data/consonants.json";
 const { Header, Footer, Sider, Content } = Layout;
 
 // Router
@@ -59,6 +62,9 @@ export function SetUp({setUpView, changeSetUpView, file, setFile, blob, setBlob}
   const [langDesc, setDesc] = useState('');
 
 
+  const [consonantList, setConsonantList] = useState([]);
+  const [vowelList, setVowelList] = useState([]);
+
   const router = useRouter();
   // const [setUpView, changeSetUpView] = useState(true);
 
@@ -74,7 +80,7 @@ export function SetUp({setUpView, changeSetUpView, file, setFile, blob, setBlob}
         reader.onload = () => {
           const blob = new Blob([reader.result], { type: info.file.type });
           sendBlobToServer(blob);
-          console.log("CHECK FOR FILE ", file)
+          console.log("CHECK FOR FILE ", info.file)
           console.log("CHECK FOR BLOB ", blob)
           setBlob(blob)
         };
@@ -130,6 +136,38 @@ export function SetUp({setUpView, changeSetUpView, file, setFile, blob, setBlob}
                 <>
                   <TextArea id="langDescID" rows={10} placeholder="Description of Language" onChange={e => { setDesc(e.currentTarget.value); }} maxLength={600} />
                 </>
+
+
+                <p>Consonants of Language</p>
+            <Input
+              id="langConsonantsID"
+              placeholder="Consonants of Language"
+              value={consonantList.join("")}
+              onChange={(e) => setConsonantList(e.target.value.split(""))}
+            />
+
+            {/* {showConsonantKeyboard && ( */}
+            <IPAKeyboard
+              list={consonants}
+              soundList={consonantList}
+              setSoundList={setConsonantList}
+            />
+            {/* )} */}
+            <p>Vowels of Language</p>
+            <Input
+              id="langVowelsID"
+              placeholder="Vowels of Language"
+              value={vowelList.join("")}
+              onChange={(e) => setVowelList(e.target.value.split(""))}
+            />
+
+            {/* {showVowelKeyboard && ( */}
+            <IPAKeyboard
+              list={vowels}
+              soundList={vowelList}
+              setSoundList={setVowelList}
+            />
+            {/* )} */}
 
                 {/* <p>Upload Custom Font</p> */}
                 {/* Removed file props for now */}
