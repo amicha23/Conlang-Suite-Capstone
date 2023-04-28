@@ -6,6 +6,7 @@ import { Button, message, Upload } from 'antd';
 import React, { useRef, useEffect, useState } from "react";
 import { Layout } from 'antd';
 const { Header, Footer, Sider, Content } = Layout;
+import { getAuth, onAuthStateChanged } from "firebase/auth";
 
 // Router
 import { useRouter } from 'next/navigation';
@@ -54,6 +55,19 @@ const props = {
   },
 };
 
+// Get the currently singed-in user (FOR TESTING PURPOSES, FEEL FREE TO DELETE FOR RELEASE)
+const auth = getAuth();
+onAuthStateChanged(auth, (user) => {
+  if (user) {
+    // User is signed in, see docs for a list of available properties
+    // https://firebase.google.com/docs/reference/js/firebase.User
+    const uid = user.uid;
+    alert(uid);
+  } else {
+    // User is signed out
+    alert("User is signed out");
+  }
+});
 
 export default function setup() {
   const [langName, setValue] = useState('');

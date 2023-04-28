@@ -147,7 +147,7 @@ export default function SideBar() {
             <Link href="/help" >
               <Image src={ help } alt='Help placeholder' width={200}/>
             </Link>
-            <Link href="/logout">
+            <Link href="/">
               <Image src={ logout } alt='Logout placeholder' width={200}/>
             </Link>
           </Sider>

@@ -4,7 +4,7 @@ import { useRouter } from 'next/router';
 import { Button, Collapse } from 'antd';
 import React, { useEffect, useState } from "react";
 import Router from 'next/router';
-
+import { getAuth, onAuthStateChanged } from "firebase/auth";
 
 // Components
 import DictionaryTable from '../components/dictTable';
@@ -19,6 +19,19 @@ const { Header, Footer, Sider, Content } = Layout;
 const Panel = Collapse.Panel;
 const { Meta } = Card;
 
+// Get the currently singed-in user (FOR TESTING PURPOSES, FEEL FREE TO DELETE FOR RELEASE)
+const auth = getAuth();
+onAuthStateChanged(auth, (user) => {
+  if (user) {
+    // User is signed in, see docs for a list of available properties
+    // https://firebase.google.com/docs/reference/js/firebase.User
+    const uid = user.uid;
+    alert(uid);
+  } else {
+    // User is signed out
+    alert("User is signed out");
+  }
+});
 
 export default function Home() {
     const [languages, setLanguages] = useState();
