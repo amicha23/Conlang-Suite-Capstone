@@ -16,6 +16,7 @@ import updateWord from "../pages/api/word/updateWord";
 import IPAKeyboard from "./IPAKeyboard";
 import vowels from "../data/vowels.json";
 import consonants from "../data/consonants.json";
+import getLangData from "../pages/api/language/getLangData";
 
 import { update, ref, get, remove, child, push, onValue, off } from "firebase/database";
 import { db } from "../../firebaseConfig/firebaseAdmin.js";
@@ -76,6 +77,7 @@ const DictionaryTable = ({ queryParam, setQueryParam, queryName, setQueryName })
   const [filterColumn, setFilterColumn] = useState('');
   const [consonantList, setConsonantList] = useState([]);
   const [vowelList, setVowelList] = useState([]);
+  const [proList, setProList] = useState([]);
   const [data, setData] = useState([]);
   const [editingKey, setEditingKey] = useState('');
   const isEditing = (record) => record.id === editingKey;
@@ -183,26 +185,65 @@ const DictionaryTable = ({ queryParam, setQueryParam, queryName, setQueryName })
   const [isProModalOpen, setIsproModalOpen] = useState(false);
   const [ProColumn, setProColumn] = useState(null);
   const [prevProColumn, setPrevProColumn] = useState(null);
-  const showProModal = () => {
+  const showProModal = (text, record) => {
+    // setPrevProColumn(text);
+    console.log("VOWE", vowelList)
+    setPrevProColumn(record);
     setIsproModalOpen(true);
   };
 
   const handleProOk = async () => {
-    console.log("New column header name: ", ProColumn)
     setIsproModalOpen(false);
 
-    // let updateFieldData = await updateField({
-    //   "currFieldName": prevEditColumn,
-    //   'newFieldName': EditColumn.name,
+    // let updateProFieldData = await updateWord({
+    //   "currFieldName": prevProColumn,
+    //   'newFieldName': proList.join(""),
     //   "lid": queryParam
     // });
 
-    // if (updateFieldData === "Success") {
-    //   console.log('updated column called :>> ', EditColumn.name);
+    // if (updateProFieldData === "Success") {
+    //   console.log('updated pronunciation called :>> ', proList.join(","));
     //   // await fetchData()
     // } else {
-    //   console.log("updated column failed ", updateFieldData)
+    //   console.log("updated pronunciation failed ", updateProFieldData)
     // }
+    let id = prevProColumn.id
+    console.log("EDIT THIS ID: ", id)
+    try {
+      const row = await form.validateFields();
+      const newData = [...data];
+      const index = newData.findIndex((item) => id === item.id);
+      if (index > -1) {
+        const item = newData[index];
+        newData.splice(index, 1, {
+          ...item,
+          ...row,
+        });
+      } else {
+        console.log("EDIT ROW: ", row)
+        let addRowData = await addWord({
+          'lid': queryParam,
+          'wordData': proList.join("")
+        });
+
+        if (addRowData === "Success") {
+          console.log('add row success');
+        } else {
+          console.log("add row failed ", addRowData)
+        }
+      }
+      newData[index]['Pronunciation'] = proList.join("")
+      console.log("EDIT THIS ROW IN THE DATABASE: ", newData[index]);
+      let updateWordData = await updateWord({'lid' : queryParam, 'data' : newData[index]});
+
+      if (updateWordData === "Success") {
+        console.log('updated row success :>> ', newData[index]);
+      } else {
+        console.log("updated row failed ", updateWordData)
+      }
+    } catch (errInfo) {
+      console.log('Validate Failed:', errInfo);
+    }
   };
 
   const handleProCancel = () => {
@@ -306,7 +347,7 @@ const DictionaryTable = ({ queryParam, setQueryParam, queryName, setQueryName })
           key: Object.keys(firstObject)[colHeader],
           width: '10rem',
           // minWidth: '10rem',
-          editable: true,
+          // editable: true,
           sorter: (a, b) => {
             console.log(typeof (a[Object.keys(firstObject)[colHeader]]), typeof (b[Object.keys(firstObject)[colHeader]]))
             if (typeof (a[Object.keys(firstObject)[colHeader]]) === 'number' && typeof (b[Object.keys(firstObject)[colHeader]]) === 'number') {
@@ -320,9 +361,12 @@ const DictionaryTable = ({ queryParam, setQueryParam, queryName, setQueryName })
           onFilter: (value, record) => {
             return String(record[Object.keys(firstObject)[colHeader]]).includes(value);
           },
-          render: (text, record) => (
-            <Button onClick={() => showProModal()}>{text}</Button>
-          ),
+          render: (text, record) => {
+            const editable = isEditing(record);
+            return editable ? (
+            <Button title="Click for IPA Keyboard" onClick={() => showProModal(text, record)}>{text}</Button>
+            ):(text)
+          }
         }
         cols.push(col);
       } else {
@@ -415,31 +459,35 @@ const DictionaryTable = ({ queryParam, setQueryParam, queryName, setQueryName })
   // }
 
 
-  // useEffect(() => {
+  useEffect(() => {
 
-  //   if (queryParam) {
-  //     fetchData();
-  //   }
-  // }, [queryParam]);
+    if (queryParam) {
+      fetchData();
+    }
+  }, [queryParam]);
 
   // useEffect(() => {
 
   //   // if (data === []) {
   //     fetchData();
   //   // }
-  // }, []);
+  // });
 
-  // async function fetchData() {
-  //   let getWordData = await getWords({'lid' : queryParam});
+  async function fetchData() {
+    let getWordData = await getLangData({'lid' : queryParam});
 
-  //   if (typeof(getWordData) !== String ) {
-  //     console.log('fetched data', getWordData);
-  //     setData(getWordData)
-  //   } else {
-  //     console.log("failed to fetch data ", getWordData)
-  //   }
+    if (getWordData) {
+      // console.log('fetched data', getWordData['lang']['consonants'].split(","));
+      // setData(getWordData)
+      if (getWordData['lang']['consonants'] !== undefined && getWordData['lang']['vowels'] !== undefined) {
+        setConsonantList(getWordData['lang']['consonants'].split(""))
+        setVowelList(getWordData['lang']['vowels'].split(""))
+      }
+    } else {
+      console.log("failed to fetch data ", getWordData)
+    }
 
-  // }
+  }
 
   // useEffect(() => {
   //   if (queryParam) {
@@ -456,6 +504,8 @@ const DictionaryTable = ({ queryParam, setQueryParam, queryName, setQueryName })
   //     return () => dictRef.off();
   //   }
   // }, []);
+
+
 
   // Refresh data on database change
   useEffect(() => {
@@ -630,6 +680,7 @@ const DictionaryTable = ({ queryParam, setQueryParam, queryName, setQueryName })
           setData(result);
         }
       // }
+      let getWordData = getLangData({'lid' : queryParam});
     })
 
     //cleanup function for when component is removed
@@ -827,39 +878,31 @@ const DictionaryTable = ({ queryParam, setQueryParam, queryName, setQueryName })
       </Modal>
 
       <Modal title="Edit Pronunciation" open={isProModalOpen} onOk={handleProOk} onCancel={handleProCancel}>
-        <Input
-          // value='Column Name'
-          onChange={(e) => {
-            setProColumn(() => {
-              return { name: e.target.value };
-            });
-          }}
-        // onChange={(e) => {
-        //     return e.target.value ;
-        // }}
-        />
-        {/* {showConsonantKeyboard && ( */}
-        <IPAKeyboard
-              list={consonants}
-              soundList={consonantList}
-              setSoundList={setConsonantList}
-            />
-            {/* )} */}
-            <p>Vowels of Language</p>
+
             <Input
               id="langVowelsID"
               placeholder="Vowels of Language"
-              value={vowelList.join("")}
-              onChange={(e) => setVowelList(e.target.value.split(""))}
+              value={proList.join("")}
+              onChange={(e) => setProList(e.target.value.split(""))}
             />
 
-            {/* {showVowelKeyboard && ( */}
+            <p>Consonants of Language</p>
             <IPAKeyboard
-              list={vowels}
-              soundList={vowelList}
-              setSoundList={setVowelList}
+              list={consonantList}
+              soundList={consonantList}
+              setSoundList={setProList}
+              curList={proList}
+              noDup={false}
             />
-            {/* )} */}
+
+            <p>Vowels of Language</p>
+            <IPAKeyboard
+              list={vowelList}
+              soundList={vowelList}
+              setSoundList={setProList}
+              curList={proList}
+              noDup={false}
+            />
       </Modal>
 
 

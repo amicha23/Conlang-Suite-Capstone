@@ -44,8 +44,12 @@ export default async function saveDictionaryFields(fieldView :any, file :any, bl
 
   let langName = (document.getElementById('langNameID') as HTMLInputElement).value
   let desc = (document.querySelectorAll('TextArea')[0] as HTMLInputElement).value
+  let consonantList = (document.getElementById('langConsonantsID') as HTMLInputElement).value
+  let vowelList = (document.getElementById('langVowelsID') as HTMLInputElement).value
   let img = (document.getElementById('uploadImg') as HTMLInputElement).textContent
   console.log("IMG ", img)
+  console.log('consonantList :>> ', consonantList.split(""));
+  console.log('vowelList :>> ', vowelList.split(""));
 
 
   // let filter_data: any[] = []
@@ -62,7 +66,9 @@ export default async function saveDictionaryFields(fieldView :any, file :any, bl
     language_desc: desc,
     dictFields: filter_data,
     coverFile : file,
-    coverBlob : blob
+    coverBlob : blob,
+    vowels: vowelList,
+    consonants: consonantList
   }
 
   console.log("Final Request Data: ", data);
@@ -73,7 +79,9 @@ export default async function saveDictionaryFields(fieldView :any, file :any, bl
     dictFields: filter_data,
     uid : "OUnW07Np3VNFduMOCX1V1bvvsd22",
     coverFile : file,
-    coverBlob : blob
+    coverBlob : blob,
+    vowels: vowelList,
+    consonants: consonantList
   })
 
   if (createSetupData === "Success") {

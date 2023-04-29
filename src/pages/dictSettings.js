@@ -118,6 +118,7 @@ export default function dictSettings() {
       setData(getLandData)
 
       setFields(getLandData['dictHeaders'])
+      setValue(getLandData['lang']['name'])
     } else {
       console.log("failed to fetch data ", getLandData)
     }
@@ -139,23 +140,24 @@ export default function dictSettings() {
   if (data) {
     return (
         <div>
-            <div id="LangInfo-Setup" style={{display: setUpView ? "block" : "none"}}>
+            <div id="LangInfo-Setup" style={{display: setUpView ? "none" : "block"}}>
               <EditDictionary data={data} setData={setData} queryParam={queryParam} queryName={queryName} setUpView={setUpView} changeSetUpView={changeSetUpView} file={file} setFile={setFile} blob={blob} setBlob={setBlob}/>
+
             </div>
-            <div id="Fields-Setup"  style={{display: setUpView ? "none" : "block"}}>
+            <div id="Fields-Setup"  style={{display: setUpView ? "block" : "none"}}>
               <Layout>
                 <Sider style={{ padding: '0 20px', background: 'white'}}>
                   {/* Will need to add in the css */}
                   <div id='progress-sidebar'>
                     {/* <Image src={ logo } alt='Logo placeholder' width={150} style={{'margin-bottom': '10px'}} /> */}
-                    <p><b>{queryName}</b></p>
+                    <p><b>{langName}</b></p>
                     <div style={{marginBottom:'1.5rem'}}>
-                      <SettingOutlined style={{display: 'inline', marginRight:'0.5rem'}} />
-                      <p style={{display: 'inline'}}>Settings</p>
+                      <EditTwoTone style={{display: 'inline', marginRight:'0.5rem'}} />
+                      <p style={{display: 'inline'}}>Edit Dictionary</p>
                     </div>
                     <div>
-                    <EditTwoTone style={{display: 'inline', marginRight:'0.5rem'}} />
-                    <p style={{display: 'inline'}}>Edit Dictionary</p>
+                      <SettingOutlined style={{display: 'inline', marginRight:'0.5rem'}} />
+                      <p style={{display: 'inline'}}>Settings</p>
                     </div>
                   </div>
                 </Sider>
@@ -177,15 +179,11 @@ export default function dictSettings() {
 
                   </div>
                   <div id="buttons" className={styles.buttons}>
-                    <div id="back-btn" className={styles.buttonsChild} style={{display: setUpView ? "none" : "block"}}>
-                      <LeftOutlined onClick={() => {
-                        changeSetUpView(true);
-                      }}/>
-                    </div>
+
                     <div id="create-dict-button">
                       <br></br>
                       {/* <Button type="primary" htmlType="submit" onClick={onFinish}> */}
-                      <Popconfirm
+                      {/* <Popconfirm
                         title="Are you sure you want to cancel these changes?"
                         description="Discard edits and return to the dashboard"
                         onConfirm={cancelConfirm}
@@ -194,28 +192,29 @@ export default function dictSettings() {
                         <Button
                         style={{marginRight: '0.5rem'}}
                         >
-                          Cancel
+                          {/* Cancel
                         </Button>
-                      </Popconfirm>
-                      <Popconfirm
+                      </Popconfirm> */}
+                      {/* <Popconfirm
                         title="Are you sure you want to save these changes?"
                         description="This action cannot be undone"
                         onConfirm={saveConfirm}
                         okText="Yes"
-                      >
+                      > */}
                         <Button
                           type="primary"
                           htmlType="submit"
                           onClick={() => {
-                            console.log("FILE: ", file)
-                            console.log("Blob: ", blob)
+                            // console.log("FILE: ", file)
+                            // console.log("Blob: ", blob)
+                            changeSetUpView(false);
                             // saveDictionaryFields(fieldView, file, blob);
                             // Router.push({pathname: '/dashboard'})
                           }}
                           >
-                          Save
+                          Continue
                         </Button>
-                      </Popconfirm>
+                      {/* </Popconfirm> */}
                     </div>
                   </div>
                 </Content>

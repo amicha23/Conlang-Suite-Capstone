@@ -18,6 +18,8 @@ export default async function createSetup(data) {
       description: data.language_desc,
       name: data.language_name,
       uid: uid,
+      vowels: data.vowels,
+      consonants: data.consonants,
     };
 
     const dict = {};

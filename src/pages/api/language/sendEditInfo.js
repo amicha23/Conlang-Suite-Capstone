@@ -46,7 +46,11 @@ export default async function saveEditDictionaryInfo(fieldView, file, blob, lid)
   let langName = (document.getElementById('langNameID')).value
   let desc = (document.querySelectorAll('TextArea')[0]).value
   let img = (document.getElementById('uploadImg')).textContent
+  let consonantList = (document.getElementById('langConsonantsID')).value
+  let vowelList = (document.getElementById('langVowelsID')).value
   console.log("IMG ", img)
+  console.log('consonantList :>> ', consonantList.split(""));
+  console.log('vowelList :>> ', vowelList.split(""));
 
 
   // let filter_data: any[] = []
@@ -65,8 +69,9 @@ export default async function saveEditDictionaryInfo(fieldView, file, blob, lid)
     newDictFields: filter_data,
     uid : "OUnW07Np3VNFduMOCX1V1bvvsd22",
     coverFile : file,
-    coverBlob : blob
-
+    coverBlob : blob,
+    vowels: vowelList,
+    consonants: consonantList
   }
 
   console.log("Final Request Data: ", data);

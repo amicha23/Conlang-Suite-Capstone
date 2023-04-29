@@ -151,6 +151,8 @@ export function SetUp({setUpView, changeSetUpView, file, setFile, blob, setBlob}
               list={consonants}
               soundList={consonantList}
               setSoundList={setConsonantList}
+              curList={consonantList}
+              noDup={true}
             />
             {/* )} */}
             <p>Vowels of Language</p>
@@ -166,6 +168,8 @@ export function SetUp({setUpView, changeSetUpView, file, setFile, blob, setBlob}
               list={vowels}
               soundList={vowelList}
               setSoundList={setVowelList}
+              curList={vowelList}
+              noDup={true}
             />
             {/* )} */}
 

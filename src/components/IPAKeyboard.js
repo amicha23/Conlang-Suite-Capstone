@@ -1,7 +1,13 @@
-const IPAKeyboard = ({ list, soundList, setSoundList }) => {
-  const writeLetter = (e, setListSound, list) => {
-    if (!list.includes(e.target.value))
+const IPAKeyboard = ({ list, soundList, setSoundList, curList, noDup }) => {
+  console.log("LIST: ", curList, noDup )
+  const writeLetter = (e, setListSound, list, curList, noDup) => {
+    console.log("DDDD", curList, noDup)
+    if (!curList.includes(e.target.value)) {
       setListSound((sounds) => [...sounds, e.target.value]);
+    }
+    else if (noDup === false) {
+      setListSound((sounds) => [...sounds, e.target.value]);
+    }
   };
 
   const createBtns = (list) => {
@@ -12,7 +18,7 @@ const IPAKeyboard = ({ list, soundList, setSoundList }) => {
           value={x}
           className="btn btn-letter"
           onClick={(e) =>
-            writeLetter(e, setSoundList, soundList, "sound-input")
+            writeLetter(e, setSoundList, soundList, curList, noDup, "sound-input")
           }
         >
           {x}

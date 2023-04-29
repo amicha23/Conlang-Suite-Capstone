@@ -1,12 +1,21 @@
 // Hold the Dictionary Setup Page 1 for naming the languge and uploads
 
 import { Input } from 'antd';
-import { UploadOutlined, SettingTwoTone, EditOutlined } from '@ant-design/icons';
-import { Button, message, Upload, Modal } from 'antd';
+import { UploadOutlined, SettingTwoTone, EditOutlined, LeftOutlined } from '@ant-design/icons';
+import { Button, message, Upload, Modal, Popconfirm } from 'antd';
 import React, { useEffect, useState } from "react";
 import { Layout } from 'antd';
 import getLangData from '../pages/api/language/getLangData';
+import IPAKeyboard from "./IPAKeyboard";
+import vowels from "../data/vowels.json";
+import consonants from "../data/consonants.json";
+import Router from 'next/router';
 const { Header, Footer, Sider, Content } = Layout;
+
+// import '../app/page.module.css';
+import styles from '../app/page.module.css'
+
+import saveEditDictionaryInfo from '../pages/api/language/sendEditInfo';
 
 // Router
 import { useRouter } from 'next/navigation';
@@ -63,9 +72,11 @@ const { TextArea } = Input;
 
 
 export function EditDictionary({data, setData, queryParam, queryName, setUpView, changeSetUpView, file, setFile, blob, setBlob}) {
-  const [langName, setValue] = useState(queryName);
+  const [langName, setValue] = useState(data['lang']['name']);
   const [langDesc, setDesc] = useState(data['lang']['description']);
   // const [data, setData] = useState(null);
+  const [consonantList, setConsonantList] = useState([]);
+  const [vowelList, setVowelList] = useState([]);
 
 
   const router = useRouter();
@@ -153,9 +164,29 @@ export function EditDictionary({data, setData, queryParam, queryName, setUpView,
   //   // setValue('hi')
 
   // }
+    // Discard changes, return to dashboard
+    const saveConfirm = (e) => {
+      console.log("Save these edits:")
+      if (!langName.trim().length) {
+        console.log("no name")
+        checkLangNameExists(langName)
+      } else {
+        checkLangNameExists(langName)
+        saveEditDictionaryInfo(fieldView, file, blob, queryParam)
+        // Router.push({pathname: '/dashboard'})
+      }
+
+    };
+
+  // Discard changes, return to dashboard
+  const cancelConfirm = (e) => {
+    Router.push({pathname: '/dashboard'})
+  };
+
   if (data) {
     // setValue(data.lang.name)
     console.log("DATA ", data)
+    console.log(data.lang.consonants)
     // setDesc(data.lang.description)
 
     return (
@@ -165,14 +196,14 @@ export function EditDictionary({data, setData, queryParam, queryName, setUpView,
                 {/* Will need to add in the css */}
                 <div id='progress-sidebar'>
                   {/* <Image src={ logo } alt='Logo placeholder' width={150} style={{'margin-bottom': '10px'}}/> */}
-                  <p><b>{queryName}</b></p>
+                  <p><b>{data.lang.name}</b></p>
                   <div style={{marginBottom:'1.5rem'}}>
-                    <SettingTwoTone style={{display: 'inline', marginRight:'0.5rem'}} />
-                    <p style={{display: 'inline'}}>Settings</p>
-                  </div>
-                  <div>
                     <EditOutlined style={{display: 'inline', marginRight:'0.5rem'}} />
                     <p style={{display: 'inline'}}>Edit Dictionary</p>
+                  </div>
+                  <div>
+                    <SettingTwoTone style={{display: 'inline', marginRight:'0.5rem'}} />
+                    <p style={{display: 'inline'}}>Settings</p>
                   </div>
 
                 </div>
@@ -181,11 +212,45 @@ export function EditDictionary({data, setData, queryParam, queryName, setUpView,
                 <h1>Dictionary Settings</h1>
                 <div id="first-page-setup">
                   <p>Name Your Language</p>
-                  <Input id="langNameID" placeholder="Name Your Language" defaultValue={queryName} onChange={e => { setValue(e.currentTarget.value); }}/>
+                  <Input id="langNameID" placeholder="Name Your Language" defaultValue={data.lang.name} onChange={e => { setValue(e.currentTarget.value); }}/>
                   <p>Description of Language</p>
                   <>
                     <TextArea id="langDescID" rows={10} placeholder="Description of Language" defaultValue={langDesc} onChange={e => { setDesc(e.currentTarget.value); }} maxLength={600} />
                   </>
+
+                  <p>Consonants of Language</p>
+            <Input
+              id="langConsonantsID"
+              placeholder="Consonants of Language"
+              value={consonantList.join("")}
+              onChange={(e) => setConsonantList(e.target.value.split(""))}
+            />
+
+            {/* {showConsonantKeyboard && ( */}
+            <IPAKeyboard
+              list={consonants}
+              soundList={consonantList}
+              setSoundList={setConsonantList}
+              curList={consonantList}
+              noDup={true}
+            />
+            {/* )} */}
+            <p>Vowels of Language</p>
+            <Input
+              id="langVowelsID"
+              placeholder="Vowels of Language"
+              value={vowelList.join("")}
+              onChange={(e) => setVowelList(e.target.value.split(""))}
+            />
+
+            {/* {showVowelKeyboard && ( */}
+            <IPAKeyboard
+              list={vowels}
+              soundList={vowelList}
+              setSoundList={setVowelList}
+              curList={vowelList}
+              noDup={true}
+            />
 
                   {/* <p>Upload Custom Font</p> */}
                   {/* Removed file props for now */}
@@ -202,33 +267,47 @@ export function EditDictionary({data, setData, queryParam, queryName, setUpView,
 
                 </div>
 
-                <div id="continue-button">
+                <div id="buttons" className={styles.buttons}>
+
                   <br></br>
-                  <Button
-                    type="primary"
-                    id="cont-button"
-                    onClick={
-                      () => {
-                        if (!langName.trim().length) {
-                          console.log("no name")
-                          checkLangNameExists(langName)
-                        } else {
-                          checkLangNameExists(langName)
-                          changeSetUpView(false);
-                        }
-                        // Response.Cache.SetCacheability(HttpCacheability.NoCache);
-                        // Response.Cache.SetExpires(DateTime.Now);
-                        // saveUserInfo({langName, langDesc})
+                  <div id="back-btn" className={styles.buttonsChild} style={{display: setUpView ? "none" : "block"}}>
+                      <LeftOutlined onClick={() => {
+                        changeSetUpView(true);
+                      }}/>
+                  </div>
+                  <div id="create-dict-button">
+                    <Popconfirm
+                        title="Are you sure you want to cancel these changes?"
+                        description="Discard edits and return to the dashboard"
+                        onConfirm={cancelConfirm}
+                        okText="Yes"
+                      >
+                        <Button
+                        style={{marginRight: '0.5rem'}}
+                        >
+                          Cancel
+                        </Button>
+                      </Popconfirm>
+                      <Popconfirm
+                        title="Are you sure you want to save these changes?"
+                        description="This action cannot be undone"
+                        onConfirm={saveConfirm}
+                        okText="Yes"
+                      >
+                      <Button
+                        type="primary"
+                        id="cont-button"
+                        onClick={
+                          () => {
+                            console.log("FILE: ", file)
+                            console.log("Blob: ", blob)
 
-                        // sessionStorage.langName = langName;
-                        // sessionStorage.langDesc = langDesc;
-
-                        // router.push('/setupFields')
-                        // console.log("Language Name: ", sessionStorage.langName);
-                        // console.log("Language Desc: ", sessionStorage.langName);
-                      }}>
-                      Continue
-                  </Button>
+                            // saveDictionaryFields(fieldView, file, blob);
+                          }}>
+                          Save
+                      </Button>
+                    </Popconfirm>
+                  </div>
                 </div>
                 <div id="name-error" style={{display: "none"}}>
                   <p>Language Name must be filled!</p>

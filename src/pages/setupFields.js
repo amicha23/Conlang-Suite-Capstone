@@ -138,11 +138,12 @@ export default function setup() {
                     <Button
                       type="primary"
                       htmlType="submit"
-                      onClick={() => {
+                      onClick={async () => {
                         console.log("FILE: ", file)
                         console.log("Blob: ", blob)
-                        saveDictionaryFields(fieldView, file, blob);
-                        Router.push({pathname: '/dashboard'})
+                        await saveDictionaryFields(fieldView, file, blob);
+                        // Router.push({pathname: '/dashboard'})
+                        window.open('/dashboard', `_self`);
                       }}
                       >
                       Create Dictionary
