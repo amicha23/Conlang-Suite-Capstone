@@ -53,7 +53,7 @@ html, body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    font-family: "Moresby";
+    /* font-family: "Moresby"; */
 }
 .container {
     position: absolute;
@@ -62,7 +62,7 @@ html, body {
     height: 100vh;
     overflow: hidden;
     z-index: 1;
-    font-family: "Neue Montreal";
+    /* font-family: "Neue Montreal"; */
     text-transform: uppercase;
     display: flex;
     justify-content: space-between;
