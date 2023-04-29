@@ -3,6 +3,7 @@ import { Layout } from 'antd';
 import { useRouter } from 'next/router';
 import { Button, Collapse } from 'antd';
 import React, { useEffect, useState } from "react";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
 
 // Components
 import DictionaryTable from '../components/dictTable';
@@ -48,6 +49,20 @@ export default function Home() {
         //   setQueryName(null);
         return
       }, []);
+
+    // Get the currently singed-in user (FOR TESTING PURPOSES, FEEL FREE TO DELETE FOR RELEASE)
+    const auth = getAuth();
+    onAuthStateChanged(auth, (user) => {
+    if (user) {
+        // User is signed in, see docs for a list of available properties
+        // https://firebase.google.com/docs/reference/js/firebase.User
+        const uid = user.uid;
+        alert(uid);
+    } else {
+        // User is signed out
+        alert("User is signed out");
+    }
+    });  
 
     return (
         <div >
