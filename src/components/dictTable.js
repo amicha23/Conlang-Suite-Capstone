@@ -210,7 +210,7 @@ const DictionaryTable = ({ queryParam, setQueryParam, queryName, setQueryName })
     let id = prevProColumn.id
     console.log("EDIT THIS ID: ", id)
     try {
-      const row = await form.validateFields();
+      const row = form;
       const newData = [...data];
       const index = newData.findIndex((item) => id === item.id);
       if (index > -1) {

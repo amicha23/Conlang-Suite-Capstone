@@ -179,18 +179,21 @@ function PreFilledList({ fields, setFields, data, setData, queryParam}) {
               style={{ width: "370px" }}
               // readOnly={
               //   field === "Orthographic forms" ||
-              //   field === "English definition"
+              //   field === "English definition" ||
+              //   field !== "Pronunciation"
               // }
               readOnly
               onChange={
                 field !== "Orthographic forms" &&
-                field !== "English definition"
+                field !== "English definition" &&
+                field !== "Pronunciation"
                   ? (e) => handleInputChange(e, key)
                   : null
               } // Pass the event and index to the handler only if editable
             />
             {field !== "Orthographic forms" &&
-              field !== "English definition" && (
+              field !== "English definition" &&
+              field !== "Pronunciation" && (
                 <div style={{display:'inline-block'}}>
                 <DeleteInput field={field} setFields={setFields} queryParam={queryParam} />
                       <Button
