@@ -98,6 +98,7 @@ export default function SideBar() {
       } else {
         console.log("delete language failed ", deleteLangData)
       }
+      window.open(`/dashboard`, `_self`);
 
   };
 

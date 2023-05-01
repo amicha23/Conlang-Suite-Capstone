@@ -17,31 +17,31 @@ function handleFileLoad(event) {
   (document.getElementById('fileContent')).textContent = event.target.result;
 }
 
-export default async function saveEditDictionaryInfo(fieldView, file, blob, lid) {
+export default async function saveEditDictionaryInfo(file, blob, lid) {
   // init();
   console.log("FILE IN SEND ", file)
   // Come back to this later -> is there a way to do this with no document elements?
   // let allInputs = document.querySelectorAll('input')
   let filter_data = []
-  if (fieldView == true) {
-    // Send Prefill + Custom fields
-    let prefill = (document.getElementById("prefill")).getElementsByTagName('input')
-    Array.from(prefill).forEach(element => {
-      if (element.value.trim().length) {
-        filter_data.push(element.value)
-      }
-    });
-    console.log("Prefill: ", filter_data)
-  } else {
-    // Send only Custom fields
-    let customfill = (document.getElementById("custom")).getElementsByTagName('input')
-    Array.from(customfill).forEach(element => {
-      if (element.value.trim().length) {
-        filter_data.push(element.value)
-      }
-    });
-    console.log("Customfill: ", filter_data)
-  }
+  // if (fieldView == true) {
+  //   // Send Prefill + Custom fields
+  //   let prefill = (document.getElementById("prefill")).getElementsByTagName('input')
+  //   Array.from(prefill).forEach(element => {
+  //     if (element.value.trim().length) {
+  //       filter_data.push(element.value)
+  //     }
+  //   });
+  //   console.log("Prefill: ", filter_data)
+  // } else {
+  //   // Send only Custom fields
+  //   let customfill = (document.getElementById("custom")).getElementsByTagName('input')
+  //   Array.from(customfill).forEach(element => {
+  //     if (element.value.trim().length) {
+  //       filter_data.push(element.value)
+  //     }
+  //   });
+  //   console.log("Customfill: ", filter_data)
+  // }
 
   let langName = (document.getElementById('langNameID')).value
   let desc = (document.querySelectorAll('TextArea')[0]).value
@@ -66,7 +66,7 @@ export default async function saveEditDictionaryInfo(fieldView, file, blob, lid)
     lid : lid,
     newLangName: langName,
     newLangDesc: desc,
-    newDictFields: filter_data,
+    // newDictFields: filter_data,
     uid : "OUnW07Np3VNFduMOCX1V1bvvsd22",
     coverFile : file,
     coverBlob : blob,

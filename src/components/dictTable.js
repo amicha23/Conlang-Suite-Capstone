@@ -811,7 +811,7 @@ const DictionaryTable = ({ queryParam, setQueryParam, queryName, setQueryName })
   return (
     <div>
       <div id="lang-name-header" >
-        <h1>{queryName}</h1>
+        <h1>{String(queryName)}</h1>
       </div>
       <Button
         onClick={handleAdd}
