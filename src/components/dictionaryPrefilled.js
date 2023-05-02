@@ -24,12 +24,6 @@ export function DictionaryPrefilledForms({ fields, setFields }) {
     <div>
       <br></br>
       <PreFilledList setFields={setFields} fields={fields} />
-
-      {/* <AddInput setFields={setFields} /> */}
-
-      {/* <Button type="primary" htmlType="submit" onClick={onFinish}>
-          Submit
-      </Button> */}
     </div>
   );
 }

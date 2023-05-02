@@ -52,6 +52,7 @@ function getLanguageOptions(langName, num, langID, handleDeleteLang) {
     // getItem('Phonology', (num * 4) + 1, null, null, null,langID, null),
     // getItem('Orthography', (num * 4) + 2, null, null, null,langID, null),
     // getItem('Language Specific', (num * 4) + 3, null, null, null,langID, null),
+    getItem('Language Stats', langName, null, null, null, langID, null),
     getItem('Delete', (num * 4) + 4, null, null, null,langID, null),
     getItem('Settings', langName, null, null, null,langID, null)
   ];
@@ -76,6 +77,10 @@ export default function SideBar() {
   const handleRoute = (e) => {
       window.open(`/langTable?lid=`+ e.item.props.langID + `&lname=` + encodeURIComponent(e.key), `_self`);
   };
+
+  const handleStats = (e) => {
+      window.open(`/stats?lid=`+ e.item.props.langID + `&lname=` + e.key, `_self`);
+  }
 
   // Route to settings for a specific table, given language id and language name
   const handleSettings = (e) => {
@@ -108,6 +113,7 @@ export default function SideBar() {
       let langNames = data.languageNames.split(',')
       console.log("Lang IDs: ", data.languageIDs.split(','))
       console.log("Lang Names: ", data.languageNames.split(','))
+      console.log('data.languageCovers :>> ', data.languageCovers);
 
       const items = [getItem('Dashboard', 'dash')];
       items[0].onClick = () => { window.open(`/dashboard`, `_self`); }
@@ -119,7 +125,9 @@ export default function SideBar() {
           if (sideLabels["label"] === "View Language") {
             sideLabels.onClick = handleRoute
           }
-
+          if (sideLabels["label"] === "Language Stats") {
+            sideLabels.onClick = handleStats
+          }
           if (sideLabels["label"] === "Delete") {
             sideLabels.onClick = handleDeleteLang
           }

@@ -90,20 +90,4 @@ export default async function saveDictionaryFields(fieldView :any, file :any, bl
     console.log("failed to create dictionary ", createSetupData)
   }
 
-  // try {
-  //   let responseJson = await fetch(`api/language/createSetup`, {
-  //     method: "POST",
-  //     body: JSON.stringify({
-  //       language_name: langName,
-  //       language_desc: desc,
-  //       dictFields: filter_data
-  //     })
-  //   })
-  //   console.log(await responseJson.json());
-  //   console.log("Sent dictionary data to the database")
-  // } catch(err) {
-  //     // add proper error handling later
-  //     console.error(err);
-  // }
-
 }

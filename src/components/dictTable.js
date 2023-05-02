@@ -1,27 +1,40 @@
 // Create a table to hold all dictionary information
 
-import { Button, Form, Input, InputNumber, Typography, Popconfirm, Table, Modal, Space } from "antd";
-import { query, set } from "firebase/database";
+import {
+  Button,
+  Form,
+  Input,
+  InputNumber,
+  Typography,
+  Popconfirm,
+  Table,
+  Modal,
+  Space,
+} from "antd";
 import React, { useContext, useEffect, useRef, useState } from "react";
-import Router from "next/router";
-import { useLocation } from 'react-router-dom';
-import ExportLangHtml from "../pages/exportLangHtml";
 import addField from "../pages/api/dictField/addField";
 import deleteField from "../pages/api/dictField/deleteField";
 import updateField from "../pages/api/dictField/updateFieldName";
 import addWord from "../pages/api/word/addWord";
 import deleteWord from "../pages/api/word/deleteWord";
-import getWords from "../pages/api/word/getWords";
 import updateWord from "../pages/api/word/updateWord";
 import IPAKeyboard from "./IPAKeyboard";
 import vowels from "../data/vowels.json";
 import consonants from "../data/consonants.json";
 import getLangData from "../pages/api/language/getLangData";
 
-import { update, ref, get, remove, child, push, onValue, off } from "firebase/database";
+import {
+  update,
+  ref,
+  get,
+  remove,
+  child,
+  push,
+  onValue,
+  off,
+} from "firebase/database";
 import { db } from "../../firebaseConfig/firebaseAdmin.js";
-import firebase from 'firebase/app';
-import 'firebase/database';
+import "firebase/database";
 
 //icons
 import {
@@ -29,11 +42,10 @@ import {
   EditTwoTone,
   EditOutlined,
   DeleteOutlined,
-  MenuOutlined
+  MenuOutlined,
 } from "@ant-design/icons";
 import "../app/globals.css";
 const { Search } = Input;
-
 
 const EditableCell = ({
   editing,
@@ -69,7 +81,13 @@ const EditableCell = ({
     </td>
   );
 };
-const DictionaryTable = ({ queryParam, setQueryParam, queryName, setQueryName }) => {
+
+const DictionaryTable = ({
+  queryParam,
+  setQueryParam,
+  queryName,
+  setQueryName,
+}) => {
   // const [queryParam, setQueryParam] = useState('');
   // const [queryName, setQueryName] = useState('');
   const [form] = Form.useForm();
@@ -84,15 +102,15 @@ const DictionaryTable = ({ queryParam, setQueryParam, queryName, setQueryName })
   const isEditing = (record) => record.id === editingKey;
   const edit = (record) => {
     form.setFieldsValue({
-      name: '',
-      age: '',
-      address: '',
+      name: "",
+      age: "",
+      address: "",
       ...record,
     });
     setEditingKey(record.id);
   };
   const cancel = () => {
-    setEditingKey('');
+    setEditingKey("");
   };
   const save = async (id) => {
     try {
@@ -107,37 +125,37 @@ const DictionaryTable = ({ queryParam, setQueryParam, queryName, setQueryName })
         });
         // setData(newData);
         // await fetchData()
-        setEditingKey('');
+        setEditingKey("");
       } else {
         // newData.push(row);
-        console.log("EDUT tow", row)
+        console.log("EDUT tow", row);
         let addRowData = await addWord({
-          'lid': queryParam,
-          'wordData': row
+          lid: queryParam,
+          wordData: row,
         });
 
         if (addRowData === "Success") {
-          console.log('add row success');
+          console.log("add row success");
           // await fetchData()
         } else {
-          console.log("add row failed ", addRowData)
+          console.log("add row failed ", addRowData);
         }
         // setData(newData);
         // await fetchData()
-        setEditingKey('');
+        setEditingKey("");
       }
 
       console.log("EDIT THIS ROW IN THE DATABASE: ", newData[index]);
       let updateWordData = await updateWord({ 'lid': queryParam, 'data': newData[index] });
 
       if (updateWordData === "Success") {
-        console.log('updated row success :>> ', newData[index]);
+        console.log("updated row success :>> ", newData[index]);
         // await fetchData()
       } else {
-        console.log("updated row failed ", updateWordData)
+        console.log("updated row failed ", updateWordData);
       }
     } catch (errInfo) {
-      console.log('Validate Failed:', errInfo);
+      console.log("Validate Failed:", errInfo);
     }
   };
 
@@ -205,10 +223,8 @@ const DictionaryTable = ({ queryParam, setQueryParam, queryName, setQueryName })
     showProModal();
   };
 
-
-
   // Set column headers
-  const [mergedColumns, setMergedColumns] = useState([])
+  const [mergedColumns, setMergedColumns] = useState([]);
   useEffect(() => {
     let firstObject = data[0] || {};
     let cols = [];
@@ -318,15 +334,15 @@ const DictionaryTable = ({ queryParam, setQueryParam, queryName, setQueryName })
         ...col,
         onCell: (record) => ({
           record,
-          inputType: col.dataIndex === 'age' ? 'number' : 'text',
+          inputType: col.dataIndex === "age" ? "number" : "text",
           dataIndex: col.dataIndex,
           title: col.title,
           editing: isEditing(record),
         }),
       };
     });
-    setMergedColumns(mergedColumns)
-  }, [data, editingKey])
+    setMergedColumns(mergedColumns);
+  }, [data, editingKey]);
 
   useEffect(() => {
 
@@ -366,6 +382,10 @@ const DictionaryTable = ({ queryParam, setQueryParam, queryName, setQueryName })
       const firstCol = Object.values(dict)[0];
       let result = [];
       let word = {};
+      // if (queryParam) {
+      const firstCol = Object.values(dict)[0];
+      let result = [];
+      let word = {};
 
       if (Object.keys(firstCol).length === 1) {
         result = {};
@@ -383,23 +403,36 @@ const DictionaryTable = ({ queryParam, setQueryParam, queryName, setQueryName })
               title: Object.keys(result)[colHeader],
               dataIndex: Object.keys(result)[colHeader],
               key: Object.keys(result)[colHeader],
-              width: '10rem',
+              width: "10rem",
               // minWidth: '10rem',
               editable: true,
               sorter: (a, b) => {
-                console.log(typeof (a[Object.keys(result)[colHeader]]), typeof (b[Object.keys(result)[colHeader]]))
-                if (typeof (a[Object.keys(result)[colHeader]]) === 'number' && typeof (b[Object.keys(result)[colHeader]]) === 'number') {
-                  return a[Object.keys(result)[colHeader]] - b[Object.keys(result)[colHeader]];
+                console.log(
+                  typeof a[Object.keys(result)[colHeader]],
+                  typeof b[Object.keys(result)[colHeader]]
+                );
+                if (
+                  typeof a[Object.keys(result)[colHeader]] === "number" &&
+                  typeof b[Object.keys(result)[colHeader]] === "number"
+                ) {
+                  return (
+                    a[Object.keys(result)[colHeader]] -
+                    b[Object.keys(result)[colHeader]]
+                  );
                 } else {
-                  return String(a[Object.keys(result)[colHeader]]).localeCompare(String(b[Object.keys(result)[colHeader]]))
+                  return String(
+                    a[Object.keys(result)[colHeader]]
+                  ).localeCompare(String(b[Object.keys(result)[colHeader]]));
                 }
               },
               sortDirections: ['descend', 'ascend'],
               // ...getColumnSearchProps(Object.keys(result)[colHeader]),
               onFilter: (value, record) => {
-                return String(record[Object.keys(result)[colHeader]]).includes(value);
-              }
-            }
+                return String(record[Object.keys(result)[colHeader]]).includes(
+                  value
+                );
+              },
+            };
             cols.push(col);
           }
         }
@@ -481,7 +514,7 @@ const DictionaryTable = ({ queryParam, setQueryParam, queryName, setQueryName })
       unregisterFunction(); //call the unregister function
     }
     return cleanup; //effect hook callback returns the cleanup function
-  }, [queryParam])
+  }, [queryParam]);
 
   const [confirmLoading, setConfirmLoading] = useState(false);
   // delete a row
@@ -514,7 +547,7 @@ const DictionaryTable = ({ queryParam, setQueryParam, queryName, setQueryName })
     }).then((data) => {return data})
 
     if (deleteWordData === "Success") {
-      console.log('delete row success');
+      console.log("delete row success");
       // window.open(`/langTable?lid=`+ queryParam + `&lname=` + queryName, `_self`);
       // await fetchData()
 
@@ -526,14 +559,17 @@ const DictionaryTable = ({ queryParam, setQueryParam, queryName, setQueryName })
       console.log("delete row failed ", deleteWordData)
       setConfirmLoading(false);
     }
-    return
+    return;
   };
 
   // Add a row
   const handleAdd = async () => {
     let newData = {};
     for (const colHeader in mergedColumns) {
-      if (mergedColumns[colHeader].title === "" || mergedColumns[colHeader].title === "id") {
+      if (
+        mergedColumns[colHeader].title === "" ||
+        mergedColumns[colHeader].title === "id"
+      ) {
         continue;
       } else {
         newData[mergedColumns[colHeader].title] = ``;
@@ -541,15 +577,15 @@ const DictionaryTable = ({ queryParam, setQueryParam, queryName, setQueryName })
     }
     console.log("ADD ROW", newData);
     let addRowData = await addWord({
-      'lid': queryParam,
-      'wordData': newData
+      lid: queryParam,
+      wordData: newData,
     });
 
     if (addRowData === "Success") {
-      console.log('add row success');
+      console.log("add row success");
       // await fetchData()
     } else {
-      console.log("add row failed ", addRowData)
+      console.log("add row failed ", addRowData);
     }
   };
 
@@ -578,7 +614,7 @@ const DictionaryTable = ({ queryParam, setQueryParam, queryName, setQueryName })
         type="primary"
         style={{
           marginBottom: 16,
-          marginLeft: 8
+          marginLeft: 8,
         }}
       >
         + Export
@@ -617,9 +653,7 @@ const DictionaryTable = ({ queryParam, setQueryParam, queryName, setQueryName })
         />
       </Modal>
 
-
       <Form form={form} component={false}>
-
         <Table
           components={{
             body: {
@@ -634,6 +668,7 @@ const DictionaryTable = ({ queryParam, setQueryParam, queryName, setQueryName })
           pagination={{
             onChange: cancel,
           }}
+          scroll={{ x: 950 }}
           scroll={{ x: 950 }}
         />
       </Form>

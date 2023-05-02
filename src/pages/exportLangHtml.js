@@ -17,7 +17,7 @@ export default function ExportLangHtml() {
         let queryParam = searchParams.get('lid').replace(/\s+/g, '')
         try {
           const result = await getLangData({ lid: queryParam }); //TODO: change to queryParam
-          setData(result);
+          setData(result[0]);
         } catch (error) {
           console.error(error);
           setData("error");
