@@ -1,4 +1,4 @@
-import './about-us2.css'
+import './about-us.css'
 import 'bootstrap/dist/css/bootstrap.css';
 // import React from 'react'
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -62,7 +62,7 @@ export default function about_us() {
               <div className='img-box'>
                 <img src="/img/jessie.jpg"  className='img-responsive' alt='picture of team member Jessie'/>
                   <ul>
-                    <a href='https://www.linkedin.com/in/alyssa-vo/'>
+                    <a href='https://www.linkedin.com/in/lingrui-zeng-b911b41ab/'>
                       <li> <FontAwesomeIcon icon={faLinkedin} className="fa-brands" /></li>
                     </a>
                   </ul>
