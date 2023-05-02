@@ -8,16 +8,19 @@ export default function about_us() {
   return (
     <section className='team'>
       <div className="container">
-        {/* <div className="nav">
-          <a href='https://ischool.uw.edu/capstone'>
-              <img src='/img/iSchoolPrimary_RGB_Black.jpg' alt="information school logo" className='logo'/>
-          </a>
-          <div className="nav-items">
-              <a href='page'>Home</a>
-              <a href='register'>Sign Up</a>
-              <a href='login'>Login</a>
+        <div className='nav-container'>
+          <div className="nav">
+            <a href='https://ischool.uw.edu/capstone'>
+                <img src='/img/iSchoolPrimary_RGB_Black.jpg' alt="information school logo" className='logo'/>
+            </a>
+            <div className="nav-items">
+                <a href='register'>Sign Up</a>
+                <a href='login'>Login</a>
+                <a href='page'>Home</a>
+            </div>
           </div>
-        </div> */}
+
+        </div>
         <h1>PENTALINGO</h1>
         <div className='row'>
           <div className='col-md-4 profile text-center'>
