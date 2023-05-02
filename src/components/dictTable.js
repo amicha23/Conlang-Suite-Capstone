@@ -80,6 +80,7 @@ const DictionaryTable = ({ queryParam, setQueryParam, queryName, setQueryName })
   const [proList, setProList] = useState([]);
   const [data, setData] = useState([]);
   const [editingKey, setEditingKey] = useState('');
+  const [sorter, setSorter] = useState({});
   const isEditing = (record) => record.id === editingKey;
   const edit = (record) => {
     form.setFieldsValue({
@@ -127,7 +128,7 @@ const DictionaryTable = ({ queryParam, setQueryParam, queryName, setQueryName })
       }
 
       console.log("EDIT THIS ROW IN THE DATABASE: ", newData[index]);
-      let updateWordData = await updateWord({'lid' : queryParam, 'data' : newData[index] });
+      let updateWordData = await updateWord({ 'lid': queryParam, 'data': newData[index] });
 
       if (updateWordData === "Success") {
         console.log('updated row success :>> ', newData[index]);
@@ -139,47 +140,6 @@ const DictionaryTable = ({ queryParam, setQueryParam, queryName, setQueryName })
       console.log('Validate Failed:', errInfo);
     }
   };
-
-
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [EditColumn, setEditColumn] = useState(null);
-  const [prevEditColumn, setPrevEditColumn] = useState(null);
-  const showEditModal = () => {
-    setIsEditModalOpen(true);
-  };
-
-  const handleEditOk = async () => {
-    console.log("New column header name: ", EditColumn)
-    setIsEditModalOpen(false);
-
-    let updateFieldData = await updateField({
-      "currFieldName": prevEditColumn,
-      'newFieldName': EditColumn.name,
-      "lid": queryParam
-    });
-
-    if (updateFieldData === "Success") {
-      console.log('updated column called :>> ', EditColumn.name);
-      // await fetchData()
-    } else {
-      console.log("updated column failed ", updateFieldData)
-    }
-  };
-
-  const handleEditCancel = () => {
-    setIsEditModalOpen(false);
-  };
-
-  // Edit a column header
-  const handleEditColumn = (dataIndex, close) => {
-    setPrevEditColumn(dataIndex);
-    close();
-    showEditModal();
-    // confirm();
-    // setSearchText(selectedKeys[0]);
-    // setSearchedColumn(dataIndex);
-  };
-
 
   // Pronunciation Edits
   const [isProModalOpen, setIsproModalOpen] = useState(false);
@@ -195,18 +155,6 @@ const DictionaryTable = ({ queryParam, setQueryParam, queryName, setQueryName })
   const handleProOk = async () => {
     setIsproModalOpen(false);
 
-    // let updateProFieldData = await updateWord({
-    //   "currFieldName": prevProColumn,
-    //   'newFieldName': proList.join(""),
-    //   "lid": queryParam
-    // });
-
-    // if (updateProFieldData === "Success") {
-    //   console.log('updated pronunciation called :>> ', proList.join(","));
-    //   // await fetchData()
-    // } else {
-    //   console.log("updated pronunciation failed ", updateProFieldData)
-    // }
     let id = prevProColumn.id
     console.log("EDIT THIS ID: ", id)
     try {
@@ -234,7 +182,7 @@ const DictionaryTable = ({ queryParam, setQueryParam, queryName, setQueryName })
       }
       newData[index]['Pronunciation'] = proList.join("")
       console.log("EDIT THIS ROW IN THE DATABASE: ", newData[index]);
-      let updateWordData = await updateWord({'lid' : queryParam, 'data' : newData[index]});
+      let updateWordData = await updateWord({ 'lid': queryParam, 'data': newData[index] });
 
       if (updateWordData === "Success") {
         console.log('updated row success :>> ', newData[index]);
@@ -250,35 +198,11 @@ const DictionaryTable = ({ queryParam, setQueryParam, queryName, setQueryName })
     setIsproModalOpen(false);
   };
 
-  // Edit a column header
+  // Edit a pronunciation header
   const handleProColumn = (dataIndex, close) => {
     setPrevProColumn(dataIndex);
     close();
     showProModal();
-    // confirm();
-    // setSearchText(selectedKeys[0]);
-    // setSearchedColumn(dataIndex);
-  };
-
-
-
-
-
-
-  // Delete a column
-  const handleDeleteColumn = async (dataIndex) => {
-    console.log("Data after delete column", data)
-    let delParam = {
-      "field": dataIndex,
-      "lid": queryParam
-    }
-    let delFieldData = await deleteField(delParam);
-    if (delFieldData === "Success") {
-      console.log('added column called :>> ', dataIndex);
-      // await fetchData()
-    } else {
-      console.log("Add column failed ", delFieldData)
-    }
   };
 
 
@@ -286,155 +210,105 @@ const DictionaryTable = ({ queryParam, setQueryParam, queryName, setQueryName })
   // Set column headers
   const [mergedColumns, setMergedColumns] = useState([])
   useEffect(() => {
-
-    // Put delete and edit feature in column header
-    const getColumnSearchProps = (dataIndex) => ({
-      filterDropdown: ({ close }) => (
-        <div
-          style={{
-            padding: 8,
-          }}
-          onKeyDown={(e) => e.stopPropagation()}
-        >
-          <Space>
-            <Button
-              onClick={() => handleEditColumn(dataIndex, close)}
-              size="small"
-              type="link"
-            >
-              Edit
-            </Button>
-            <Button
-              onClick={() => handleDeleteColumn(dataIndex)}
-              type="link"
-              size="small"
-            >
-              Delete
-            </Button>
-            <Button
-              type="link"
-              size="small"
-              onClick={() => {
-                close();
-              }}
-            >
-              Close
-            </Button>
-          </Space>
-        </div>
-      ),
-      filterIcon: (filtered) => (
-        <MenuOutlined
-          style={{
-            color: filtered ? '#1890ff' : undefined,
-          }}
-        />
-      ),
-      render: (text) => text
-    });
-
-
     let firstObject = data[0] || {};
     let cols = [];
     for (const colHeader in Object.keys(firstObject)) {
-      if (Object.keys(firstObject)[colHeader] !== "id" &&  Object.keys(firstObject)[colHeader] !== "key") { // add to remove id and key columns -> for testing purposes only
-      console.log(Object.keys(firstObject)[colHeader])
-      if (Object.keys(firstObject)[colHeader] === "Pronunciation") {
-        console.log("Pronunciation Column Here")
-        const col = {
-          title: Object.keys(firstObject)[colHeader],
-          dataIndex: Object.keys(firstObject)[colHeader],
-          key: Object.keys(firstObject)[colHeader],
-          width: '10rem',
-          // minWidth: '10rem',
-          // editable: true,
-          sorter: (a, b) => {
-            console.log(typeof (a[Object.keys(firstObject)[colHeader]]), typeof (b[Object.keys(firstObject)[colHeader]]))
-            if (typeof (a[Object.keys(firstObject)[colHeader]]) === 'number' && typeof (b[Object.keys(firstObject)[colHeader]]) === 'number') {
-              return a[Object.keys(firstObject)[colHeader]] - b[Object.keys(firstObject)[colHeader]];
-            } else {
-              return String(a[Object.keys(firstObject)[colHeader]]).localeCompare(String(b[Object.keys(firstObject)[colHeader]]))
+      if (Object.keys(firstObject)[colHeader] !== "id" && Object.keys(firstObject)[colHeader] !== "key") { // add to remove id and key columns -> for testing purposes only
+        console.log(Object.keys(firstObject)[colHeader])
+        if (Object.keys(firstObject)[colHeader] === "Pronunciation") {
+          console.log("Pronunciation Column Here")
+          const col = {
+            title: Object.keys(firstObject)[colHeader],
+            dataIndex: Object.keys(firstObject)[colHeader],
+            key: Object.keys(firstObject)[colHeader],
+            width: '10rem',
+            // minWidth: '10rem',
+            // editable: true,
+            sorter: (a, b) => {
+              console.log(typeof (a[Object.keys(firstObject)[colHeader]]), typeof (b[Object.keys(firstObject)[colHeader]]))
+              if (typeof (a[Object.keys(firstObject)[colHeader]]) === 'number' && typeof (b[Object.keys(firstObject)[colHeader]]) === 'number') {
+                return a[Object.keys(firstObject)[colHeader]] - b[Object.keys(firstObject)[colHeader]];
+              } else {
+                return String(a[Object.keys(firstObject)[colHeader]]).localeCompare(String(b[Object.keys(firstObject)[colHeader]]))
+              }
+            },
+            sortDirections: ['descend', 'ascend'],
+            // ...getColumnSearchProps(Object.keys(firstObject)[colHeader]),
+            onFilter: (value, record) => {
+              return String(record[Object.keys(firstObject)[colHeader]]).includes(value);
+            },
+            render: (text, record) => {
+              const editable = isEditing(record);
+              return editable ? (
+                <Button title="Click for IPA Keyboard" onClick={() => showProModal(text, record)}>{text}</Button>
+              ) : (text)
             }
-          },
-          sortDirections: ['descend', 'ascend'],
-          ...getColumnSearchProps(Object.keys(firstObject)[colHeader]),
-          onFilter: (value, record) => {
-            return String(record[Object.keys(firstObject)[colHeader]]).includes(value);
-          },
-          render: (text, record) => {
-            const editable = isEditing(record);
-            return editable ? (
-            <Button title="Click for IPA Keyboard" onClick={() => showProModal(text, record)}>{text}</Button>
-            ):(text)
           }
-        }
-        cols.push(col);
-      } else {
-      const col = {
-        title: Object.keys(firstObject)[colHeader],
-        dataIndex: Object.keys(firstObject)[colHeader],
-        key: Object.keys(firstObject)[colHeader],
-        width: '10rem',
-        // minWidth: '10rem',
-        editable: true,
-        sorter: (a, b) => {
-          console.log(typeof (a[Object.keys(firstObject)[colHeader]]), typeof (b[Object.keys(firstObject)[colHeader]]))
-          if (typeof (a[Object.keys(firstObject)[colHeader]]) === 'number' && typeof (b[Object.keys(firstObject)[colHeader]]) === 'number') {
-            return a[Object.keys(firstObject)[colHeader]] - b[Object.keys(firstObject)[colHeader]];
-          } else {
-            return String(a[Object.keys(firstObject)[colHeader]]).localeCompare(String(b[Object.keys(firstObject)[colHeader]]))
+          cols.push(col);
+        } else {
+          const col = {
+            title: Object.keys(firstObject)[colHeader],
+            dataIndex: Object.keys(firstObject)[colHeader],
+            key: Object.keys(firstObject)[colHeader],
+            width: '10rem',
+            // minWidth: '10rem',
+            editable: true,
+            sorter: (a, b) => {
+              console.log(typeof (a[Object.keys(firstObject)[colHeader]]), typeof (b[Object.keys(firstObject)[colHeader]]))
+              if (typeof (a[Object.keys(firstObject)[colHeader]]) === 'number' && typeof (b[Object.keys(firstObject)[colHeader]]) === 'number') {
+                return a[Object.keys(firstObject)[colHeader]] - b[Object.keys(firstObject)[colHeader]];
+              } else {
+                return String(a[Object.keys(firstObject)[colHeader]]).localeCompare(String(b[Object.keys(firstObject)[colHeader]]))
+              }
+            },
+            sortDirections: ['descend', 'ascend'],
+            onFilter: (value, record) => {
+              return String(record[Object.keys(firstObject)[colHeader]]).includes(value);
+            }
           }
-        },
-        sortDirections: ['descend', 'ascend'],
-        ...getColumnSearchProps(Object.keys(firstObject)[colHeader]),
-        onFilter: (value, record) => {
-          return String(record[Object.keys(firstObject)[colHeader]]).includes(value);
+          cols.push(col);
         }
-      }
-      cols.push(col);
-    }
 
       }
     }
     // if (data.length > 0) {
     cols.push(
-    {
-      title: '',
-      dataIndex: 'operation',
-      width: '10rem',
-      render: (_, record) => {
-        const editable = isEditing(record);
-        return editable ? (
-          <div>
-            <span>
-              <Typography.Link
-                onClick={() => save(record.id)}
-                style={{
-                  marginRight: 8,
-                }}
-              >
-                Save
+      {
+        title: '',
+        dataIndex: 'operation',
+        width: '10rem',
+        render: (_, record) => {
+          const editable = isEditing(record);
+          return editable ? (
+            <div>
+              <span>
+                <Typography.Link
+                  onClick={() => save(record.id)}
+                  style={{
+                    marginRight: 8,
+                  }}
+                >
+                  Save
+                </Typography.Link>
+                <Popconfirm title="Sure to cancel?" onConfirm={cancel}>
+                  <a>Cancel</a>
+                </Popconfirm>
+              </span>
+            </div>
+          ) : (
+            <div style={{ minWidth: '200%' }}>
+              <Typography.Link disabled={editingKey !== ''} onClick={() => edit(record)}>
+                Edit
               </Typography.Link>
-              <Popconfirm title="Sure to cancel?" onConfirm={cancel}>
-                <a>Cancel</a>
+              <Popconfirm title="Are you sure delete this row?" okButtonProps={{loading: confirmLoading}} onConfirm={async () => await handleDelete(record.id, record)}>
+                    <a><DeleteOutlined style={{ marginLeft: 12 }} /> </a>
               </Popconfirm>
-            </span>
-          </div>
-        ) : (
-          <div style={{ minWidth: '200%' }}>
-            <Typography.Link disabled={editingKey !== ''} onClick={() => edit(record)}>
-              Edit
-            </Typography.Link>
-            <Popconfirm title="Are you sure delete this row?" onConfirm={async () => await handleDelete(record.id, record)}>
-              <a><DeleteOutlined style={{ marginLeft: 12 }} /> </a>
-            </Popconfirm>
-          </div>
-        );
+            </div>
+          );
 
-      },
+        },
 
-    })
-    // }
+      })
 
     let mergedColumns = cols.map((col) => {
       if (!col.editable) {
@@ -454,11 +328,6 @@ const DictionaryTable = ({ queryParam, setQueryParam, queryName, setQueryName })
     setMergedColumns(mergedColumns)
   }, [data, editingKey])
 
-  // if (filterColumn) {
-  //   mergedColumns = mergedColumns.filter(column => column.dataIndex !== filterColumn);
-  // }
-
-
   useEffect(() => {
 
     if (queryParam) {
@@ -466,19 +335,10 @@ const DictionaryTable = ({ queryParam, setQueryParam, queryName, setQueryName })
     }
   }, [queryParam]);
 
-  // useEffect(() => {
-
-  //   // if (data === []) {
-  //     fetchData();
-  //   // }
-  // });
-
   async function fetchData() {
-    let getWordData = await getLangData({'lid' : queryParam});
+    let getWordData = await getLangData({ 'lid': queryParam });
 
     if (getWordData) {
-      // console.log('fetched data', getWordData['lang']['consonants'].split(","));
-      // setData(getWordData)
       if (getWordData['lang']['consonants'] !== undefined && getWordData['lang']['vowels'] !== undefined) {
         setConsonantList(getWordData['lang']['consonants'].split(""))
         setVowelList(getWordData['lang']['vowels'].split(""))
@@ -486,102 +346,38 @@ const DictionaryTable = ({ queryParam, setQueryParam, queryName, setQueryName })
     } else {
       console.log("failed to fetch data ", getWordData)
     }
-
   }
 
-  // useEffect(() => {
-  //   if (queryParam) {
-  //     const dictRef = ref(db, `languages/${queryParam}`);
-
-  //     // Attach an event listener for real-time updates
-  //     dictRef.on(`languages${queryParam}`, (snapshot) => {
-  //       const fetchedData = snapshot.val();
-  //       console.log("LOOOK", fetchData)
-  //       setData(fetchedData);
-  //     });
-
-  //     // Detach the event listener when the component unmounts
-  //     return () => dictRef.off();
-  //   }
-  // }, []);
 
 
 
-  // Refresh data on database change
+  // Refresh data and columns on database change
   useEffect(() => {
     const dictRef = ref(db, `languages/${queryParam}/dict`);
 
     //returns a function that will "unregister" (turn off) the listener
     const unregisterFunction = onValue(dictRef, (snapshot) => {
-        const dict = snapshot.val();
-        console.log("LOOK DATA ", dict)
-        // setData(dict)
+      const dict = snapshot.val();
+      console.log("LOOK DATA ", dict)
+      // setData(dict)
 
 
-        // if (queryParam) {
-        const firstCol = Object.values(dict)[0];
-        let result = [];
-        let word = {};
+      // if (queryParam) {
+      const firstCol = Object.values(dict)[0];
+      let result = [];
+      let word = {};
 
-        if (Object.keys(firstCol).length === 1) {
-          result = {};
-          let dcols = Object.keys(dict);
-          dcols.forEach((col) => {
-            result[col] = '';
-          });
+      if (Object.keys(firstCol).length === 1) {
+        result = {};
+        let dcols = Object.keys(dict);
+        dcols.forEach((col) => {
+          result[col] = '';
+        });
 
-          const getColumnSearchProps = (dataIndex) => ({
-            filterDropdown: ({ close }) => (
-              <div
-                style={{
-                  padding: 8,
-                }}
-                onKeyDown={(e) => e.stopPropagation()}
-              >
-                <Space>
-                  <Button
-                    onClick={() => handleEditColumn(dataIndex, close)}
-                    size="small"
-                    type="link"
-                  >
-                    Edit
-                  </Button>
-                  <Button
-                    onClick={() => handleDeleteColumn(dataIndex)}
-                    type="link"
-                    size="small"
-                  >
-                    Delete
-                  </Button>
-                  <Button
-                    type="link"
-                    size="small"
-                    onClick={() => {
-                      close();
-                    }}
-                  >
-                    Close
-                  </Button>
-                </Space>
-              </div>
-            ),
-            filterIcon: (filtered) => (
-              <MenuOutlined
-                style={{
-                  color: filtered ? '#1890ff' : undefined,
-                }}
-              />
-            ),
-            render: (text) => text
-          });
-
-          // let data =  [{'English definition': 't', 'testf': 't'}]
-
-
-          let firstObject = data[0] || {};
-          let cols = [];
-          for (const colHeader in Object.keys(result)) {
-            if (Object.keys(result)[colHeader] !== "id" &&  Object.keys(result)[colHeader] !== "key") { // add to remove id and key columns -> for testing purposes only
+        let firstObject = data[0] || {};
+        let cols = [];
+        for (const colHeader in Object.keys(result)) {
+          if (Object.keys(result)[colHeader] !== "id" && Object.keys(result)[colHeader] !== "key") { // add to remove id and key columns -> for testing purposes only
             console.log(Object.keys(result)[colHeader])
             const col = {
               title: Object.keys(result)[colHeader],
@@ -599,16 +395,16 @@ const DictionaryTable = ({ queryParam, setQueryParam, queryName, setQueryName })
                 }
               },
               sortDirections: ['descend', 'ascend'],
-              ...getColumnSearchProps(Object.keys(result)[colHeader]),
+              // ...getColumnSearchProps(Object.keys(result)[colHeader]),
               onFilter: (value, record) => {
                 return String(record[Object.keys(result)[colHeader]]).includes(value);
               }
             }
             cols.push(col);
-            }
           }
-          // if (data.length > 0) {
-          cols.push(
+        }
+        // if (data.length > 0) {
+        cols.push(
           {
             title: '',
             dataIndex: 'operation',
@@ -636,7 +432,7 @@ const DictionaryTable = ({ queryParam, setQueryParam, queryName, setQueryName })
                   <Typography.Link disabled={editingKey !== ''} onClick={() => edit(record)}>
                     Edit
                   </Typography.Link>
-                  <Popconfirm title="Are you sure delete this row?" onConfirm={async () => await handleDelete(record.id, record)}>
+                  <Popconfirm title="Are you sure delete this row?" okButtonProps={{loading: confirmLoading}} onConfirm={async () => await handleDelete(record.id, record)}>
                     <a><DeleteOutlined style={{ marginLeft: 12 }} /> </a>
                   </Popconfirm>
                 </div>
@@ -645,42 +441,39 @@ const DictionaryTable = ({ queryParam, setQueryParam, queryName, setQueryName })
             },
 
           })
-          // }
+        // }
 
-          let mergedColumns = cols.map((col) => {
-            if (!col.editable) {
-              return col;
-            }
-            return {
-              ...col,
-              onCell: (record) => ({
-                record,
-                inputType: col.dataIndex === 'age' ? 'number' : 'text',
-                dataIndex: col.dataIndex,
-                title: col.title,
-                editing: isEditing(record),
-              }),
-            };
-          });
-          console.log("TRY COLUMNS", mergedColumns)
-          setMergedColumns(mergedColumns)
-
-          // setData([]);
-        } else {
-          for (let id of Object.keys(firstCol)) {
-            word = {};
-            if (id === "createTime") continue;
-            word = { id: id };
-            for (let col of Object.keys(dict)) {
-              word[col] = dict[col][id];
-            }
-            result.push(word);
+        let mergedColumns = cols.map((col) => {
+          if (!col.editable) {
+            return col;
           }
-          console.log("SSSSSS", result)
-          setData(result);
+          return {
+            ...col,
+            onCell: (record) => ({
+              record,
+              inputType: col.dataIndex === 'age' ? 'number' : 'text',
+              dataIndex: col.dataIndex,
+              title: col.title,
+              editing: isEditing(record),
+            }),
+          };
+        });
+        console.log("TRY COLUMNS", mergedColumns)
+        setMergedColumns(mergedColumns)
+
+      } else {
+        for (let id of Object.keys(firstCol)) {
+          word = {};
+          if (id === "createTime") continue;
+          word = { id: id };
+          for (let col of Object.keys(dict)) {
+            word[col] = dict[col][id];
+          }
+          result.push(word);
         }
-      // }
-      let getWordData = getLangData({'lid' : queryParam});
+        setData(result);
+      }
+      let getWordData = getLangData({ 'lid': queryParam });
     })
 
     //cleanup function for when component is removed
@@ -690,28 +483,35 @@ const DictionaryTable = ({ queryParam, setQueryParam, queryName, setQueryName })
     return cleanup; //effect hook callback returns the cleanup function
   }, [queryParam])
 
-
+  const [confirmLoading, setConfirmLoading] = useState(false);
   // delete a row
   const handleDelete = async (key, record) => {
     console.log("DELETE THIS ROW FROM DATABASE: ", record);
-      for (let i = 0; i < data.length; i++) {
-        if (data[i].id === record.id) {
-          if (i === data.length - 1) {
-            console.log("no")
-            setData([]);
-            continue
-          } else {
-            console.log("check", data[i + 1])
-            edit(data[i + 1])
-            break
-          }
-        }
-      }
+    console.log("Rows remaining", data.length)
+    if (data.length - 1 === 0) {
+      setData([]);
+    }
+    setConfirmLoading(true);
+    // setSorter({})
+    // for (let i = 0; i < data.length; i++) {
+    //   if (data[i].id === record.id) {
+    //     if (i === data.length - 1) {
+    //       console.log("no rows")
+    //       // setData([]);
+    //       continue
+    //     }
+    //     // } else {
+    //     //   console.log("check", data[i + 1])
+    //     //   edit(data[i + 1])
+    //     //   break
+    //     // }
+    //   }
+    // }
 
     let deleteWordData = await deleteWord({
       "data": record,
       "lid": queryParam
-    })
+    }).then((data) => {return data})
 
     if (deleteWordData === "Success") {
       console.log('delete row success');
@@ -719,10 +519,12 @@ const DictionaryTable = ({ queryParam, setQueryParam, queryName, setQueryName })
       // await fetchData()
 
       // edit(data[0])
-      setEditingKey('');
-      return
+      // setEditingKey('');
+      // return
+      setConfirmLoading(false);
     } else {
       console.log("delete row failed ", deleteWordData)
+      setConfirmLoading(false);
     }
     return
   };
@@ -751,61 +553,8 @@ const DictionaryTable = ({ queryParam, setQueryParam, queryName, setQueryName })
     }
   };
 
-  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-  const [AddColumn, setAddColumn] = useState(null);
-  const showAddModal = () => {
-    setIsAddModalOpen(true);
-  };
-
-  const handleAddOk = () => {
-    setIsAddModalOpen(false);
-    handleAddColumn()
-  };
-
-  const handleAddCancel = () => {
-    setIsAddModalOpen(false);
-  };
-
-  // Add column
-  const handleAddColumn = async () => {
-    let addCol = await addField(
-      {
-        "fieldName": AddColumn.name,
-        "lid": queryParam
-      })
-    if (addCol === "Success") {
-      console.log('added column called :>> ', AddColumn.name);
-      // await fetchData()
-    } else {
-      console.log("Add column failed ", addCol)
-    }
-  }
-
-  // const MyTable = () => {
-  //   // const updatedColumns = columns.filter(column => column.dataIndex !== 'column2');
-
-  //   return <Table
-  //   components={{
-  //     body: {
-  //       cell: EditableCell,
-  //     },
-  //   }}
-  //   bordered
-  //   dataSource={data}
-  //   columns={mergedColumns}
-  //   rowClassName="editable-row"
-  //   pagination={{
-  //     onChange: cancel,
-  //   }}
-  //   scroll={{x:950,y:"calc(100vh - 220px)" }}
-  // />;
-  // }
   const handleExport = async () => {
-    console.log("OTHER", queryParam)
-    const q = queryParam
-    // ExportLangHtml(q);
-    // Router.push({pathname: '/exportLangHtml', query: { lid: queryParam}})
-    window.open(`/exportLangHtml?lid=`+ queryParam);
+    window.open(`/exportLangHtml?lid=` + queryParam);
   };
 
   return (
@@ -822,23 +571,11 @@ const DictionaryTable = ({ queryParam, setQueryParam, queryName, setQueryName })
       >
         + Add a row
       </Button>
-      <Button
-        onClick={showAddModal}
-        // onClick={handleAddColumn}
-        type="primary"
-        style={{
-          marginBottom: 16,
-          marginLeft: 8
-        }}
-      >
-        + Add a column
-      </Button>
+
 
       <Button
         onClick={handleExport}
-        // onClick={handleAddColumn}
         type="primary"
-        // href="/exportLangHtml" target="_blank"
         style={{
           marginBottom: 16,
           marginLeft: 8
@@ -847,62 +584,37 @@ const DictionaryTable = ({ queryParam, setQueryParam, queryName, setQueryName })
         + Export
       </Button>
 
-      <Modal title="Add Column" open={isAddModalOpen} onOk={handleAddOk} onCancel={handleAddCancel}>
+      <Modal title="Edit Pronunciation" open={isProModalOpen} onOk={handleProOk} onCancel={handleProCancel} footer={[<Button key="back" onClick={handleProCancel}>
+            Cancel
+          </Button>,
+          <Button key="submit" type="primary" onClick={handleProOk}>
+            Save
+          </Button>,]}>
+
         <Input
-          // value='Column Name'
-          onChange={(e) => {
-            setAddColumn(() => {
-              return { name: e.target.value };
-            });
-          }}
-        // onChange={(e) => {
-        //     return e.target.value ;
-        // }}
+          id="langVowelsID"
+          placeholder="Vowels of Language"
+          value={proList.join("")}
+          onChange={(e) => setProList(e.target.value.split(""))}
         />
-      </Modal>
 
-
-
-      <Modal title="Edit Column Header" open={isEditModalOpen} onOk={handleEditOk} onCancel={handleEditCancel}>
-        <Input
-          // value='Column Name'
-          onChange={(e) => {
-            setEditColumn(() => {
-              return { name: e.target.value };
-            });
-          }}
-        // onChange={(e) => {
-        //     return e.target.value ;
-        // }}
+        <p>Consonants of Language</p>
+        <IPAKeyboard
+          list={consonantList}
+          soundList={consonantList}
+          setSoundList={setProList}
+          curList={proList}
+          noDup={false}
         />
-      </Modal>
 
-      <Modal title="Edit Pronunciation" open={isProModalOpen} onOk={handleProOk} onCancel={handleProCancel}>
-
-            <Input
-              id="langVowelsID"
-              placeholder="Vowels of Language"
-              value={proList.join("")}
-              onChange={(e) => setProList(e.target.value.split(""))}
-            />
-
-            <p>Consonants of Language</p>
-            <IPAKeyboard
-              list={consonantList}
-              soundList={consonantList}
-              setSoundList={setProList}
-              curList={proList}
-              noDup={false}
-            />
-
-            <p>Vowels of Language</p>
-            <IPAKeyboard
-              list={vowelList}
-              soundList={vowelList}
-              setSoundList={setProList}
-              curList={proList}
-              noDup={false}
-            />
+        <p>Vowels of Language</p>
+        <IPAKeyboard
+          list={vowelList}
+          soundList={vowelList}
+          setSoundList={setProList}
+          curList={proList}
+          noDup={false}
+        />
       </Modal>
 
 
@@ -918,10 +630,11 @@ const DictionaryTable = ({ queryParam, setQueryParam, queryName, setQueryName })
           dataSource={data}
           columns={mergedColumns}
           rowClassName="editable-row"
+          onChange={(sorter) => setSorter(sorter)}
           pagination={{
             onChange: cancel,
           }}
-          scroll={{ x: 950}}
+          scroll={{ x: 950 }}
         />
       </Form>
     </div>
