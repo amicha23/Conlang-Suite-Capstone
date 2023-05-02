@@ -70,6 +70,16 @@ export default function Home() {
   };
   
 
+  function sum(arrays) {
+    let sum = 0;
+
+    // Iterate through each array element, starting from index 1
+    for (let i = 1; i < arrays.length; i++) {
+      // Retrieve the second element of the inner array and add it to the sum
+      sum += arrays[i][1];
+    }
+    return sum;
+  }
 
   var items = [];
   for (let i = 0; i < fieldName.length; i++) {
@@ -77,15 +87,18 @@ export default function Home() {
       {
         key: i+1, 
         label:fieldName[i], 
-        children: childContent({name: fieldName[i], chartData: data[i]})
+        children: childContent({chartData: data[i], total: sum(data[i])})
       }
     );
+
   }
-  
-  function childContent({ name, chartData }) {
+
+
+
+  function childContent({ chartData, total}) {
       return (
           <div>
-              the content of tab pane goes here {name}
+            total count: {total}
             <Chart
               chartType="PieChart"
               data={chartData}
