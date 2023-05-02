@@ -1,5 +1,7 @@
 import { db, storage } from "../../../../firebaseConfig/firebaseAdmin.js";
 import { get, ref, child, push, update } from "firebase/database";
+import { getStorage, ref as storageRef, deleteObject } from "firebase/storage";
+
 import {
   ref as storeRef,
   uploadBytesResumable,
@@ -34,12 +36,23 @@ export default async function createSetup(data) {
     langData["dict"] = dict;
 
     const newLangKey = push(child(ref(db), "languages")).key;
-    if (data.coverFile) {
-      const coverURL = await uploadCoverImg(data.coverFile.originFileObj, newLangKey);
 
-      console.log("COVERURL ", coverURL)
-      langData["coverURL"] = coverURL;
+    const storage = getStorage();
+    const desertRef = storageRef(storage, `coverImg/default.jpg`);
+    var coverURL = await getDownloadURL(desertRef);
+
+    if (data.coverFile) {
+      console.log(
+        "data.coverFile.originFileObj :>> ",
+        data.coverFile.originFileObj
+      );
+      coverURL = await uploadCoverImg(
+        data.coverFile.originFileObj,
+        newLangKey
+      );
     }
+
+    langData["coverURL"] = coverURL;
 
     // Update user data with new language ID and name
     const userRef = ref(db, `users/${uid}`);
@@ -85,7 +98,7 @@ async function uploadCoverImg(file, lid) {
 
     // Get the download URL for the uploaded file
     const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
-    console.log('downloadURL :>> ', downloadURL);
+    console.log("downloadURL :>> ", downloadURL);
     return downloadURL;
   } catch (error) {
     console.error("Upload error:", error);

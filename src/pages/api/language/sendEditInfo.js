@@ -17,9 +17,9 @@ function handleFileLoad(event) {
   (document.getElementById('fileContent')).textContent = event.target.result;
 }
 
-export default async function saveEditDictionaryInfo(file, blob, lid) {
+export default async function saveEditDictionaryInfo(data) {
   // init();
-  console.log("FILE IN SEND ", file)
+  // console.log("FILE IN SEND ", file)
   // Come back to this later -> is there a way to do this with no document elements?
   // let allInputs = document.querySelectorAll('input')
   let filter_data = []
@@ -62,17 +62,17 @@ export default async function saveEditDictionaryInfo(file, blob, lid) {
   // let dict_data = filter_data.slice(3, filter_data.length);
 
 
-  let data = {
-    lid : lid,
-    newLangName: langName,
-    newLangDesc: desc,
-    // newDictFields: filter_data,
-    uid : "OUnW07Np3VNFduMOCX1V1bvvsd22",
-    coverFile : file,
-    coverBlob : blob,
-    vowels: vowelList,
-    consonants: consonantList
-  }
+  // let data = {
+  //   lid : lid,
+  //   newLangName: langName,
+  //   newLangDesc: desc,
+  //   // newDictFields: filter_data,
+  //   uid : "OUnW07Np3VNFduMOCX1V1bvvsd22",
+  //   coverFile : file,
+  //   coverBlob : blob,
+  //   vowels: vowelList,
+  //   consonants: consonantList
+  // }
 
   console.log("Final Request Data: ", data);
 

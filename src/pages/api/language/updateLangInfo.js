@@ -3,6 +3,7 @@ import { ref, update } from "firebase/database";
 
 export default async function updateLangNameAndDesc(data) {
   const lid = data.lid;
+  console.log("UPDATE DATA", data)
 
   try {
     const updates = {};
@@ -10,7 +11,7 @@ export default async function updateLangNameAndDesc(data) {
     updates[`languages/${lid}/description`] = data.newLangDesc;
     updates[`languages/${lid}/consonants`] = data.consonants;
     updates[`languages/${lid}/vowels`] = data.vowels;
-    updates[`languages/${lid}/coverImg`] = data.coverURL;
+    updates[`languages/${lid}/coverURL`] = data.coverURL;
 
     await update(ref(db), updates);
     return "Success";

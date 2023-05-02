@@ -171,7 +171,7 @@ const DictionaryTable = ({ queryParam, setQueryParam, queryName, setQueryName })
         console.log("EDIT ROW: ", row)
         let addRowData = await addWord({
           'lid': queryParam,
-          'wordData': proList.join("")
+          'wordData': proList
         });
 
         if (addRowData === "Success") {
@@ -180,7 +180,7 @@ const DictionaryTable = ({ queryParam, setQueryParam, queryName, setQueryName })
           console.log("add row failed ", addRowData)
         }
       }
-      newData[index]['Pronunciation'] = proList.join("")
+      newData[index]['Pronunciation'] = proList
       console.log("EDIT THIS ROW IN THE DATABASE: ", newData[index]);
       let updateWordData = await updateWord({ 'lid': queryParam, 'data': newData[index] });
 
@@ -594,8 +594,8 @@ const DictionaryTable = ({ queryParam, setQueryParam, queryName, setQueryName })
         <Input
           id="langVowelsID"
           placeholder="Vowels of Language"
-          value={proList.join("")}
-          onChange={(e) => setProList(e.target.value.split(""))}
+          value={proList}
+          onChange={(e) => setProList(e.target.value)}
         />
 
         <p>Consonants of Language</p>

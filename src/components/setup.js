@@ -142,8 +142,8 @@ export function SetUp({setUpView, changeSetUpView, file, setFile, blob, setBlob}
             <Input
               id="langConsonantsID"
               placeholder="Consonants of Language"
-              value={consonantList.join("")}
-              onChange={(e) => setConsonantList(e.target.value.split(""))}
+              value={consonantList}
+              onChange={(e) => setConsonantList(e.target.value)}
             />
 
             {/* {showConsonantKeyboard && ( */}
@@ -159,8 +159,8 @@ export function SetUp({setUpView, changeSetUpView, file, setFile, blob, setBlob}
             <Input
               id="langVowelsID"
               placeholder="Vowels of Language"
-              value={vowelList.join("")}
-              onChange={(e) => setVowelList(e.target.value.split(""))}
+              value={vowelList}
+              onChange={(e) => setVowelList(e.target.value)}
             />
 
             {/* {showVowelKeyboard && ( */}

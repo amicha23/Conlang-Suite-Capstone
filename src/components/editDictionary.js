@@ -172,7 +172,7 @@ export function EditDictionary({ data, setData, queryParam, queryName, setUpView
       checkLangNameExists(langName)
     } else {
       checkLangNameExists(langName)
-      saveEditDictionaryInfo(file, blob, queryParam)
+      saveEditDictionaryInfo({'lid': queryParam, 'coverURL': coverImg, 'newLangName': langName, 'newLangDesc': langDesc, 'consonants': [consonantList].join(""), 'vowels': [vowelList].join("")})
       // Router.push({pathname: '/dashboard'})
     }
 
@@ -228,7 +228,7 @@ export function EditDictionary({ data, setData, queryParam, queryName, setUpView
               <Input
                 id="langConsonantsID"
                 placeholder="Consonants of Language"
-                value={consonantList.join("")}
+                value={[consonantList].join("")}
                 onChange={(e) => setConsonantList(e.target.value)}
               />
 
@@ -237,7 +237,7 @@ export function EditDictionary({ data, setData, queryParam, queryName, setUpView
                 list={consonants}
                 soundList={consonantList}
                 setSoundList={setConsonantList}
-                curList={consonantList.join("")}
+                curList={consonantList}
                 noDup={true}
               />
               {/* )} */}
@@ -245,7 +245,7 @@ export function EditDictionary({ data, setData, queryParam, queryName, setUpView
               <Input
                 id="langVowelsID"
                 placeholder="Vowels of Language"
-                value={vowelList.join("")}
+                value={vowelList}
                 onChange={(e) => setVowelList(e.target.value)}
               />
 
@@ -254,7 +254,7 @@ export function EditDictionary({ data, setData, queryParam, queryName, setUpView
                 list={vowels}
                 soundList={vowelList}
                 setSoundList={setVowelList}
-                curList={vowelList.join("")}
+                curList={vowelList}
                 noDup={true}
               />
 

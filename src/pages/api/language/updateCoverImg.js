@@ -36,15 +36,8 @@ export default async function updateCoverImg(data) {
     };
     console.log("TEST NULL")
     // delete existed old img
-    // const storage = getStorage();
+    const storage = getStorage();
     const desertRef = ref(storage, `coverImg/default.jpg`);
-    const storageRef = ref(storage, `coverImg/${lid}.jpg`);
-
-    const uploadTask = uploadBytesResumable(storageRef, `coverImg/default.jpg`, metadata);
-    console.log("Upload task started:", uploadTask);
-
-    // Wait for the upload task to complete
-    await uploadTask;
     const downloadURL = await getDownloadURL(desertRef);
     console.log("downloadURL(default) :>> ", downloadURL);
     return downloadURL;
