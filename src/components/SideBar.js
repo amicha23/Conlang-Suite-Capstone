@@ -74,12 +74,12 @@ export default function SideBar() {
 
   // Route to specific table, given language id and language name
   const handleRoute = (e) => {
-      window.open(`/langTable?lid=`+ e.item.props.langID + `&lname=` + e.key, `_self`);
+      window.open(`/langTable?lid=`+ e.item.props.langID + `&lname=` + encodeURIComponent(e.key), `_self`);
   };
 
   // Route to settings for a specific table, given language id and language name
   const handleSettings = (e) => {
-    window.open(`/dictSettings?lid=`+ e.item.props.langID + `&lname=` + e.key, `_self`);
+    window.open(`/dictSettings?lid=`+ e.item.props.langID + `&lname=` + encodeURIComponent(e.key), `_self`);
 };
 
 
