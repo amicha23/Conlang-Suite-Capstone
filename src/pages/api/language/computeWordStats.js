@@ -2,94 +2,62 @@ import { db } from "../../../../firebaseConfig/firebaseAdmin.js";
 import { ref, get } from "firebase/database";
 
 
-
-// show language stats, pass in lid and column names
+// show language stats, pass in lid
 export default async function computeStat(data) {
-  const lid = "-NTadEqCzrA2EZmbUEs4";
-  const field = "2";
-  // const lid = data.lid;
-  // cosnt field = data.field;
+  var lid = data.lid;
+  const dictRef = ref(db, `languages/${lid}/dict`);
 
+  function count_values(field, field_values) {
+    // Create a dictionary to store the count of words starting with each alphabet
+    const alphaCount = {};
+    // Iterate over each word in the array and update the count of that alphabet in the dictionary
+    field_values.forEach(word => {
+      var alpha = word[0];
+      if (field === ('Orthographic forms')) {
+        alpha = word;
+      }
+      alphaCount[alpha] = (alphaCount[alpha] || 0) + 1;
+    });
 
-  const fieldRef = ref(db, `languages/${lid}/dict/${field}`);
-  // const data = {
-  //   "-NTWnNkh1pArdcl4cgBz": {
-  //     "createTime": "2023-04-20 20:13:35",
-  //     "description": "language1 description",
-  //     "dict": {
-  //       "English definition": {
-  //         "-NTzrir7bLSYpirHRi9r": "abc",
-  //         "-NTpZLGeu_nhSbj-5cq_": "cdba",
-  //         "createTime": "2023-04-20 20:13:35"
-  //       },
-  //       "aa": {
-  //         "-NTzrir7bLSYpirHRi9r": "fekl",
-  //         "-NTpZLGeu_nhSbj-5cq_": "thso",
-  //         "createTime": "2023-04-26 15:54:0"
-  //       },
-  //       "testf": {
-  //         "-NTzrir7bLSYpirHRi9r": "thap",
-  //         "-NTpZLGeu_nhSbj-5cq_": "theiso",
-  //         "createTime": "2023-04-23 2:33:50"
-  //       }
-  //     },
-  //     "name": "language1",
-  //     "uid": "OUnW07Np3VNFduMOCX1V1bvvsd22"
-  //   }
-  // }
+    // Convert the dictionary to a list of lists and sort it based on the alphabet
+    const result = Object.entries(alphaCount)
+      .map(([k, v]) => [k, String(v)])
+      .sort();
+    result.unshift(['type', 'count']);
+    return result;
+  }
 
   try {
-    const snapshot = await get(fieldRef);
+    const snapshot = await get(dictRef);
     if (!snapshot.exists()) {
       return "No data available";
     }
-    const field_data = snapshot.val();
+    const dict_data = snapshot.val();
+    // 
+    const field_names = Object.keys(dict_data);
+    console.log(Array.isArray(field_names));
 
-    console.log(field_data);
+    var all_field_stats = [];
+    for (const field of field_names) {
+      var field_data = dict_data[field];
 
-    const filtered_keys = Object.keys(field_data)
+      const filtered_keys = Object.keys(field_data)
         .filter(key => key !== "createTime")
         .reduce((obj, key) => {
           obj[key] = field_data[key];
           return obj;
-        }, {}); 
-    
-    const field_values = Object.values(filtered_keys);
-    const stats = {};
-    const percentStats = {};
-    const totalLength = field_values.length;
-    
-    for (const fieldVal of field_values) {
-      var this_value = fieldVal;
+        }, {});
+      
+      const field_values = Object.values(filtered_keys);
+      const field_stats = count_values(field, field_values);
+      all_field_stats.push(field_stats);
+      
 
-      if (field === "English definition" || field === "Orthographic form") {
-        this_value = fieldVal[0];
-      }
-      if (stats[this_value]) {
-        stats[this_value]++;
-        percentStats[this_value] = stats[this_value] / totalLength;
-      } else {
-        stats[this_value] = 1;
-        percentStats[this_value] = 1 / totalLength;
-      }
     }
-
-    console.log(stats);
-    console.log(percentStats);
-    return percentStats;
+    console.log(all_field_stats);
+    return [field_names, all_field_stats];
   } catch (err) {
     console.error(err);
     return err;
   }
 }
-
-// pie render, move to frontend after menu is done
-// export function piechart(options) {
-//   var options = {
-//     title: 'Pie Chart',
-//   };
-
-//   var chart = google.visualization.PieChart(document.getElementById('piechart'));
-
-//   chart.draw(data, options)
-// }
