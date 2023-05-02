@@ -8,22 +8,24 @@ export default async function computeStat(data) {
   const dictRef = ref(db, `languages/${lid}/dict`);
 
   function count_values(field, field_values) {
-    // Create a dictionary to store the count of words starting with each alphabet
-    const alphaCount = {};
-    // Iterate over each word in the array and update the count of that alphabet in the dictionary
-    field_values.forEach(word => {
-      var alpha = word[0];
-      if (field === ('Orthographic forms')) {
-        alpha = word;
-      }
-      alphaCount[alpha] = (alphaCount[alpha] || 0) + 1;
-    });
+    const result = [];
+    result.push(['type', 'count']);
+    // Iterate through each word in the array
+    for (let word of field_values) {
+      // Extract the first letter of the word
+      const firstLetter = word[0];
 
-    // Convert the dictionary to a list of lists and sort it based on the alphabet
-    const result = Object.entries(alphaCount)
-      .map(([k, v]) => [k, String(v)])
-      .sort();
-    result.unshift(['type', 'count']);
+      // Check if an array element for this letter already exists in the result array
+      const index = result.findIndex((arr) => arr[0] === firstLetter);
+
+      if (index !== -1) {
+        // If the element already exists, increment its count by 1
+        result[index][1]++;
+      } else {
+        // If the element does not exist, create a new element with count 1
+        result.push([firstLetter, 1]);
+      }
+    }
     return result;
   }
 

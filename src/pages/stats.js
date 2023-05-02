@@ -69,49 +69,19 @@ export default function Home() {
     is3D: false,
   };
   
+
+
   var items = [];
   for (let i = 0; i < fieldName.length; i++) {
     items.push(
       {
         key: i+1, 
         label:fieldName[i], 
-        children: childContent({name: fieldName[i], chartData: data[i+1]})
+        children: childContent({name: fieldName[i], chartData: data[i]})
       }
     );
   }
-
-
-  // const test_data = [
-  //   ["Task", "Hours per Day"],
-  //   ["Work", 11],
-  //   ["Eat", 2],
-  //   ["Commute", 2],
-  //   ["Watch TV", 2],
-  //   ["Sleep", 7], // CSS-style declaration
-  // ]
-
-  // TODO: chang items into field names of designated lid, change children into rendered charts
-  // const items = [
-  //     {
-  //       key: '1',
-  //       label: fieldName[0],
-  //       children: childContent({name: fieldName[0], chartData: data[0]}),
-  //     },
-  //     {
-  //       key: '2',
-  //       label: fieldName[1],
-  //       children: childContent({name: fieldName[1], chartData: data[1]}),
-  //     },
-  //     {
-  //       key: '3',
-  //       label: `fieldName[2]`,
-  //       children: `Content of Tab Pane 3`,
-  //     },
-  //   ];
-    
   
-
-
   function childContent({ name, chartData }) {
       return (
           <div>
