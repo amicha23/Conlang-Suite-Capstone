@@ -14,7 +14,6 @@ export default async function deleteLang(data) {
       return `Lang '${lid}' does not exist`;
     }
     const langData = snapshot.val();
-    const lname = langData.name;
 
     // update user's data
     const userRef = ref(db, `users/${uid}`);
@@ -22,7 +21,6 @@ export default async function deleteLang(data) {
     if (snapshot_user.exists()) {
       const userData = snapshot_user.val();
       var user_lid = userData.lid;
-      var user_lname = userData.lname;
 
       function replaceSubstringIfFound(str, subStr, replacement) {
         if (str.includes(subStr + ",")) {
@@ -36,13 +34,11 @@ export default async function deleteLang(data) {
       }
 
       user_lid = replaceSubstringIfFound(user_lid, lid, "");
-      user_lname = replaceSubstringIfFound(user_lname, lname, "");
     }
 
     const updates = {};
     updates[`languages/${lid}`] = null;
     updates[`users/${uid}/lid`] = user_lid;
-    updates[`users/${uid}/lname`] = user_lname;
 
     set(ref(db, `deleteRecord/${uid}/${lid}`), { langData });
 
