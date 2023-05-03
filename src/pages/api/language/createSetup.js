@@ -60,17 +60,12 @@ export default async function createSetup(data) {
     if (snapshot.exists()) {
       const userData = snapshot.val();
       const lid = userData.lid || "";
-      const lname = userData.lname || "";
 
       const newLid = lid ? `${lid},${newLangKey}` : newLangKey;
-      const newLname = lname
-        ? `${lname},${data.language_name}`
-        : data.language_name;
 
       const updates = {};
       updates[`/languages/${newLangKey}`] = langData;
       updates[`/users/${uid}/lid`] = newLid;
-      updates[`/users/${uid}/lname`] = newLname;
 
       await update(ref(db), updates);
       return "Success";

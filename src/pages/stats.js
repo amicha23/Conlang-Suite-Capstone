@@ -14,12 +14,6 @@ import '../app/globals.css';
 // Constants
 const { Footer, Content } = Layout;
 
-
-
-
-
-
-
 export default function Home() {
   const [data, setData] = useState([]);
   const [fieldName, setFieldName] = useState([]);

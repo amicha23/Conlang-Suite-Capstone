@@ -9,9 +9,10 @@ export default async function getUserLang(data) {
     const snapshot = await get(userRef);
 
     let lCovers = [];
+    let lName = [];
     if (snapshot.exists()) {
       const data = snapshot.val();
-      const { lid, lname } = data;
+      const { lid } = data;
       let _lid = lid.split(',');
       for (let id of _lid) {
         const langRef = ref(db, `languages/${id}`);
@@ -22,10 +23,12 @@ export default async function getUserLang(data) {
         }
     
         const langCoverUrl = snapshot.val().coverURL;
+        const langName = snapshot.val().name;
         lCovers.push(langCoverUrl);
+        lName.push(langName);
       }
-      
-      return { languageIDs: lid, languageNames: lname, languageCovers: lCovers };
+      console.log('lName :>> ', lName);      
+      return { languageIDs: lid, languageNames: lName, languageCovers: lCovers };
     } else {
       return "No data available";
     }
