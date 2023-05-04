@@ -1,11 +1,12 @@
 // PACKAGES
 import { Layout } from 'antd';
-import { Button, Collapse, Tabs } from 'antd';
+import { Button, Collapse, Tabs, Segmented } from 'antd';
 import React, { useEffect, useState, createElement } from "react";
 import { Chart } from "react-google-charts";
 
 
 // Components
+import getLangData from '../pages/api/language/getLangData';
 import computeStat from '../pages/api/language/computeWordStats';
 import SideBar from '../components/SideBar';
 import '../app/globals.css';
@@ -16,10 +17,13 @@ const { Footer, Content } = Layout;
 
 export default function Home() {
   const [data, setData] = useState([]);
-  const [fieldName, setFieldName] = useState([]);
+  const [firstLetterData, setFirstLetterData] = useState([]);
+  const [typeData, setTypeData] = useState([]);
+  const [fieldNames, setFieldNames] = useState([]);
   const [queryParam, setQueryParam] = useState('');
   const [queryName, setQueryName] = useState('');
   const [searchParams, setSearchParams] = useState('');
+  const [isFirstLetterData, setIsFirstLetterData] = useState(true);
 
   useEffect(() => {
     const searchParams = new URLSearchParams(window.location.search);
@@ -37,11 +41,14 @@ export default function Home() {
   // Load in stats data on render
   async function fetchData() {
     let getStatsData = await computeStat({'lid' : queryParam});
+    let getFieldNames = await getLangData({'lid' : queryParam});
 
     if (typeof(getStatsData) !== String ) {
       console.log('FETCH', getStatsData);
-      setData(getStatsData[1])
-      setFieldName(getStatsData[0])
+      setData(getStatsData);
+      setFirstLetterData(getStatsData[0]);
+      setTypeData(getStatsData[1]);
+      setFieldNames(getFieldNames[`dictHeaders`]);
     } else {
       console.log("failed to fetch data ", getStatsData[0])
       console.log("failed to fetch data ", getStatsData[1])
@@ -57,11 +64,12 @@ export default function Home() {
     }
   }, [queryParam]);
 
-  const options = {
-    // title: "Language Statistics",
-    pieHole: 0.5,
-    is3D: false,
-  };
+
+  const onChange = (key) => {
+    console.log(key);
+    key === 'Type' ? setIsFirstLetterData(false): setIsFirstLetterData(true);
+
+  }
   
 
   function sum(arrays) {
@@ -75,16 +83,19 @@ export default function Home() {
     return sum;
   }
 
-  var items = [];
-  for (let i = 0; i < fieldName.length; i++) {
-    items.push(
-      {
-        key: i+1, 
-        label:fieldName[i], 
-        children: childContent({chartData: data[i], total: sum(data[i])})
-      }
-    );
+  function generateItems(isFirstLetter) {
+    var items = [];
+    for (let i = 0; i < fieldNames.length; i++) {
+      items.push(
+        {
+          key: i+1, 
+          label:fieldNames[i], 
+          children: isFirstLetter ? childContent({chartData: firstLetterData[i], total: sum(firstLetterData[i])}): childContent({chartData: typeData[i], total: sum(typeData[i])})
+        }
+      );
 
+    }
+    return items;
   }
 
 
@@ -92,13 +103,17 @@ export default function Home() {
   function childContent({ chartData, total}) {
       return (
           <div>
-            total count: {total}
+            {/* <Segmented options={['First Letter', 'Type']}/> */}
             <Chart
               chartType="PieChart"
               data={chartData}
               width="100%"
               height="400px"
-              options={options}
+              options={{
+                title: `total count: ${total}`,
+                pieHole: 0.5,
+                is3D: false,
+              }}
               legendToggle
             />
           </div>
@@ -120,8 +135,8 @@ export default function Home() {
                       style={{ padding: 24, minHeight: '100%'}}>
                     <div>
                         <h2>Language Statistics Chart</h2>
-                        <Tabs defaultActiveKey='1' type="card" items={items} style={{borderLeft: 20, paddingTop:20}}/>
-
+                        <Tabs defaultActiveKey='1' type="card" items={generateItems(isFirstLetterData)} style={{borderLeft: 20, paddingTop:20}}/>
+                        <Segmented options={['First Letter', 'Type']} onChange={onChange} />
                     </div>
                 </div>
             </Content>
