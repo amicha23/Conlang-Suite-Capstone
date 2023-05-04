@@ -24,7 +24,7 @@ export default function Home() {
     const [viewDict, changeDashboardView] = useState(true);
 
     const createDict = () => {
-        Router.push('/setupFields');
+        window.open(`/setupFields`, `_self`);
     };
 
     // Get all user languages into the sidebar on load
@@ -70,7 +70,7 @@ export default function Home() {
                 </Layout>
             </div>
         );
-    } 
+    }
     return (
         <div>
             <Layout style={{
@@ -104,7 +104,7 @@ function LangCard(props) {
     const handleClick = () => {
       // Navigate to the cards language
     }
-  
+
     return (
         <Card hoverable style={{ width: 240,}}
             cover={<img alt="Picture for given dictionary" src={props.langImg} />}>
@@ -118,8 +118,8 @@ function LangCard(props) {
     const langIDS = langData.languageIDs.split(",");
     const langNames = langData.languageNames;
     const langImgs = langData.languageCovers;
-    
-    
+
+
     let langCards = [];
     for (let i = 0; i < langNames.length; i++) {
         langCards.push(

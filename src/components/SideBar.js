@@ -122,6 +122,8 @@ export default function SideBar() {
   };
 
   if (data) {
+
+
     console.log("data.languageNames :>> ", data.languageNames);
     let langIDS = data.languageIDs.split(",");
     let langNames = data.languageNames;
