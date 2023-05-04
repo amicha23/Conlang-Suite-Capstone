@@ -173,6 +173,7 @@ export function EditDictionary({ data, setData, queryParam, queryName, setUpView
     } else {
       checkLangNameExists(langName)
       saveEditDictionaryInfo({'lid': queryParam, 'coverURL': coverImg, 'newLangName': langName, 'newLangDesc': langDesc, 'consonants': [consonantList].join(""), 'vowels': [vowelList].join("")})
+      window.open('/dashboard', `_self`);
       // Router.push({pathname: '/dashboard'})
     }
 
