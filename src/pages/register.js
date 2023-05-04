@@ -8,10 +8,10 @@ import 'bootstrap/dist/css/bootstrap.css';
 
 const ShowHideDiv = function (check, season) {
     let el = document.getElementById(season);
-    
+
     // hide element(s)
     el.classList.add('hidden');
-    
+
     // Show element(s) if checked
     if(check.checked === true){
       el.classList.remove('hidden');
@@ -35,12 +35,13 @@ export default function register() {
                     <Input className = "mb-2"type ="password" id="password" placeholder="Password"/>
                     <i className='fa fa-eye showpd'/>
                     <div className = "d-grid gap-1" id="signin-button">
-                    <Button type="primary" onClick={() => registerUser()}>Sign up</Button>
+                    <Button type="primary" onClick={() => {registerUser()
+                    window.location.href = '/login';}}>Sign up</Button>
                     <Button icon={<GoogleOutlined/>} onClick={() => googleLogin()}>Sign in with Google</Button>
                     <div class="g-signin2" data-onsuccess="onSignIn"></div>
                     </div>
                     <p class="mt-4 text-center">Already have an account? <span className="text-primary fw-semibold">Sign in</span> </p>
-                </div>              
+                </div>
                 </div >
             </section>
         </div>

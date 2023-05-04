@@ -70,14 +70,14 @@ export default async function saveDictionaryFields(fieldView :any, file :any, bl
     vowels: vowelList,
     consonants: consonantList
   }
-
+  let uid = sessionStorage.getItem("uid");
   console.log("Final Request Data: ", data);
 
   let createSetupData = await createSetup({
     language_name: langName,
     language_desc: desc,
     dictFields: filter_data,
-    uid : "OUnW07Np3VNFduMOCX1V1bvvsd22",
+    uid : uid,
     coverFile : file,
     coverBlob : blob,
     vowels: vowelList,

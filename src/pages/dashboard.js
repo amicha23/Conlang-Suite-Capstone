@@ -11,7 +11,7 @@ import DictionaryTable from '../components/dictTable';
 import SideBar from '../components/SideBar';
 
 // FILES
-import getUserLang from "../pages/api/getUserLang";
+import getUserLang from "./api/user/getUserLang";
 
 // Constants
 const { Header, Footer, Sider, Content } = Layout;
@@ -29,9 +29,11 @@ export default function Home() {
 
     // Get all user languages into the sidebar on load
     useEffect(() => {
+        let uid = sessionStorage.getItem("uid");
+        console.log("USE THIS UID: ", uid)
         const fetchData = async () => {
             let getLangData = await getUserLang({
-            uid: "OUnW07Np3VNFduMOCX1V1bvvsd22",
+            uid: uid,
         });
         setLangData(getLangData);
     };
@@ -70,7 +72,7 @@ export default function Home() {
                 </Layout>
             </div>
         );
-    }
+    } else {
     return (
         <div>
             <Layout style={{
@@ -98,6 +100,7 @@ export default function Home() {
             </Layout>
         </div>
     );
+    }
 }
 
 function LangCard(props) {
@@ -115,9 +118,13 @@ function LangCard(props) {
 
   function LangCards({langData}) {
     console.log('LANGDATA2: ' + langData);
-    const langIDS = langData.languageIDs.split(",");
-    const langNames = langData.languageNames;
-    const langImgs = langData.languageCovers;
+    if (langData === "No data available") {
+        console.log("ASHKD", langData)
+        return null
+    }
+        const langIDS = langData.languageIDs.split(",");
+        const langNames = langData.languageNames;
+        const langImgs = langData.languageCovers;
 
 
     let langCards = [];

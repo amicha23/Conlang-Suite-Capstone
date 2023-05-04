@@ -1,7 +1,7 @@
-import { 
+import {
   onAuthStateChanged,
-  signOut, 
-  createUserWithEmailAndPassword, 
+  signOut,
+  createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   sendPasswordResetEmail,
   GoogleAuthProvider,
@@ -10,6 +10,7 @@ import {
 import { ref, child, update, set } from "firebase/database";
 import { db, auth } from "firebaseConfig/firebaseAdmin";
 import { useRouter } from 'next/router';
+import getCurrentUid from '../pages/api/user/getCurrentUID';
 // var testAuth = {
 //   email: "test@test.me",
 //   password: "Test1234"
@@ -22,11 +23,11 @@ export async function registerUser() {
 
   try {
     const userCredential = await createUserWithEmailAndPassword(auth, registerEmail, registerPassword);
-    
+
     console.log("Successful registered HERE!")
-    
+
     const userKey = userCredential.user.uid;
-    
+
     set(ref(db, 'users/' + userKey), {
       username: registerUserName,
       lname: "",
@@ -38,7 +39,7 @@ export async function registerUser() {
       console.error("Error pushing data:", error);
     });
 
-    window.location.href = '/login';
+    // window.location.href = '/login';
 
   }
   catch(error) {
@@ -56,10 +57,13 @@ export async function loginUser() {
   try {
     await signInWithEmailAndPassword(auth, loginEmail, loginPassword)
     console.log("Successful logged in HERE!");
-
+    const uid :any = await getCurrentUid();
+    console.log("TEST", uid)
+    sessionStorage.setItem("uid", uid);
+    console.log("TES UID", sessionStorage.getItem("uid"))
     window.location.href = '/dashboard';
     // router.push({pathname: '/dashboard'});
-    
+
   }
   catch(error) {
     console.log(`There was an error: ${error}`);

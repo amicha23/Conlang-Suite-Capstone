@@ -4,7 +4,8 @@ import { db } from "../../../../firebaseConfig/firebaseAdmin.js";
 export default async function deleteLang(data) {
   var lid = data.lid;
   // lid = "-NTI9g4l17bcQqpzegwZ";
-  var uid = "OUnW07Np3VNFduMOCX1V1bvvsd22";
+  // var uid = "OUnW07Np3VNFduMOCX1V1bvvsd22";
+  let uid = sessionStorage.getItem("uid");
 
   try {
     const langRef = ref(db, `languages/${lid}`);

@@ -58,7 +58,7 @@ export default function login() {
                 <i className='fa fa-eye showpd'/>
 
                 <p style={linkStyle} className = "text-end text-primary fw-semibold mb-5" onClick={() => router.push('forgetPassword')}>Forgot password?</p>
-                
+
                 <div className = "d-grid gap-1" id="signin-button">
                   <Button type="primary" onClick={() => loginUser()}>Sign in</Button>
                   <Button icon={<GoogleOutlined/>} onClick={() => googleLogin()}>Sign in with Google</Button>
@@ -66,12 +66,12 @@ export default function login() {
                 </div>
 
                 <p className="mt-4 text-center">Don't have an account? <Link href="register" className="text-primary fw-semibold">Sign up</Link> </p>
-               
 
-              </div>              
+
+              </div>
             </div >
         </section>
       </div>
-      
+
   );
 }

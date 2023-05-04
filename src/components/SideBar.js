@@ -30,7 +30,7 @@ import logo from "../../public/langtimelogo.png";
 import logout from "../../public/logout.png";
 import help from "../../public/help.png";
 import deleteLang from "../pages/api/language/deleteLang";
-import getUserLang from "../pages/api/getUserLang";
+import getUserLang from "../pages/api/user/getUserLang";
 
 function getItem(label, key, icon, children, type, langID, func) {
   return {
@@ -62,9 +62,11 @@ export default function SideBar() {
 
   // Get all user languages into the sidebar on load
   useEffect(() => {
+    let uid = sessionStorage.getItem("uid");
+    console.log("SIDEBAR UID", uid)
     const fetchData = async () => {
       let getLangData = await getUserLang({
-        uid: "OUnW07Np3VNFduMOCX1V1bvvsd22",
+        uid: uid,
       });
       setData(getLangData);
     };
@@ -111,8 +113,9 @@ export default function SideBar() {
 
     if (deleteLangData === "Success") {
       console.log("deleted language called :>> ", deleteLangData);
+      let uid = sessionStorage.getItem("uid");
       let getLangData = await getUserLang({
-        uid: "OUnW07Np3VNFduMOCX1V1bvvsd22",
+        uid: uid,
       });
       setData(getLangData);
     } else {
@@ -125,6 +128,28 @@ export default function SideBar() {
 
 
     console.log("data.languageNames :>> ", data.languageNames);
+    if (data.languageNames === undefined) {
+      return (
+        <div>
+          <Sider
+            theme="light"
+            style={{
+              minHeight: "100%",
+            }}
+          >
+            <Link class="test" href="/dashboard">
+              <Image src={logo} alt="Logo placeholder" width={150} />
+            </Link>
+            <Link href="/help">
+              <Image src={help} alt="Help placeholder" width={200} />
+            </Link>
+            <Link href="/logout">
+              <Image src={logout} alt="Logout placeholder" width={200} />
+            </Link>
+          </Sider>
+        </div>
+      );
+    } else {
     let langIDS = data.languageIDs.split(",");
     let langNames = data.languageNames;
     console.log("Lang IDs: ", data.languageIDs.split(","));
@@ -147,6 +172,7 @@ export default function SideBar() {
         langID,
         null
       );
+
       for (let sideLabels of Object.values(menuButton.children)) {
         if (sideLabels["label"] === "View Language") {
           sideLabels.onClick = handleRoute;
@@ -195,7 +221,7 @@ export default function SideBar() {
         </Sider>
       </div>
     );
-  } else {
-    return null;
   }
+}
+
 }

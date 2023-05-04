@@ -113,7 +113,7 @@ function PreFilledList({ fields, setFields, data, setData, queryParam}) {
   // Edit a column header
   const handleEditColumn = (dataIndex, close) => {
     setPrevEditColumn(dataIndex);
-    close();
+    // close();
     showEditModal();
     // confirm();
     // setSearchText(selectedKeys[0]);
@@ -197,7 +197,7 @@ function PreFilledList({ fields, setFields, data, setData, queryParam}) {
                 <div style={{display:'inline-block'}}>
                 <DeleteInput field={field} setFields={setFields} queryParam={queryParam} />
                       <Button
-                    onClick={() => handleEditColumn(field, close)}
+                    onClick={() => handleEditColumn(field)}
                     size="small"
                     type="link"
                   >
