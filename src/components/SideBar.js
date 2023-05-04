@@ -63,10 +63,10 @@ export default function SideBar() {
   // Get all user languages into the sidebar on load
   useEffect(() => {
     const fetchData = async () => {
-      let getLandData = await getUserLang({
+      let getLangData = await getUserLang({
         uid: "OUnW07Np3VNFduMOCX1V1bvvsd22",
       });
-      setData(getLandData);
+      setData(getLangData);
     };
 
     fetchData();
@@ -111,10 +111,10 @@ export default function SideBar() {
 
     if (deleteLangData === "Success") {
       console.log("deleted language called :>> ", deleteLangData);
-      let getLandData = await getUserLang({
+      let getLangData = await getUserLang({
         uid: "OUnW07Np3VNFduMOCX1V1bvvsd22",
       });
-      setData(getLandData);
+      setData(getLangData);
     } else {
       console.log("delete language failed ", deleteLangData);
     }

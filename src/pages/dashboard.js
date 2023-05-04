@@ -1,7 +1,7 @@
 // PACKAGES
 import { Layout, Image } from 'antd';
 import { useRouter } from 'next/router';
-import { Button, Collapse, Card } from 'antd';
+import { Button, Collapse } from 'antd';
 import React, { useEffect, useState } from "react";
 import Router from 'next/router';
 
@@ -20,6 +20,7 @@ const { Meta } = Card;
 
 
 export default function Home() {
+    const [langData, setLangData] = useState();
     const [langData, setLangData] = useState();
     const [viewDict, changeDashboardView] = useState(true);
 
@@ -77,7 +78,19 @@ export default function Home() {
                 minHeight: '100vh',
             }}>
                 <SideBar/>
+                minHeight: '100vh',
+            }}>
+                <SideBar/>
                 <Layout className="site-layout">
+                    <Content style={{
+                        padding: 24,
+                        minHeight: '100%'
+                    }}>
+                        <div id="view-create-dashboard" style={{display: viewDict ? "block" : "none"}} >
+                            <h1>Dashboard</h1>
+                            <Button type='primary' onClick={ createDict }>Create New Dictionary</Button>
+                        </div>
+                    </Content>
                     <Content style={{
                         padding: 24,
                         minHeight: '100%'
@@ -104,7 +117,6 @@ function LangCard(props) {
     const handleClick = () => {
       // Navigate to the cards language
     }
-
     return (
         <Card hoverable style={{ width: 240,}}
             cover={<img alt="Picture for given dictionary" src={props.langImg} />}>
