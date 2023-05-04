@@ -7,7 +7,7 @@ import {
   GoogleAuthProvider,
   getAuth,
   signInWithPopup } from "firebase/auth";
-import { ref, child, update, set } from "firebase/database";
+import { ref, child, update, set, get } from "firebase/database";
 import { db, auth } from "firebaseConfig/firebaseAdmin";
 import { useRouter } from 'next/router';
 // var testAuth = {
@@ -29,8 +29,8 @@ export async function registerUser() {
     
     set(ref(db, 'users/' + userKey), {
       username: registerUserName,
-      lname: "",
       lid: "",
+
     }).then(() => {
       console.log("User data pushed successfully");
     })
@@ -81,31 +81,70 @@ export async function monitorAuthState()  {
 }
 
 
+// export async function googleLogin() {
+//   const provider = new GoogleAuthProvider();
+//   signInWithPopup(auth, provider)
+//   .then((result) => {
+//     // This gives you a Google Access Token. You can use it to access the Google API.
+//     const credential = GoogleAuthProvider.credentialFromResult(result);
+//     const user = result.user;
+//     const uid = user.uid;
+//     const refUser = ref(db, 'users/');
+//     const snapshot = await get(userRef);
+//     alert("google loign successfully");
+//     // window.location.href = '/dashboard';
+//   }).catch((error) => {
+//     // Handle Errors here.
+//     // const errorCode = error.code;
+//     // const errorMessage = error.message;
+//     // The email of the user's account used.
+//     // const email = error.customData.email;
+//     // The AuthCredential type that was used.
+//     // const credential = GoogleAuthProvider.credentialFromError(error);
+//     // ...
+//   });
+
+// }
+
 export async function googleLogin() {
   const provider = new GoogleAuthProvider();
-  signInWithPopup(auth, provider)
-  .then((result) => {
+  try {
+    const result = await signInWithPopup(auth, provider);
     // This gives you a Google Access Token. You can use it to access the Google API.
     const credential = GoogleAuthProvider.credentialFromResult(result);
-    // const token = credential.accessToken;
-    // The signed-in user info.
     const user = result.user;
-    // IdP data available using getAdditionalUserInfo(result)
-    // ...
-    alert("google loign successfully");
-    window.location.href = '/dashboard';
-  }).catch((error) => {
-    // Handle Errors here.
-    // const errorCode = error.code;
-    // const errorMessage = error.message;
-    // The email of the user's account used.
-    // const email = error.customData.email;
-    // The AuthCredential type that was used.
-    // const credential = GoogleAuthProvider.credentialFromError(error);
-    // ...
-  });
+    const uid = user.uid;
 
+    const userRef = ref(db, 'users');
+    const snapshot = await get(userRef);
+    if (!snapshot.exists()) {
+      return 'snapshot not found';
+    }
+    let users = snapshot.val();
+    let userIds = Object.keys(users);
+    alert("Google login successful");
+    if (!userIds.includes(uid)) {
+      set(ref(db, 'users/' + uid), {
+        username: user.displayName,
+        lid: "",
+  
+      }).then(() => {
+        console.log("User data pushed successfully");
+      })
+      .catch((error) => {
+        console.error("Error pushing data:", error);
+      });
+    }
+  } catch (error: any) {
+    // Handle Errors here.
+    const errorCode = error.code;
+    const errorMessage = error.message;
+    alert(`Google login failed with error code ${errorCode} and message ${errorMessage}`);
+    // ...
+  }
 }
+
+
 
 export async function logoutUser() {
   await signOut(auth);
