@@ -60,11 +60,12 @@ export default function ExportLangHtml() {
     return <div>Failed to export</div>;
   } else {
     console.log("TEST DATA", data)
-    const lname = data.name;
-    const langDesc = data.description;
-    const createTime = data.createTime;
-    const dict = data.dict;
+    const lname = data.lang.name;
+    const langDesc = data.lang.description;
+    const createTime = data.lang.createTime;
+    const dict = data.lang.dict;
     const dictTableData = reformatDict(dict);
+    console.log("HH", dictTableData)
 
     const columns = Object.keys(dictTableData[0]).map((key) => ({
       title: key,

@@ -14,7 +14,6 @@ export default async function deleteLang(data) {
       return `Lang '${lid}' does not exist`;
     }
     const langData = snapshot.val();
-    const lname = langData.name;
 
     // update user's data
     const userRef = ref(db, `users/${uid}`);
@@ -22,7 +21,6 @@ export default async function deleteLang(data) {
     if (snapshot_user.exists()) {
       const userData = snapshot_user.val();
       var user_lid = userData.lid;
-      var user_lname = userData.lname;
 
       function replaceSubstringIfFound(str, subStr, replacement) {
         if (str.includes(subStr + ",")) {
@@ -36,19 +34,45 @@ export default async function deleteLang(data) {
       }
 
       user_lid = replaceSubstringIfFound(user_lid, lid, "");
-      user_lname = replaceSubstringIfFound(user_lname, lname, "");
     }
 
     const updates = {};
     updates[`languages/${lid}`] = null;
     updates[`users/${uid}/lid`] = user_lid;
-    updates[`users/${uid}/lname`] = user_lname;
+
+    const currentTime = getCurrTime();
+    langData["deleteTime"] = currentTime;
 
     set(ref(db, `deleteRecord/${uid}/${lid}`), { langData });
 
     await update(ref(db), updates);
-    return "Success"
+    return "Success";
   } catch (e) {
     return e;
   }
+}
+
+function getCurrTime() {
+  let date_ob = new Date();
+
+  let date = ("0" + date_ob.getDate()).slice(-2);
+  let month = ("0" + (date_ob.getMonth() + 1)).slice(-2);
+  let year = date_ob.getFullYear();
+  let hours = date_ob.getHours();
+  let minutes = date_ob.getMinutes();
+  let seconds = date_ob.getSeconds();
+  let currentTime =
+    year +
+    "-" +
+    month +
+    "-" +
+    date +
+    " " +
+    hours +
+    ":" +
+    minutes +
+    ":" +
+    seconds;
+
+  return currentTime;
 }

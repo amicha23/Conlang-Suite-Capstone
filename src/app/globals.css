@@ -137,6 +137,11 @@ a {
   background: #fff;
 }
 
+/* keep images in check */
+.card {
+  flex-basis: 200px;
+  margin-bottom: 30px;
+}
 
 @media (prefers-color-scheme: dark) {
   html {

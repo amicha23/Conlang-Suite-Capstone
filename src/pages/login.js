@@ -1,5 +1,3 @@
-// import 'antd/dist/antd.css';
-import { library } from '@fortawesome/fontawesome-svg-core'; //this is for the eye icon show/hide password switch
 import 'bootstrap/dist/css/bootstrap.css';
 import { Input } from 'antd';
 import { GoogleOutlined, UploadOutlined } from '@ant-design/icons';

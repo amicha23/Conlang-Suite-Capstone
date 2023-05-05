@@ -2,6 +2,7 @@ import { db } from "../../../../firebaseConfig/firebaseAdmin.js";
 import { ref, update } from "firebase/database";
 
 export default async function updateWord(data) {
+  console.log("HH ", data)
   var lid = data.lid;
   var wordData = data.data;
   var wid = wordData.id;

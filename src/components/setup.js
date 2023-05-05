@@ -5,6 +5,9 @@ import { UploadOutlined } from '@ant-design/icons';
 import { Button, message, Upload } from 'antd';
 import React, { useEffect, useState } from "react";
 import { Layout } from 'antd';
+import IPAKeyboard from "./IPAKeyboard";
+import vowels from "../data/vowels.json";
+import consonants from "../data/consonants.json";
 const { Header, Footer, Sider, Content } = Layout;
 
 // Router
@@ -16,6 +19,7 @@ import { CheckCircleOutlined, CheckCircleTwoTone, InfoCircleOutlined, InfoCircle
 // images
 import Image from 'next/image';
 import logo from '../../public/langtimelogo.png';
+import uploadCoverImg from '../pages/api/language/uploadLangImg'
 
 // Components
 // import { DictionaryPrefilledForms } from './dictionaryPrefilled';
@@ -30,30 +34,83 @@ const { TextArea } = Input;
 
 
 // Implement file upload later
-const props = {
-  name: 'file',
-  action: 'https://www.mocky.io/v2/5cc8019d300000980a055e76',
-  headers: {
-    authorization: 'authorization-text',
-  },
-  onChange(info) {
-    if (info.file.status !== 'uploading') {
-      console.log(info.file, info.fileList);
-    }
-    if (info.file.status === 'done') {
-      message.success(`${info.file.name} file uploaded successfully`);
-    } else if (info.file.status === 'error') {
-      message.error(`${info.file.name} file upload failed.`);
-    }
-  },
-};
+// const props = {
+//   name: 'file',
+//   action: 'https://www.mocky.io/v2/5cc8019d300000980a055e76',
+//   headers: {
+//     authorization: 'authorization-text',
+//   },
+//   onChange(info) {
+//     console.log(props.name, props.action)
+//     if (info.file.status !== 'uploading') {
+//       console.log(info.file, info.fileList);
+//     }
+//     if (info.file.status === 'done') {
+//       message.success(`${info.file.name} file uploaded successfully`);
+//     } else if (info.file.status === 'error') {
+//       message.error(`${info.file.name} file upload failed.`);
+//     }
+//   },
+// };
 
 
-export function SetUp({setUpView, changeSetUpView}) {
+
+
+
+export function SetUp({setUpView, changeSetUpView, file, setFile, blob, setBlob}) {
   const [langName, setValue] = useState('');
   const [langDesc, setDesc] = useState('');
+
+
+  const [consonantList, setConsonantList] = useState([]);
+  const [vowelList, setVowelList] = useState([]);
+
   const router = useRouter();
   // const [setUpView, changeSetUpView] = useState(true);
+
+  function UploadFile() {
+
+
+    function handleUpload(info) {
+      if (info.file.status === "done") {
+        setFile(info.file)
+        message.success(`${info.file.name} file uploaded successfully`);
+        const reader = new FileReader();
+        reader.readAsDataURL(info.file.originFileObj);
+        reader.onload = () => {
+          const blob = new Blob([reader.result], { type: info.file.type });
+          sendBlobToServer(blob);
+          console.log("CHECK FOR FILE ", info.file)
+          console.log("CHECK FOR BLOB ", blob)
+          setBlob(blob)
+        };
+      } else if (info.file.status === "error") {
+        message.error(`${info.file.name} file upload failed.`);
+      }
+    }
+
+    async function sendBlobToServer(blob) {
+      const formData = new FormData();
+      formData.append("file", blob);
+      // await uploadCoverImg(formData);
+      // try {
+      //   const response = await fetch("/upload", {
+      //     method: "POST",
+      //     body: formData,
+      //   });
+      //   const data = await response.json();
+      //   console.log(data);
+      // } catch (error) {
+      //   console.error(error);
+      // }
+    }
+
+    return (
+      <Upload id="uploadImg" onChange={handleUpload}>
+        <Button icon={<UploadOutlined />}>Click to Upload</Button>
+      </Upload>
+    );
+  }
 
   return (
       <div>
@@ -80,16 +137,53 @@ export function SetUp({setUpView, changeSetUpView}) {
                   <TextArea id="langDescID" rows={10} placeholder="Description of Language" onChange={e => { setDesc(e.currentTarget.value); }} maxLength={600} />
                 </>
 
-                <p>Upload Custom Font</p>
+
+                <p>Consonants of Language</p>
+            <Input
+              id="langConsonantsID"
+              placeholder="Consonants of Language"
+              value={consonantList}
+              onChange={(e) => setConsonantList(e.target.value)}
+            />
+
+            {/* {showConsonantKeyboard && ( */}
+            <IPAKeyboard
+              list={consonants}
+              soundList={consonantList}
+              setSoundList={setConsonantList}
+              curList={consonantList}
+              noDup={true}
+            />
+            {/* )} */}
+            <p>Vowels of Language</p>
+            <Input
+              id="langVowelsID"
+              placeholder="Vowels of Language"
+              value={vowelList}
+              onChange={(e) => setVowelList(e.target.value)}
+            />
+
+            {/* {showVowelKeyboard && ( */}
+            <IPAKeyboard
+              list={vowels}
+              soundList={vowelList}
+              setSoundList={setVowelList}
+              curList={vowelList}
+              noDup={true}
+            />
+            {/* )} */}
+
+                {/* <p>Upload Custom Font</p> */}
                 {/* Removed file props for now */}
-                <Upload >
-                  <Button icon={<UploadOutlined />}>Click to Upload</Button>
-                </Upload>
+                {/* <Upload > */}
+                  {/* <Button icon={<UploadOutlined />}>Click to Upload</Button> */}
+                {/* </Upload> */}
 
                 <p>Upload Cover Image</p>
-                <Upload >
+                {/* <Upload {...props}>
                   <Button icon={<UploadOutlined />}>Click to Upload</Button>
-                </Upload>
+                </Upload> */}
+                <UploadFile />
               </div>
 
               <div id="continue-button">

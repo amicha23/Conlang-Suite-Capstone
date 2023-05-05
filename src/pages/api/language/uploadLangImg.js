@@ -1,6 +1,5 @@
 import { storage } from "../../../../firebaseConfig/firebaseAdmin.js";
 import {
-  ref,
   uploadBytesResumable,
   getDownloadURL,
   getMetadata,
