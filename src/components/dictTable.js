@@ -17,6 +17,7 @@ import IPAKeyboard from "./IPAKeyboard";
 import vowels from "../data/vowels.json";
 import consonants from "../data/consonants.json";
 import getLangData from "../pages/api/language/getLangData";
+import saveAsCsv from "../pages/api/language/saveAsCsv";
 
 import { update, ref, get, remove, child, push, onValue, off } from "firebase/database";
 import { db } from "../../firebaseConfig/firebaseAdmin.js";
@@ -557,6 +558,10 @@ const DictionaryTable = ({ queryParam, setQueryParam, queryName, setQueryName })
     window.open(`/exportLangHtml?lid=` + queryParam);
   };
 
+  const handleCsvExport = async () => {
+    await saveAsCsv({lid: queryParam, data: data, name: queryName});
+  };
+
   return (
     <div>
       <div id="lang-name-header" >
@@ -582,6 +587,17 @@ const DictionaryTable = ({ queryParam, setQueryParam, queryName, setQueryName })
         }}
       >
         + Export
+      </Button>
+
+      <Button
+        onClick={handleCsvExport}
+        type="primary"
+        style={{
+          marginBottom: 16,
+          marginLeft: 8
+        }}
+      >
+        + save as CSV
       </Button>
 
       <Modal title="Edit Pronunciation" open={isProModalOpen} onOk={handleProOk} onCancel={handleProCancel} footer={[<Button key="back" onClick={handleProCancel}>
