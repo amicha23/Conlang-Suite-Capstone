@@ -4,7 +4,6 @@ import { GoogleOutlined, KeyOutlined, UploadOutlined } from '@ant-design/icons';
 import {registerUser, googleLogin, monitorAuthState} from "src/app/user"
 import { auth } from "firebaseConfig/firebaseAdmin";
 import 'bootstrap/dist/css/bootstrap.css';
-{/* <link rel="stylesheet" href="styles.css"></link> */}
 
 const ShowHideDiv = function (check, season) {
     let el = document.getElementById(season);

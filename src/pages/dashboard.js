@@ -26,7 +26,6 @@ export default function Home() {
     const createDict = () => {
         window.open(`/setupFields`, `_self`);
     };
-
     const recoverLang = () => {
         window.open(`/recoverDelLang`, `_self`);
     };
