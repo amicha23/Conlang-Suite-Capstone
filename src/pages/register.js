@@ -4,6 +4,8 @@ import { GoogleOutlined, KeyOutlined, UploadOutlined } from '@ant-design/icons';
 import {registerUser, googleLogin, monitorAuthState} from "src/app/user"
 import { auth } from "firebaseConfig/firebaseAdmin";
 import 'bootstrap/dist/css/bootstrap.css';
+import Link from 'next/link';
+
 {/* <link rel="stylesheet" href="styles.css"></link> */}
 
 const ShowHideDiv = function (check, season) {
@@ -39,7 +41,7 @@ export default function register() {
                     <Button icon={<GoogleOutlined/>} onClick={() => googleLogin()}>Sign in with Google</Button>
                     <div class="g-signin2" data-onsuccess="onSignIn"></div>
                     </div>
-                    <p class="mt-4 text-center">Already have an account? <span className="text-primary fw-semibold">Sign in</span> </p>
+                    <p class="mt-4 text-center">Already have an account? <Link href="login" className="text-primary fw-semibold">Sign in</Link> </p>
                 </div>              
                 </div >
             </section>
