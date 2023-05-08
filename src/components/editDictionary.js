@@ -181,13 +181,22 @@ export function EditDictionary({ data, setData, queryParam, queryName, setUpView
 
   // Discard changes, return to dashboard
   const cancelConfirm = (e) => {
-    Router.push({ pathname: '/dashboard' })
+    window.open('/dashboard', `_self`);
   };
 
   const handleDelImg = async (e) => {
+    console.log("DELETE THIS", coverImg)
+    if (coverImg.includes("default.jpg") || coverImg === undefined || coverImg === null) {
+      e.disabled = true;
+    } else {
+      e.disabled = false;
+
     setCoverImg('')
     let newCoverURL = await updateCoverImg({'lid': queryParam, 'coverImg': null})
     setCoverImg(newCoverURL)
+    checkDefaultImage(e)
+    }
+
   }
 
   if (data) {
@@ -343,5 +352,14 @@ function checkLangNameExists(langName) {
   } else {
     let errormsg = document.getElementById("name-error")
     errormsg.style.display = "none"
+  }
+}
+
+// Disable cancel upload image on default image
+function checkDefaultImage(e) {
+  if (coverImg.includes("default.jpg") || coverImg === undefined) {
+    e.disabled = true;
+  } else {
+    e.disabled = false;
   }
 }

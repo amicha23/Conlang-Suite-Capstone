@@ -35,9 +35,8 @@ export default function register() {
                     <Input className = "mb-2"type ="password" id="password" placeholder="Password"/>
                     <i className='fa fa-eye showpd'/>
                     <div className = "d-grid gap-1" id="signin-button">
-                    <Button type="primary" onClick={() => {registerUser()
-                    window.location.href = '/login';}}>Sign up</Button>
-                    <Button icon={<GoogleOutlined/>} onClick={() => googleLogin()}>Sign in with Google</Button>
+                    <Button type="primary" onClick={() => {registerUser()}}>Sign up</Button>
+                    <Button icon={<GoogleOutlined/>} onClick={() => {googleLogin()}}>Sign in with Google</Button>
                     <div class="g-signin2" data-onsuccess="onSignIn"></div>
                     </div>
                     <p class="mt-4 text-center">Already have an account? <span className="text-primary fw-semibold">Sign in</span> </p>

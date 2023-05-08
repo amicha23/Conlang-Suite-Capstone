@@ -23,6 +23,7 @@ import Link from "next/link";
 import React, { useState, useEffect } from "react";
 import { Menu } from "antd";
 import Router from "next/router";
+import signOut, { logout as logoutFunction } from "../app/user"
 // import { useSearchParams } from "react-router-dom";
 
 // FILES
@@ -126,9 +127,8 @@ export default function SideBar() {
 
   if (data) {
 
-
     console.log("data.languageNames :>> ", data.languageNames);
-    if (data.languageNames === undefined) {
+    if (data.languageNames === undefined || data.languageIDs === '') {
       return (
         <div>
           <Sider
@@ -140,11 +140,11 @@ export default function SideBar() {
             <Link class="test" href="/dashboard">
               <Image src={logo} alt="Logo placeholder" width={150} />
             </Link>
-            <Link href="/help">
+            {/* <Link href="/help">
               <Image src={help} alt="Help placeholder" width={200} />
-            </Link>
-            <Link href="/logout">
-              <Image src={logout} alt="Logout placeholder" width={200} />
+            </Link> */}
+            <Link href="/">
+              <Image src={logout} alt="Logout placeholder" width={200} onClick={() => {sessionStorage.clear(); logoutFunction()}}/>
             </Link>
           </Sider>
         </div>
@@ -212,11 +212,12 @@ export default function SideBar() {
             mode="inline"
             items={items}
           />
-          <Link href="/help">
+          {/* <Link href="/help">
             <Image src={help} alt="Help placeholder" width={200} />
-          </Link>
-          <Link href="/logout">
-            <Image src={logout} alt="Logout placeholder" width={200} />
+          </Link> */}
+          <Link href="/">
+            <Image src={logout} alt="Logout placeholder" width={200} onClick={() => {sessionStorage.clear();
+                                                                                      logoutFunction()}}/>
           </Link>
         </Sider>
       </div>

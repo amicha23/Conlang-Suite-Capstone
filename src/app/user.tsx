@@ -34,6 +34,7 @@ export async function registerUser() {
       lid: "",
     }).then(() => {
       console.log("User data pushed successfully");
+      window.location.href = '/login';
     })
     .catch((error) => {
       console.error("Error pushing data:", error);
@@ -88,7 +89,7 @@ export async function monitorAuthState()  {
 export async function googleLogin() {
   const provider = new GoogleAuthProvider();
   signInWithPopup(auth, provider)
-  .then((result) => {
+  .then(async (result) => {
     // This gives you a Google Access Token. You can use it to access the Google API.
     const credential = GoogleAuthProvider.credentialFromResult(result);
     // const token = credential.accessToken;
@@ -96,7 +97,11 @@ export async function googleLogin() {
     const user = result.user;
     // IdP data available using getAdditionalUserInfo(result)
     // ...
-    alert("google loign successfully");
+    alert("google login successfully");
+    const uid :any = await getCurrentUid();
+    console.log("Google UID", uid)
+    sessionStorage.setItem("uid", uid);
+    console.log("TEST GOOGLE UID", sessionStorage.getItem("uid"))
     window.location.href = '/dashboard';
   }).catch((error) => {
     // Handle Errors here.
