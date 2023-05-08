@@ -26,11 +26,7 @@
     "axios": "^1.3.6",
     "blob": "^0.1.0",
     "bootstrap": "^5.2.3",
-<<<<<<< HEAD
-    "cheerio": "^1.0.0-rc.12",
-=======
     "dotenv": "^16.0.3",
->>>>>>> cdc4def15418760d9457d4a75eed4aff3ee0ecca
     "firebase": "^9.17.1",
     "firebase-admin": "^11.5.0",
     "gsap": "^3.11.5",

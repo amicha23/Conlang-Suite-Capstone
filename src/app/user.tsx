@@ -6,14 +6,8 @@ import {
   sendPasswordResetEmail,
   GoogleAuthProvider,
   getAuth,
-<<<<<<< HEAD
-  signInWithPopup,
-} from "firebase/auth";
-import { ref, child, update, set } from "firebase/database";
-=======
   signInWithPopup } from "firebase/auth";
 import { ref, child, update, set, get } from "firebase/database";
->>>>>>> cdc4def15418760d9457d4a75eed4aff3ee0ecca
 import { db, auth } from "firebaseConfig/firebaseAdmin";
 import { useRouter } from "next/router";
 // var testAuth = {
@@ -46,17 +40,10 @@ export async function registerUser() {
 
     set(ref(db, "users/" + userKey), {
       username: registerUserName,
-<<<<<<< HEAD
-      email: registerEmail,
-      lname: "",
-      lid: "",
-      createTime: currTime,
-=======
       lid: "",
 
     }).then(() => {
       console.log("User data pushed successfully");
->>>>>>> cdc4def15418760d9457d4a75eed4aff3ee0ecca
     })
       .then(() => {
         console.log("User data pushed successfully");
@@ -107,32 +94,6 @@ export async function monitorAuthState() {
   });
 }
 
-<<<<<<< HEAD
-export async function googleLogin() {
-  const provider = new GoogleAuthProvider();
-  signInWithPopup(auth, provider)
-    .then((result) => {
-      // This gives you a Google Access Token. You can use it to access the Google API.
-      const credential = GoogleAuthProvider.credentialFromResult(result);
-      // const token = credential.accessToken;
-      // The signed-in user info.
-      const user = result.user;
-      // IdP data available using getAdditionalUserInfo(result)
-      // ...
-      alert("google loign successfully");
-      window.location.href = "/dashboard";
-    })
-    .catch((error) => {
-      // Handle Errors here.
-      // const errorCode = error.code;
-      // const errorMessage = error.message;
-      // The email of the user's account used.
-      // const email = error.customData.email;
-      // The AuthCredential type that was used.
-      // const credential = GoogleAuthProvider.credentialFromError(error);
-      // ...
-    });
-=======
 
 // export async function googleLogin() {
 //   const provider = new GoogleAuthProvider();
@@ -195,7 +156,6 @@ export async function googleLogin() {
     alert(`Google login failed with error code ${errorCode} and message ${errorMessage}`);
     // ...
   }
->>>>>>> cdc4def15418760d9457d4a75eed4aff3ee0ecca
 }
 
 
