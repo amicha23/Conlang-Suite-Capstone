@@ -26,6 +26,9 @@ export default function Home() {
     const createDict = () => {
         window.open(`/setupFields`, `_self`);
     };
+    const recoverLang = () => {
+        window.open(`/recoverDelLang`, `_self`);
+    };
 
     // Get all user languages into the sidebar on load
     useEffect(() => {
@@ -57,7 +60,8 @@ export default function Home() {
                         }}>
                             <div id="view-create-dashboard" style={{display: viewDict ? "block" : "none"}} >
                                 <h1>Dashboard</h1>
-                                <Button type='primary' onClick={ createDict }>Create New Dictionary</Button>
+                                <Button type='primary' style={{ marginRight: "10px" }} onClick={ createDict }>Create New Dictionary</Button>
+                                <Button type='primary' onClick={ recoverLang }>Recover Deleted Languages</Button>
                             </div>
                             <LangCards langData={langData}/>
                         </Content>
@@ -87,6 +91,7 @@ export default function Home() {
                         <div id="view-create-dashboard" style={{display: viewDict ? "block" : "none"}} >
                             <h1>Dashboard</h1>
                             <Button type='primary' onClick={ createDict }>Create New Dictionary</Button>
+                            <Button type='primary' onClick={ recoverLang }>Recover Deleted Languages</Button>
                         </div>
                     </Content>
                     <Footer
