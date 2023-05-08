@@ -135,47 +135,6 @@ const RecoverDelLang = () => {
       </Button>
     </div>
   );
-
-  //   return (
-  //     <div>
-  //       <h2>Deleted Languages</h2>
-  //       <p>Languages deleted in 30 days</p>
-  //       {deletedLanguages.length > 0 ? (
-  //         <Table dataSource={deletedLanguages} columns={columns} />
-  //       ) : (
-  //         <p>No deleted languages found.</p>
-  //       )}
-
-  //       <Modal
-  //         title="Language Details"
-  //         visible={isModalVisible}
-  //         footer={null}
-  //         onCancel={() => setIsModalVisible(false)}
-  //       >
-  //         {selectedLanguage && (
-  //           <>
-  //             <p>
-  //               <strong>Name:</strong> {selectedLanguage.name}
-  //             </p>
-  //             <p>
-  //               <strong>Description:</strong> {selectedLanguage.description}
-  //             </p>
-  //             <p>
-  //               <strong>Consonants:</strong> {selectedLanguage.consonants}
-  //             </p>
-  //             <p>
-  //               <strong>Vowels:</strong> {selectedLanguage.vowels}
-  //             </p>
-  //             <p>
-  //               <strong>Numbers of word:</strong>{" "}
-  //               {Object.keys(Object.values(selectedLanguage.dict)[0]).length - 1}
-  //             </p>
-  //           </>
-  //         )}
-  //       </Modal>
-  //       <Button onClick={backToDashboard}> Back to dashboard </Button>
-  //     </div>
-  //   );
 };
 
 export default RecoverDelLang;
