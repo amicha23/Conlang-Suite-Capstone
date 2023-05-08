@@ -1,7 +1,7 @@
 // PACKAGES
 import { Layout, Image } from 'antd';
 import { useRouter } from 'next/router';
-import { Button, Collapse, Card } from 'antd';
+import { Button, Collapse, Card, Row, Col } from 'antd';
 import React, { useEffect, useState } from "react";
 import Router from 'next/router';
 
@@ -103,12 +103,19 @@ export default function Home() {
 function LangCard(props) {
     const handleClick = () => {
       // Navigate to the cards language
-    }
+      window.open(
+        `/langTable?lid=` +
+          props.langID +
+          `&lname=` +
+          encodeURIComponent(props.langName),
+        `_self`
+      );
+    } 
 
     return (
-        <Card hoverable style={{ width: 240,}}
+        <Card onClick={handleClick} hoverable style={{ width: 240,}}
             cover={<img alt="Picture for given dictionary" src={props.langImg} />}>
-            <Meta title={props.langName} description="www.instagram.com"/>
+            <Meta title={props.langName} description="LANGUAGE URL"/>
         </Card>
     )
   }
@@ -123,12 +130,16 @@ function LangCard(props) {
     let langCards = [];
     for (let i = 0; i < langNames.length; i++) {
         langCards.push(
-            <LangCard langName={langNames[i]} langImg={langImgs[i]} key={langIDS[i]}/>
+            <Col span={6}>
+                <LangCard langName={langNames[i]} langImg={langImgs[i]} langID={langIDS[i]} key={langIDS[i]}/>
+            </Col>
         )
     }
     return (
         <div id="langCards">
-          {langCards}
+            <Row>
+                {langCards}
+            </Row>
         </div>
       );
   }
