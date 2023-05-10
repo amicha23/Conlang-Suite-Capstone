@@ -5,16 +5,18 @@ export default async function saveAsCsv(data) {
   var lid = data.lid;
   var wordData = data.data;
   const name = data.name;
+  const columns = data.columns;
+  let csvCols = []
+  for (let i = 0; i < columns.length - 1; i++) {
+    csvCols.push(columns[i].title)
+  }
 
   let csvContent = "data:text/csv;charset=utf-8,";
+  csvContent += csvCols.join(",") + '\r\n';
 
   for (var i = 0; i < wordData.length; i++) {
-    if (i === 0 ) {
-      var row = Object.keys(wordData[i]).join(",");
-    } else {
-      var row = Object.values(wordData[i]).join(",");
-    }
-    csvContent += row + '\r\n';
+      var row = (Object.values(wordData[i]).slice(1)).join(",");
+      csvContent += row + '\r\n';
   }
 
   var encodedUri = encodeURI(csvContent);

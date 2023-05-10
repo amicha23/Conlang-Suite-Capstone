@@ -132,7 +132,7 @@ export async function googleLogin() {
     const errorMessage = error.message;
     alert(`Google login failed with error code ${errorCode} and message ${errorMessage}`);
     // ...
-  }
+  })
 }
 
 

@@ -32,7 +32,16 @@ export default function register() {
                     <p class="mb-1">Name</p>
                     <Input id="username" placeholder="Name"/>
                     <p class="mb-1">Email</p>
-                    <Input id="email" placeholder="Email"/>
+                    <Input id="email" placeholder="Email" rules={[
+                        {
+                            type: 'email',
+                            message: 'The input is not valid E-mail!',
+                        },
+                        {
+                            required: true,
+                            message: 'Please input your E-mail!',
+                        },
+                        ]}/>
                     <p class="mt-3 mb-1">Password</p>
                     <Input className = "mb-2"type ="password" id="password" placeholder="Password"/>
                     <i className='fa fa-eye showpd'/>
@@ -42,7 +51,7 @@ export default function register() {
                     <div class="g-signin2" data-onsuccess="onSignIn"></div>
                     </div>
                     <p class="mt-4 text-center">Already have an account? <Link href="login" className="text-primary fw-semibold">Sign in</Link> </p>
-                </div>              
+                </div>
                 </div >
             </section>
         </div>

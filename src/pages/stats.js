@@ -26,6 +26,17 @@ export default function Home() {
   const [isFirstLetterData, setIsFirstLetterData] = useState(true);
 
   useEffect(() => {
+    let uid = sessionStorage.getItem("uid");
+    console.log("USE THIS UID: ", uid)
+    if (uid) {
+      console.log("Logged in");
+    } else {
+      console.log("Not logged in");
+      window.open(`/`, `_self`);
+    }
+  }, []);
+
+  useEffect(() => {
     const searchParams = new URLSearchParams(window.location.search);
 
     setSearchParams(searchParams);
@@ -70,7 +81,7 @@ export default function Home() {
     key === 'Type' ? setIsFirstLetterData(false): setIsFirstLetterData(true);
 
   }
-  
+
 
   function sum(arrays) {
     let sum = 0;
@@ -88,8 +99,8 @@ export default function Home() {
     for (let i = 0; i < fieldNames.length; i++) {
       items.push(
         {
-          key: i+1, 
-          label:fieldNames[i], 
+          key: i+1,
+          label:fieldNames[i],
           children: isFirstLetter ? childContent({chartData: firstLetterData[i], total: sum(firstLetterData[i])}): childContent({chartData: typeData[i], total: sum(typeData[i])})
         }
       );

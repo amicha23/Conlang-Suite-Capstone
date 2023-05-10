@@ -72,7 +72,7 @@ export function SetUp({setUpView, changeSetUpView, file, setFile, blob, setBlob}
 
 
     function handleUpload(info) {
-      if (info.file.status === "done") {
+      if (info.file.status === "done" && (info.file.type === "image/png" || info.file.type === "image/jpeg")) {
         setFile(info.file)
         message.success(`${info.file.name} file uploaded successfully`);
         const reader = new FileReader();
@@ -83,9 +83,15 @@ export function SetUp({setUpView, changeSetUpView, file, setFile, blob, setBlob}
           console.log("CHECK FOR FILE ", info.file)
           console.log("CHECK FOR BLOB ", blob)
           setBlob(blob)
+          let errormsgImg = document.getElementById("img-error")
+          errormsgImg.style.display="none"
         };
       } else if (info.file.status === "error") {
         message.error(`${info.file.name} file upload failed.`);
+      } else if (info.file.type !== "image/png" || info.file.type !== "image/jpeg") {
+        let errormsgImg = document.getElementById("img-error")
+        errormsgImg.style.display="block"
+        // message.error(`${info.file.name} file upload failed.`);
       }
     }
 
@@ -111,6 +117,10 @@ export function SetUp({setUpView, changeSetUpView, file, setFile, blob, setBlob}
       </Upload>
     );
   }
+
+  const backToDashboard = () => {
+    window.open(`/dashboard`, `_self`);
+  };
 
   return (
       <div>
@@ -185,6 +195,9 @@ export function SetUp({setUpView, changeSetUpView, file, setFile, blob, setBlob}
                 </Upload> */}
                 <UploadFile />
               </div>
+              <div id="img-error" style={{display: "none"}}>
+                <p>Upload File must be jpg or png!</p>
+              </div>
 
               <div id="continue-button">
                 <br></br>
@@ -213,6 +226,18 @@ export function SetUp({setUpView, changeSetUpView, file, setFile, blob, setBlob}
                     }}>
                     Continue
                  </Button>
+                 <Button
+                  onClick={backToDashboard}
+                  style={{
+                    margin: "20px",
+                    display: "block",
+                    marginLeft: "auto",
+                    marginRight: "auto",
+                    }}
+                  >
+                  {" "}
+                  Back to dashboard{" "}
+                </Button>
               </div>
               <div id="name-error" style={{display: "none"}}>
                 <p>Language Name must be filled!</p>

@@ -559,7 +559,7 @@ const DictionaryTable = ({ queryParam, setQueryParam, queryName, setQueryName })
   };
 
   const handleCsvExport = async () => {
-    await saveAsCsv({lid: queryParam, data: data, name: queryName});
+    await saveAsCsv({lid: queryParam, data: data, name: queryName, columns: mergedColumns});
   };
 
   return (
@@ -609,7 +609,7 @@ const DictionaryTable = ({ queryParam, setQueryParam, queryName, setQueryName })
 
         <Input
           id="langVowelsID"
-          placeholder="Vowels of Language"
+          // placeholder="Vowels of Language"
           value={proList}
           onChange={(e) => setProList(e.target.value)}
         />

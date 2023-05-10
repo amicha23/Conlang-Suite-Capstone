@@ -13,6 +13,17 @@ const RecoverDelLang = () => {
     fetchDeletedLanguages();
   }, []);
 
+  useEffect(() => {
+    let uid = sessionStorage.getItem("uid");
+    console.log("USE THIS UID: ", uid)
+    if (uid) {
+      console.log("Logged in");
+    } else {
+      console.log("Not logged in");
+      window.open(`/`, `_self`);
+    }
+  }, []);
+
   const fetchDeletedLanguages = async () => {
     try {
       const data = await getUserDelLang();

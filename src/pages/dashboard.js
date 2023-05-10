@@ -34,14 +34,18 @@ export default function Home() {
     useEffect(() => {
         let uid = sessionStorage.getItem("uid");
         console.log("USE THIS UID: ", uid)
-        const fetchData = async () => {
-            let getLangData = await getUserLang({
-            uid: uid,
-        });
-        setLangData(getLangData);
-    };
+        if (uid) {
+            const fetchData = async () => {
+                let getLangData = await getUserLang({
+                uid: uid,
+                });
+            setLangData(getLangData);
 
-    fetchData();
+            };
+            fetchData();
+        } else {
+            window.open(`/`, `_self`);
+        }
     }, []);
 
     console.log('LANGDATA1: ');
@@ -129,9 +133,9 @@ function LangCard(props) {
   }
 
   function LangCards({langData}) {
-    console.log('LANGDATA2: ' + langData);
-    if (langData === "No data available") {
-        console.log("ASHKD", langData)
+    console.log('LANGDATA2: ' + JSON.stringify(langData));
+    if (langData === "No data available" || langData.languageCovers[0] === undefined) {
+        console.log("no images", langData)
         return null
     }
         const langIDS = langData.languageIDs.split(",");

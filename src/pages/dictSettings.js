@@ -85,6 +85,17 @@ export default function dictSettings() {
   const [searchParams, setSearchParams] = useState('');
 
   useEffect(() => {
+    let uid = sessionStorage.getItem("uid");
+    console.log("USE THIS UID: ", uid)
+    if (uid) {
+      console.log("Logged in");
+    } else {
+      console.log("Not logged in");
+      window.open(`/`, `_self`);
+    }
+  }, []);
+
+  useEffect(() => {
     const searchParams = new URLSearchParams(window.location.search);
     console.log("SSS", searchParams)
 
@@ -135,6 +146,10 @@ export default function dictSettings() {
   // Discard changes, return to dashboard
   const cancelConfirm = (e) => {
     Router.push({pathname: '/dashboard'})
+  };
+
+  const backToDashboard = () => {
+    window.open(`/dashboard`, `_self`);
   };
 
   if (data) {
@@ -213,6 +228,18 @@ export default function dictSettings() {
                           }}
                           >
                           Continue
+                        </Button>
+                        <Button
+                          onClick={backToDashboard}
+                          style={{
+                            margin: "20px",
+                            display: "block",
+                            marginLeft: "auto",
+                            marginRight: "auto",
+                            }}
+                          >
+                          {" "}
+                          Back to dashboard{" "}
                         </Button>
                       {/* </Popconfirm> */}
                     </div>

@@ -31,6 +31,17 @@ export default function Home() {
     // router.push({ pathname: router.asPath });
 
     useEffect(() => {
+        let uid = sessionStorage.getItem("uid");
+        console.log("USE THIS UID: ", uid)
+        if (uid) {
+          console.log("Logged in");
+        } else {
+          console.log("Not logged in");
+          window.open(`/`, `_self`);
+        }
+      }, []);
+
+    useEffect(() => {
         const searchParams = new URLSearchParams(window.location.search);
 
 

@@ -54,7 +54,7 @@ export default async function recoverLang(lid) {
       return "Recover failed";
     }
   } catch (err) {
-    console.log("error :>> ", error);
+    console.log("error :>> ", err);
     return err;
   }
 }
