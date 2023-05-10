@@ -1,0 +1,9 @@
+h1 {
+  font-size: 32px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.ant-card {
+  margin: 2ch;
+  width: 20vw;
+}

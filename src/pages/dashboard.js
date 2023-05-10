@@ -1,5 +1,5 @@
 // PACKAGES
-import { Layout, Image } from 'antd';
+import { Layout, Image, Space } from 'antd';
 import { useRouter } from 'next/router';
 import { Button, Collapse, Card, Col, Row } from 'antd';
 import React, { useEffect, useState } from "react";
@@ -12,6 +12,7 @@ import SideBar from '../components/SideBar';
 
 // FILES
 import getUserLang from "./api/user/getUserLang";
+import '../app/css/dashboard.css';
 
 // Constants
 const { Header, Footer, Sider, Content } = Layout;
@@ -125,7 +126,7 @@ function LangCard(props) {
     }
 
     return (
-        <Card onClick={handleClick} hoverable style={{ width: 240,}}
+        <Card onClick={handleClick} hoverable 
             cover={<img alt="Picture for given dictionary" src={props.langImg} />}>
             <Meta title={props.langName} description="LANGUAGE URL"/>
         </Card>
@@ -153,9 +154,11 @@ function LangCard(props) {
         }
         return (
             <div id="langCards">
-                <Row>
-                    {langCards}
-                </Row>
+                <Space size={'middle'}>
+                    <Row>
+                        {langCards}
+                    </Row>
+                </Space>
             </div>
           );
   }
