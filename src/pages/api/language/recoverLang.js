@@ -8,8 +8,8 @@ import {
 
 export default async function recoverLang(lid) {
   try {
-    // let uid = sessionStorage.getItem("uid");
-    let uid = "OUnW07Np3VNFduMOCX1V1bvvsd22";
+    let uid = sessionStorage.getItem("uid");
+    // let uid = "OUnW07Np3VNFduMOCX1V1bvvsd22";
     console.log("lid :>> ", lid);
     const langRef = ref(db, `deleteRecord/${uid}/${lid}`);
     const snapshot = await get(langRef);
