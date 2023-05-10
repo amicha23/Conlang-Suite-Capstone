@@ -128,7 +128,7 @@ function LangCard(props) {
     return (
         <Card onClick={handleClick} hoverable 
             cover={<img alt="Picture for given dictionary" src={props.langImg} />}>
-            <Meta title={props.langName} description="LANGUAGE URL"/>
+            <Meta title={props.langName} />
         </Card>
     )
   }
