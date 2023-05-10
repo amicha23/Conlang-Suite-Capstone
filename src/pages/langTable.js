@@ -31,11 +31,22 @@ export default function Home() {
     // router.push({ pathname: router.asPath });
 
     useEffect(() => {
+        let uid = sessionStorage.getItem("uid");
+        console.log("USE THIS UID: ", uid)
+        if (uid) {
+          console.log("Logged in");
+        } else {
+          console.log("Not logged in");
+          window.open(`/`, `_self`);
+        }
+      }, []);
+
+    useEffect(() => {
         const searchParams = new URLSearchParams(window.location.search);
 
 
         setSearchParams(searchParams);
-        if (searchParams) {
+        if (searchParams !== undefined) {
             // const queryParam = searchParams.get('lid');
             // const queryName = searchParams.get('lname');
 
@@ -50,26 +61,27 @@ export default function Home() {
       }, []);
 
     return (
-        <div>
+        <div >
             <Layout style={{
                         minHeight: '100vh',
                     }}>
-                <div id="side-bar-div">
-                    <SideBar/>
-                </div>
+                {/* <div id="side-bar-div"> */}
+                    <SideBar />
+                {/* </div> */}
                 <Layout className="site-layout">
-                    <Header
+                    {/* <Header
                         className="site-layout-background"
                         style={{
                             padding: 0,
                         }}
-                        />
+                        /> */}
+
                     <Content style={{
                                 margin: '0 16px',
                             }}>
                         <div id="dict-table" className='site-layout-background' style={{
                                                                                         padding: 24,
-                                                                                        minHeight: 360,
+                                                                                        minHeight: '100%'
                                                                                         }}>
                             <DictionaryTable queryParam={queryParam} setQueryParam={setQueryParam} queryName={queryName} setQueryName= {setQueryName}/>
                         </div>
@@ -84,5 +96,5 @@ export default function Home() {
                 </Layout>
             </Layout>
         </div>
-    );
+    )
 }

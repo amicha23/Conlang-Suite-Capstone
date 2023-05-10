@@ -24,12 +24,6 @@ export function DictionaryPrefilledForms({ fields, setFields }) {
     <div>
       <br></br>
       <PreFilledList setFields={setFields} fields={fields} />
-
-      {/* <AddInput setFields={setFields} /> */}
-
-      {/* <Button type="primary" htmlType="submit" onClick={onFinish}>
-          Submit
-      </Button> */}
     </div>
   );
 }
@@ -61,17 +55,20 @@ function PreFilledList({ fields, setFields }) {
               style={{ width: "370px" }}
               readOnly={
                 field === "Orthographic forms" ||
-                field === "English definition"
+                field === "English definition" ||
+                field === "Pronunciation"
               }
               onChange={
                 field !== "Orthographic forms" &&
-                field !== "English definition"
+                field !== "English definition" &&
+                field !== "Pronunciation"
                   ? (e) => handleInputChange(e, key)
                   : null
               } // Pass the event and index to the handler only if editable
             />
             {field !== "Orthographic forms" &&
-              field !== "English definition" && (
+              field !== "English definition" &&
+              field !== "Pronunciation" && (
                 <DeleteInput field={field} setFields={setFields} />
               )}
           </Form.Item>

@@ -2,9 +2,10 @@
 
 import { Input } from 'antd';
 import { UploadOutlined, LeftOutlined } from '@ant-design/icons';
-import { Button, message, Upload } from 'antd';
+import { Button, message, Upload, Popconfirm } from 'antd';
 import React, { useRef, useEffect, useState } from "react";
 import { Layout } from 'antd';
+import Router from 'next/router';
 const { Header, Footer, Sider, Content } = Layout;
 
 // Router
@@ -64,20 +65,38 @@ export default function setup() {
 
   const [fields, setFields] = React.useState([
     "Orthographic forms",
+    "Pronunciation",
+    "English definition",
     "Keystrokes for orthography",
     "Head word",
     "Inflected forms",
-    "Pronunciation",
     "Proto-form",
-    "Politeness-register scale",
-    "English definition"
+    "Politeness-register scale"
   ]);
+
+  const [file, setFile] = useState(null);
+  const [blob, setBlob] = useState(null);
+
+  useEffect(() => {
+    let uid = sessionStorage.getItem("uid");
+    console.log("USE THIS UID: ", uid)
+    if (uid) {
+      console.log("Logged in");
+    } else {
+      console.log("Not logged in");
+      window.open(`/`, `_self`);
+    }
+  }, []);
+
+  const cancelConfirm = (e) => {
+    window.open('/dashboard', `_self`);
+  };
 
 
   return (
       <div>
           <div id="LangInfo-Setup" style={{display: setUpView ? "block" : "none"}}>
-            <SetUp setUpView={setUpView} changeSetUpView={changeSetUpView}/>
+            <SetUp setUpView={setUpView} changeSetUpView={changeSetUpView} file={file} setFile={setFile} blob={blob} setBlob={setBlob}/>
           </div>
           <div id="Fields-Setup"  style={{display: setUpView ? "none" : "block"}}>
             <Layout>
@@ -122,20 +141,37 @@ export default function setup() {
                   </div>
 
                 </div>
-                <div id="buttons" className={styles.buttons}>
-                  <div id="back-btn" className={styles.buttonsChild} style={{display: setUpView ? "none" : "block"}}>
+                <div id="buttons" style={{display: 'flex', alignItems: 'center'}}>
+                  <div id="back-btn" style={{display: setUpView ? "none" : "block", flex: '0.6'}}>
                     <LeftOutlined onClick={() => {
                       changeSetUpView(true);
                     }}/>
                   </div>
+
                   <div id="create-dict-button">
                     <br></br>
+                    <Popconfirm
+                      title="Are you sure you want to cancel these changes?"
+                      description="Discard edits and return to the dashboard"
+                      onConfirm={cancelConfirm}
+                      okText="Yes"
+                    >
+                      <Button
+                        style={{ marginRight: '0.5rem' }}
+                      >
+                        Cancel
+                      </Button>
+                    </Popconfirm>
                     {/* <Button type="primary" htmlType="submit" onClick={onFinish}> */}
                     <Button
                       type="primary"
                       htmlType="submit"
-                      onClick={() => {
-                        saveDictionaryFields(fieldView);
+                      onClick={async () => {
+                        console.log("FILE: ", file)
+                        console.log("Blob: ", blob)
+                        await saveDictionaryFields(fieldView, file, blob);
+                        // Router.push({pathname: '/dashboard'})
+                        window.open('/dashboard', `_self`);
                       }}
                       >
                       Create Dictionary

@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "node -r dotenv/config -r esm ./src/pages/api/scheduler.js & next dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@ant-design/icons": "^5.0.1",
+    "@ant-design/plots": "^1.2.5",
     "@firebase/storage": "^0.11.2",
     "@next/font": "13.1.6",
     "@types/node": "18.13.0",
@@ -18,14 +19,21 @@
     "@types/react-dom": "18.0.10",
     "antd": "^5.2.3",
     "blob": "^0.1.0",
+    "bootstrap": "^5.2.3",
+    "dotenv": "^16.0.3",
     "firebase": "^9.17.1",
     "firebase-admin": "^11.5.0",
-    "next": "^13.3.0",
+    "next": "^13.2.3",
+    "node-schedule": "^2.1.1",
+    "prop-types": "^15.8.1",
     "react": "18.2.0",
     "react-bootstrap": "^2.7.2",
     "react-dom": "18.2.0",
+    "react-google-charts": "^4.0.0",
+    "react-keyboard": "^1.0.10",
     "react-router-dom": "^6.10.0",
     "request": "^2.79.0",
+    "simple-keyboard": "^3.5.54",
     "typescript": "4.9.5"
   }
 }

@@ -1,16 +1,16 @@
 import { storage } from "../../../../firebaseConfig/firebaseAdmin.js";
 import {
-  ref,
   uploadBytesResumable,
   getDownloadURL,
   getMetadata,
 } from "firebase/storage";
-import fs from "fs"; // Import the fs module
+import { ref, set } from "firebase/database";
+import { db } from "../../../../firebaseConfig/firebaseAdmin.js";
 
-export default async function handler(req, res) {
+export default async function uploadCoverImg(data) {
   try {
-    const file = req.body.file;
-    const lid = req.body.lid;
+    const file = data.file;
+    const lid = data.lid;
 
     // const lid = "-NTH0xS0MqSDgOiPg09p";
 
@@ -43,18 +43,16 @@ export default async function handler(req, res) {
           () => {
             // Upload completed successfully, get download URL
             getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-              console.log("File available at:", downloadURL);
-              res.status(200).json("Cover image upload success");
+              set(ref(db, `language/${lid}/coverImg`), { downloadURL });
+              return "Cover image upload success";
             });
           }
         );
       })
       .catch((e) => {
-        console.error("Error uploading image:", e);
-        res.status(500).json("Cover image upload failed");
+        return e;
       });
   } catch (e) {
-    console.error("Error uploading image:", e);
-    res.status(500).json("Cover image upload failed");
+    return e;
   }
 }
