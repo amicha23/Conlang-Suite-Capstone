@@ -7,6 +7,7 @@ import {
   GoogleAuthProvider,
   getAuth,
   signInWithPopup } from "firebase/auth";
+
 import { ref, child, update, set, get } from "firebase/database";
 import { db, auth } from "firebaseConfig/firebaseAdmin";
 import { useRouter } from 'next/router';
@@ -58,12 +59,14 @@ export async function loginUser() {
   try {
     await signInWithEmailAndPassword(auth, loginEmail, loginPassword)
     console.log("Successful logged in HERE!");
+
     const uid :any = await getCurrentUid();
     console.log("TEST", uid)
     sessionStorage.setItem("uid", uid);
     console.log("TES UID", sessionStorage.getItem("uid"))
     window.location.href = '/dashboard';
     // router.push({pathname: '/dashboard'});
+
 
   }
   catch(error) {
@@ -135,8 +138,6 @@ export async function googleLogin() {
   })
 }
 
-
-
 export async function logoutUser() {
   await signOut(auth);
   alert('logged out');
@@ -155,5 +156,6 @@ export async function resetPassword() {
       const errorMessage = error.message;
       alert(errorCode + errorMessage)
     });
+
 }
 

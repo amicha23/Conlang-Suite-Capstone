@@ -6,7 +6,8 @@
     "dev": "node -r dotenv/config -r esm ./src/pages/api/scheduler.js & next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "reg": "node  C:/Users/bahan/Desktop/Conlang-Suite-Capstone/src/pages/register.js"
   },
   "dependencies": {
     "@ant-design/icons": "^5.0.1",
@@ -26,6 +27,7 @@
     "node-schedule": "^2.1.1",
     "prop-types": "^15.8.1",
     "react": "18.2.0",
+    "react-bootstrap": "^2.7.2",
     "react-dom": "18.2.0",
     "react-google-charts": "^4.0.0",
     "react-keyboard": "^1.0.10",
