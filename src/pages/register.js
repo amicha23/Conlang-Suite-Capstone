@@ -1,5 +1,5 @@
 import React, { useEffect, useState} from 'react';
-import { Button, Input } from "antd";
+import { Button, Input, Form } from "antd";
 import { GoogleOutlined, KeyOutlined, UploadOutlined } from '@ant-design/icons';
 import {registerUser, googleLogin, monitorAuthState} from "src/app/user"
 import { auth } from "firebaseConfig/firebaseAdmin";
@@ -29,27 +29,59 @@ export default function register() {
                 <img src="/img/langtime_studio_logo-transformed.png" alt="test"/>
                 <h2 class="text-center">Create an account</h2>
                 <div id="first-page-setup">
+                    <Form>
                     <p class="mb-1">Name</p>
-                    <Input id="username" placeholder="Name"/>
-                    <p class="mb-1">Email</p>
-                    <Input id="email" placeholder="Email" rules={[
+                    <Form.Item
+                    name='Username'
+                    // label="Name"
+                    rules={[
                         {
-                            type: 'email',
-                            message: 'The input is not valid E-mail!',
+                        required: true,
+                        message: 'Username is required'
                         },
+                    ]}
+                    >
+                        <Input id="username" placeholder="Name"/>
+                    </Form.Item>
+                    <p class="mb-1">Email</p>
+                    <Form.Item
+                        name='Email'
+                        // label="Email"
+                        rules={[
+                            {
+                            required: true,
+                            type: 'email',
+                            message: 'Email is required'
+                            },
+                        ]}
+                        >
+                        <Input id="email" placeholder="Email" />
+                    </Form.Item>
+                    <p class="mt-3 mb-1">Password</p>
+                    <Form.Item
+                        name="password"
+                        // label="Password"
+                        rules={[
                         {
                             required: true,
-                            message: 'Please input your E-mail!',
+                            message: 'Password is required',
                         },
-                        ]}/>
-                    <p class="mt-3 mb-1">Password</p>
-                    <Input className = "mb-2"type ="password" id="password" placeholder="Password"/>
-                    <i className='fa fa-eye showpd'/>
-                    <div className = "d-grid gap-1" id="signin-button">
-                    <Button type="primary" onClick={() => {registerUser()}}>Sign up</Button>
-                    <Button icon={<GoogleOutlined/>} onClick={() => {googleLogin()}}>Sign in with Google</Button>
-                    <div class="g-signin2" data-onsuccess="onSignIn"></div>
-                    </div>
+                        ]}
+                        >
+                        {/* <i className='fa fa-eye showpd'/> */}
+                        <Input.Password className = "mb-2"type ="password" id="password" placeholder="Password"/>
+
+                    </Form.Item>
+                        <Form.Item>
+                            <div className = "d-grid gap-1" id="signin-button">
+
+                            <Button type="primary" htmlType="submit" onClick={() => {registerUser()}}>Sign up</Button>
+                            <Button icon={<GoogleOutlined/>} htmlType="submit" onClick={() => {googleLogin()}}>Sign in with Google</Button>
+
+                            <div class="g-signin2" data-onsuccess="onSignIn"></div>
+                            </div>
+                        </Form.Item>
+                    </Form>
                     <p class="mt-4 text-center">Already have an account? <Link href="login" className="text-primary fw-semibold">Sign in</Link> </p>
                 </div>
                 </div >
