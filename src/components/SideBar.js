@@ -23,7 +23,7 @@ import Link from "next/link";
 import React, { useState, useEffect } from "react";
 import { Menu } from "antd";
 import Router from "next/router";
-import signOut, { logout as logoutFunction } from "../app/user"
+import signOut, { logoutUser as logoutFunction } from "../app/user"
 // import { useSearchParams } from "react-router-dom";
 
 // FILES

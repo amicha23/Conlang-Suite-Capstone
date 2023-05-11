@@ -45,7 +45,7 @@ export default function Home() {
             };
             fetchData();
         } else {
-            window.open(`/`, `_self`);
+            window.open(`https://langtimeengine.framer.website/`, `_self`);
         }
     }, []);
 
@@ -126,7 +126,7 @@ function LangCard(props) {
     }
 
     return (
-        <Card onClick={handleClick} hoverable 
+        <Card onClick={handleClick} hoverable
             cover={<img alt="Picture for given dictionary" src={props.langImg} />}>
             <Meta title={props.langName} />
         </Card>

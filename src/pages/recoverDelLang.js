@@ -20,7 +20,7 @@ const RecoverDelLang = () => {
       console.log("Logged in");
     } else {
       console.log("Not logged in");
-      window.open(`/`, `_self`);
+      window.open(`https://langtimeengine.framer.website/`, `_self`);
     }
   }, []);
 

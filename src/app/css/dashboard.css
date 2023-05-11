@@ -5,4 +5,13 @@ h1 {
 
 .ant-card {
   margin: 2ch;
+  width: 20vw;
+  height: 20vw;
+}
+
+.ant-row {
+  display: flex;
+  flex-flow: row wrap;
+  min-width: 0;
+  gap: 4rem;
 }
