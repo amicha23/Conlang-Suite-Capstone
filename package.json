@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "node -r dotenv/config -r esm ./src/pages/api/scheduler.js & next dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
