@@ -1,15 +1,16 @@
 import 'bootstrap/dist/css/bootstrap.css';
 import { Input } from 'antd';
 import { GoogleOutlined, UploadOutlined } from '@ant-design/icons';
-import { Button, message, Upload } from 'antd';
+import { Button, message, Upload, Form } from 'antd';
 import React, { useEffect, useState } from "react";
 import { Layout } from 'antd';
 import { db, auth } from "firebaseConfig/firebaseAdmin";
 import { getDatabase, ref, set as firebaseSet, onValue } from 'firebase/database';
-import { loginUser, googleLogin, resetPassword } from "src/app/user"
+import { googleLogin, resetPassword } from "src/app/user"
 import { CheckCircleOutlined, CheckCircleTwoTone, InfoCircleOutlined, InfoCircleTwoTone } from '@ant-design/icons'; // icons
 import Link from 'next/link';
 import { useRouter } from 'next/router';
+import { notification } from 'antd';
 
 function writeUserData(userId, name, email) {
   const db = getDatabase();
@@ -27,6 +28,32 @@ const linkStyle = {
   cursor: 'pointer',
 }
 
+function loginUser() {
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
+
+  // Check if email and password meet requirements
+  const validEmail = /\S+@\S+\.\S+/.test(email);
+  const validPassword = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/.test(password);
+
+  if (!validEmail || !validPassword) {
+    // Show error notification
+    notification.error({
+      message: 'Invalid email or password',
+      description: 'Please enter a valid email address and a password with at least 8 characters, including at least one letter and one number.',
+    });
+    return;
+  }
+
+  // Proceed with user registration
+  auth.createUserWithEmailAndPassword(email, password)
+    .then((userCredential) => {
+      // ...
+    })
+    .catch((error) => {
+      // ...
+    });
+}
 
 //function to toggle hide/show password
 function showPwd(id, el) {
@@ -41,6 +68,25 @@ function showPwd(id, el) {
 }
 
 export default function login() {
+  const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+
+    const handleSignUp = () => {
+        // check if email and password meet certain requirements
+        if (email.length >= 6 && password.length >= 8) {
+            // trigger browser notification
+            if ("Notification" in window) {
+                Notification.requestPermission().then((permission) => {
+                    if (permission === "granted") {
+                        new Notification("Email and password meet requirements!");
+                    }
+                });
+            }
+        }
+
+        // call the loginUser function
+        loginUser();
+    };
   const router = useRouter();
   return (
       <div className="container">
@@ -51,23 +97,45 @@ export default function login() {
               <h1 style={{marginLeft: '75px'}}>Log in to your account</h1>
               <p className='text-secondary text-center pb-3'>Welcome! Please enter your details</p>
               <div id="first-page-setup">
-                <p className="mb-1">Email</p>
-                <Input id="email" placeholder="Email"/>
-                <p className="mt-3 mb-1">Password</p>
-                <Input className = "mb-2"type ="password" id="password" placeholder="Password"/>
-                <i className='fa fa-eye showpd'/>
+                <Form>
+                  <p class="mb-1">Email</p>
+                  <Form.Item
+                      name='Email'
+                      // label="Email"
+                      rules={[
+                          {
+                          required: true,
+                          message: 'Email is required'
+                          },
+                      ]}
+                  >
+                  <Input id="email" placeholder="Email"/>
+                  </Form.Item>
+                  <p className="mt-3 mb-1">Password</p>
+                  <Form.Item
+                    name="password"
+                    // label="Password"
+                    rules={[
+                    {
+                        required: true,
+                        message: 'Password is required',
+                    },
+                    ]}
+                    >
+                    {/* <i className='fa fa-eye showpd'/> */}
+                    <Input.Password className = "mb-2"type ="password" id="password" placeholder="Password"/>
 
-                <p style={linkStyle} className = "text-end text-primary fw-semibold mb-5" onClick={() => router.push('forgetPassword')}>Forgot password?</p>
+                  </Form.Item>
+                  <i className='fa fa-eye showpd'/>
 
-                <div className = "d-grid gap-1" id="signin-button">
-                  <Button type="primary" onClick={() => loginUser()}>Sign in</Button>
-                  <Button icon={<GoogleOutlined/>} onClick={() => googleLogin()}>Sign in with Google</Button>
-                  <div className="g-signin2" data-onsuccess="onSignIn"></div>
-                </div>
-
+                  <p style={linkStyle} className = "text-end text-primary fw-semibold mb-5" onClick={() => router.push('forgetPassword')}>Forgot password?</p>
+                  <div className = "d-grid gap-1" id="signin-button">
+                    <Button type="primary" onClick={() => loginUser()}>Sign in</Button>
+                    <Button icon={<GoogleOutlined/>} onClick={() => googleLogin()}>Sign in with Google</Button>
+                    <div className="g-signin2" data-onsuccess="onSignIn"></div>
+                  </div>
+                </Form>
                 <p className="mt-4 text-center">Don't have an account? <Link href="register" className="text-primary fw-semibold">Sign up</Link> </p>
-
-
               </div>
             </div >
         </section>

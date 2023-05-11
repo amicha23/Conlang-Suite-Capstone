@@ -78,16 +78,16 @@ export default function register() {
                     <Form>
                     <p class="mb-1">Name</p>
                     <Form.Item
-                    name='Username'
-                    // label="Name"
-                    rules={[
-                        {
-                        required: true,
-                        message: 'Username is required'
-                        },
-                    ]}
+                        name='Username'
+                        // label="Name"
+                        rules={[
+                            {
+                            required: true,
+                            message: 'Username is required'
+                            },
+                        ]}
                     >
-                        <Input id="username" placeholder="Name"/>
+                    <Input id="username" placeholder="Name"/>
                     </Form.Item>
                     <p class="mb-1">Email</p>
                     <Form.Item
