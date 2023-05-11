@@ -1,7 +1,7 @@
-import { 
+import {
   onAuthStateChanged,
-  signOut, 
-  createUserWithEmailAndPassword, 
+  signOut,
+  createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   sendPasswordResetEmail,
   GoogleAuthProvider,
@@ -9,6 +9,7 @@ import {
   signInWithPopup } from "firebase/auth";
 import { ref, set, get } from "firebase/database";
 import { db, auth } from "firebaseConfig/firebaseAdmin";
+import getCurrentUid from '../pages/api/user/getCurrentUID';
 
 // var testAuth = {
 //   email: "test@test.me",
@@ -22,11 +23,11 @@ export async function registerUser() {
 
   try {
     const userCredential = await createUserWithEmailAndPassword(auth, registerEmail, registerPassword);
-    
+
     console.log("Successful registered HERE!")
-    
+
     const userKey = userCredential.user.uid;
-    
+
     set(ref(db, 'users/' + userKey), {
       username: registerUserName,
       lid: "",
@@ -57,9 +58,12 @@ export async function loginUser() {
     await signInWithEmailAndPassword(auth, loginEmail, loginPassword)
     console.log("Successful logged in HERE!");
 
+    const uid :any = await getCurrentUid();
+    sessionStorage.setItem("uid", uid);
+
     window.location.href = '/dashboard';
     // router.push({pathname: '/dashboard'});
-    
+
   }
   catch(error) {
     console.log(`There was an error: ${error}`);
@@ -99,15 +103,13 @@ export async function googleLogin() {
     let userIds = Object.keys(users);
     alert("Google login successful");
 
-    console.log("Google UID", uid)
     sessionStorage.setItem("uid", uid);
-    console.log("TEST GOOGLE UID", sessionStorage.getItem("uid"))
 
     if (!userIds.includes(uid)) {
       set(ref(db, 'users/' + uid), {
         username: user.displayName,
         lid: "",
-  
+
       }).then(() => {
         console.log("User data pushed successfully");
       })
