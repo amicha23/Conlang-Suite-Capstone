@@ -77,6 +77,17 @@ export default function setup() {
   const [file, setFile] = useState(null);
   const [blob, setBlob] = useState(null);
 
+  useEffect(() => {
+    let uid = sessionStorage.getItem("uid");
+    console.log("USE THIS UID: ", uid)
+    if (uid) {
+      console.log("Logged in");
+    } else {
+      console.log("Not logged in");
+      window.open(`/`, `_self`);
+    }
+  }, []);
+
   const cancelConfirm = (e) => {
     window.open('/dashboard', `_self`);
   };
@@ -136,6 +147,7 @@ export default function setup() {
                       changeSetUpView(true);
                     }}/>
                   </div>
+
                   <div id="create-dict-button">
                     <br></br>
                     <Popconfirm

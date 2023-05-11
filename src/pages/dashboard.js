@@ -1,7 +1,7 @@
 // PACKAGES
-import { Layout, Image } from 'antd';
+import { Layout, Image, Space } from 'antd';
 import { useRouter } from 'next/router';
-import { Button, Collapse, Card } from 'antd';
+import { Button, Collapse, Card, Col, Row } from 'antd';
 import React, { useEffect, useState } from "react";
 import Router from 'next/router';
 
@@ -12,6 +12,7 @@ import SideBar from '../components/SideBar';
 
 // FILES
 import getUserLang from "./api/user/getUserLang";
+import '../app/css/dashboard.css';
 
 // Constants
 const { Header, Footer, Sider, Content } = Layout;
@@ -26,22 +27,29 @@ export default function Home() {
     const createDict = () => {
         window.open(`/setupFields`, `_self`);
     };
+    const recoverLang = () => {
+        window.open(`/recoverDelLang`, `_self`);
+    };
 
     // Get all user languages into the sidebar on load
     useEffect(() => {
         let uid = sessionStorage.getItem("uid");
         console.log("USE THIS UID: ", uid)
-        const fetchData = async () => {
-            let getLangData = await getUserLang({
-            uid: uid,
-        });
-        setLangData(getLangData);
-    };
+        if (uid) {
+            const fetchData = async () => {
+                let getLangData = await getUserLang({
+                uid: uid,
+                });
+            setLangData(getLangData);
 
-    fetchData();
+            };
+            fetchData();
+        } else {
+            window.open(`/`, `_self`);
+        }
     }, []);
 
-    console.log('LANGDATA1: ' + langData);
+    console.log('LANGDATA1: ');
     // Create dashboard cards for each language
     if (langData) {
         return (
@@ -57,7 +65,8 @@ export default function Home() {
                         }}>
                             <div id="view-create-dashboard" style={{display: viewDict ? "block" : "none"}} >
                                 <h1>Dashboard</h1>
-                                <Button type='primary' onClick={ createDict }>Create New Dictionary</Button>
+                                <Button type='primary' style={{ marginRight: "10px"}} onClick={ createDict }>Create New Dictionary</Button>
+                                <Button type='primary' onClick={ recoverLang }>Recover Deleted Languages</Button>
                             </div>
                             <LangCards langData={langData}/>
                         </Content>
@@ -73,53 +82,61 @@ export default function Home() {
             </div>
         );
     } else {
-    return (
-        <div>
-            <Layout style={{
-                minHeight: '100vh',
-            }}>
-                <SideBar/>
-                <Layout className="site-layout">
-                    <Content style={{
-                        padding: 24,
-                        minHeight: '100%'
-                    }}>
-                        <div id="view-create-dashboard" style={{display: viewDict ? "block" : "none"}} >
-                            <h1>Dashboard</h1>
-                            <Button type='primary' onClick={ createDict }>Create New Dictionary</Button>
-                        </div>
-                    </Content>
-                    <Footer
-                        style={{
-                            textAlign: 'center',
-                        }}
-                        >
-                        Langtime ©2023 Created by Pentalingo & Conlangers
-                    </Footer>
+        return (
+            <div>
+                <Layout style={{
+                    minHeight: '100vh',
+                }}>
+                    <SideBar/>
+                    <Layout className="site-layout">
+                        <Content style={{
+                            padding: 24,
+                            minHeight: '100%'
+                        }}>
+                            <div id="view-create-dashboard" style={{display: viewDict ? "block" : "none"}} >
+                                <h1>Dashboard</h1>
+                                <Button type='primary' style={{ marginRight: "10px"}} onClick={ createDict }>Create New Dictionary</Button>
+                                <Button type='primary' onClick={ recoverLang }>Recover Deleted Languages</Button>
+                            </div>
+                        </Content>
+                        <Footer
+                            style={{
+                                textAlign: 'center',
+                            }}
+                            >
+                            Langtime ©2023 Created by Pentalingo & Conlangers
+                        </Footer>
+                    </Layout>
                 </Layout>
-            </Layout>
-        </div>
-    );
+            </div>
+        );
     }
 }
 
 function LangCard(props) {
     const handleClick = () => {
       // Navigate to the cards language
+      window.open(
+        `/langTable?lid=` +
+          props.langID +
+          `&lname=` +
+          encodeURIComponent(props.langName),
+        `_self`
+      );
     }
 
     return (
-        <Card hoverable style={{ width: 240,}}
+        <Card onClick={handleClick} hoverable 
             cover={<img alt="Picture for given dictionary" src={props.langImg} />}>
-            <Meta title={props.langName} description="www.instagram.com"/>
+            <Meta title={props.langName} description="LANGUAGE URL"/>
         </Card>
     )
   }
 
   function LangCards({langData}) {
-    console.log('LANGDATA2: ' + langData);
-    if (langData === "No data available") {
-        console.log("ASHKD", langData)
+    console.log('LANGDATA2: ' + JSON.stringify(langData));
+    if (langData === "No data available" || langData.languageCovers[0] === undefined) {
+        console.log("no images", langData)
         return null
     }
         const langIDS = langData.languageIDs.split(",");
@@ -127,15 +144,21 @@ function LangCard(props) {
         const langImgs = langData.languageCovers;
 
 
-    let langCards = [];
-    for (let i = 0; i < langNames.length; i++) {
-        langCards.push(
-            <LangCard langName={langNames[i]} langImg={langImgs[i]} key={langIDS[i]}/>
-        )
-    }
-    return (
-        <div id="langCards">
-          {langCards}
-        </div>
-      );
+        let langCards = [];
+        for (let i = 0; i < langNames.length; i++) {
+            langCards.push(
+                <Col span={6}>
+                    <LangCard langName={langNames[i]} langImg={langImgs[i]} langID={langIDS[i]} key={langIDS[i]}/>
+                </Col>
+            )
+        }
+        return (
+            <div id="langCards">
+                <Space size={'middle'}>
+                    <Row>
+                        {langCards}
+                    </Row>
+                </Space>
+            </div>
+          );
   }

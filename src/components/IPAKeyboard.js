@@ -29,7 +29,7 @@ const IPAKeyboard = ({ list, soundList, setSoundList, curList, noDup }) => {
 
   return (
     <div className="input-letters">
-      <div className="wrapper-ipa">{createBtns(list)}</div>
+      <div className="wrapper-ipa" style={{"marginBottom":"20px"}}>{createBtns(list)}</div>
     </div>
   );
 };

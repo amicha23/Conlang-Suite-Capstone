@@ -1,5 +1,5 @@
 // // PACKAGES
-import { Layout } from "antd";
+import { Layout, Modal } from "antd";
 // import Image from 'next/image'
 // import Link from 'next/link';
 // import React, { useState, useEffect } from 'react'
@@ -23,6 +23,7 @@ import Link from "next/link";
 import React, { useState, useEffect } from "react";
 import { Menu } from "antd";
 import Router from "next/router";
+import signOut, { logout as logoutFunction } from "../app/user"
 // import { useSearchParams } from "react-router-dom";
 
 // FILES
@@ -103,12 +104,16 @@ export default function SideBar() {
     );
   };
 
-  // Delete a language on the sidebar
-  const handleDeleteLang = async (e) => {
-    console.log("Delete language: ", e.item.props.langID);
-
-    let deleteLangData = await deleteLang({
-      lid: e.item.props.langID,
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [currentDelete, setCurrentDelete] = useState(null);
+  const showModal = () => {
+    setIsModalOpen(true);
+  };
+  const handleOk = async () => {
+    setIsModalOpen(false);
+    console.log("DELETE THIS LANGUAGE CONFIRM")
+     let deleteLangData = await deleteLang({
+      lid: currentDelete,
     });
 
     if (deleteLangData === "Success") {
@@ -121,14 +126,43 @@ export default function SideBar() {
     } else {
       console.log("delete language failed ", deleteLangData);
     }
+    setCurrentDelete(null)
     window.open(`/dashboard`, `_self`);
+  };
+  const handleCancel = () => {
+    setIsModalOpen(false);
+    setCurrentDelete(null)
+  };
+
+  // Delete a language on the sidebar
+  const handleDeleteLang = async (e) => {
+    console.log("Delete language: ", e.item.props.langID);
+    setIsModalOpen(true);
+    setCurrentDelete(e.item.props.langID)
+
+    // handleOk(e)
+
+    // let deleteLangData = await deleteLang({
+    //   lid: e.item.props.langID,
+    // });
+
+    // if (deleteLangData === "Success") {
+    //   console.log("deleted language called :>> ", deleteLangData);
+    //   let uid = sessionStorage.getItem("uid");
+    //   let getLangData = await getUserLang({
+    //     uid: uid,
+    //   });
+    //   setData(getLangData);
+    // } else {
+    //   console.log("delete language failed ", deleteLangData);
+    // }
+    // window.open(`/dashboard`, `_self`);
   };
 
   if (data) {
 
-
     console.log("data.languageNames :>> ", data.languageNames);
-    if (data.languageNames === undefined) {
+    if (data.languageNames === undefined || data.languageIDs === '') {
       return (
         <div>
           <Sider
@@ -140,11 +174,11 @@ export default function SideBar() {
             <Link class="test" href="/dashboard">
               <Image src={logo} alt="Logo placeholder" width={150} />
             </Link>
-            <Link href="/help">
+            {/* <Link href="/help">
               <Image src={help} alt="Help placeholder" width={200} />
-            </Link>
-            <Link href="/logout">
-              <Image src={logout} alt="Logout placeholder" width={200} />
+            </Link> */}
+            <Link href="/">
+              <Image src={logout} alt="Logout placeholder" width={200} onClick={() => {sessionStorage.clear(); logoutFunction}}/>
             </Link>
           </Sider>
         </div>
@@ -212,11 +246,15 @@ export default function SideBar() {
             mode="inline"
             items={items}
           />
-          <Link href="/help">
+          <Modal title="Confirm Delete" open={isModalOpen} onOk={handleOk} onCancel={handleCancel}>
+            <p>Confirm delete this language?</p>
+          </Modal>
+          {/* <Link href="/help">
             <Image src={help} alt="Help placeholder" width={200} />
-          </Link>
-          <Link href="/logout">
-            <Image src={logout} alt="Logout placeholder" width={200} />
+          </Link> */}
+          <Link href="/">
+            <Image src={logout} alt="Logout placeholder" width={200} onClick={() => {sessionStorage.clear();
+                                                                                      logoutFunction}}/>
           </Link>
         </Sider>
       </div>

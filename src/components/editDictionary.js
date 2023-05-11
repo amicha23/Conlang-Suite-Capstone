@@ -31,7 +31,7 @@ import updateCoverImg from '../pages/api/language/updateCoverImg'
 
 //firebase
 
-import { update, ref, get, remove, child, push, onValue, off, on, query } from "firebase/database";
+import { update, ref, get, remove, child, push, onValue, off, on, query, set } from "firebase/database";
 import { db } from "../../firebaseConfig/firebaseAdmin.js";
 import firebase from 'firebase/app';
 
@@ -83,7 +83,8 @@ export function EditDictionary({ data, setData, queryParam, queryName, setUpView
 
   function UploadFile() {
     function handleUpload(info) {
-      if (info.file.status === "done") {
+      console.log("FILE TYPE: ", info.file.type)
+      if (info.file.status === "done" && (info.file.type === "image/png" || info.file.type === "image/jpeg")) {
         setFile(info.file)
         message.success(`${info.file.name} file uploaded successfully`);
         const reader = new FileReader();
@@ -97,9 +98,15 @@ export function EditDictionary({ data, setData, queryParam, queryName, setUpView
           let newCoverURL = await updateCoverImg({ "lid": queryParam, "coverImg": info.file.originFileObj })
           console.log("Set new coverURL: ", newCoverURL)
           setCoverImg(newCoverURL);
+          let errormsg = document.getElementById("img-error")
+          errormsg.style.display="none"
         };
       } else if (info.file.status === "error") {
         message.error(`${info.file.name} file upload failed.`);
+      } else if (info.file.type !== "image/png" || info.file.type !== "image/jpeg") {
+        let errormsg = document.getElementById("img-error")
+        errormsg.style.display="block"
+        // message.error(`${info.file.name} file upload failed.`);
       }
     }
 
@@ -139,6 +146,16 @@ export function EditDictionary({ data, setData, queryParam, queryName, setUpView
     );
   }
 
+  useEffect(() => {
+
+    if (coverImg.includes("default.jpg") || coverImg === undefined || coverImg === null) {
+      document.getElementById("del-image").disabled = true;
+
+      console.log("Nothing to delete")
+    } else {
+      document.getElementById("del-image").disabled = false;
+    }
+  }, [coverImg]);
 
 
   // useEffect(() => {
@@ -181,13 +198,26 @@ export function EditDictionary({ data, setData, queryParam, queryName, setUpView
 
   // Discard changes, return to dashboard
   const cancelConfirm = (e) => {
-    Router.push({ pathname: '/dashboard' })
+    window.open('/dashboard', `_self`);
   };
 
   const handleDelImg = async (e) => {
-    setCoverImg('')
+    // console.log("DELETE THIS", e.target)
+    // document.getElementById("del-image").disabled = true;
+    if (coverImg.includes("default.jpg") || coverImg === undefined || coverImg === null) {
+      document.getElementById("del-image").disabled = true;
+
+      console.log("Nothing to delete")
+    } else {
+      document.getElementById("del-image").disabled = false;
+
+    // setCoverImg('')
     let newCoverURL = await updateCoverImg({'lid': queryParam, 'coverImg': null})
     setCoverImg(newCoverURL)
+    // setCoverImg("https://firebasestorage.googleapis.com/v0/b/langtime-27547.appspot.com/o/coverImg%2Fdefault.jpg?alt=media&token=d8b6f8dc-54f5-4d2d-a361-3b5b6b8bcf1e")
+    // checkDefaultImage(e)
+    }
+
   }
 
   if (data) {
@@ -279,7 +309,10 @@ export function EditDictionary({ data, setData, queryParam, queryName, setUpView
                   </Upload> */}
               <div>
                 <UploadFile style={{display: 'inline-block', marginRight: '20px'}}/>
-                <Button icon={<DeleteOutlined/>} style={{display: 'inline-block', marginRight: '20px'}} onClick={handleDelImg}>Delete</Button>
+                <Button id="del-image" icon={<DeleteOutlined/>} style={{display: 'inline-block', marginRight: '20px'}} onClick={(e) => handleDelImg(e)}>Delete</Button>
+              </div>
+              <div id="img-error" style={{display: "none"}}>
+                <p>Upload File must be jpg or png!</p>
               </div>
             </div>
 
@@ -343,5 +376,14 @@ function checkLangNameExists(langName) {
   } else {
     let errormsg = document.getElementById("name-error")
     errormsg.style.display = "none"
+  }
+}
+
+// Disable cancel upload image on default image
+function checkDefaultImage(e) {
+  if (coverImg.includes("default.jpg") || coverImg === undefined) {
+    e.disabled = true;
+  } else {
+    e.disabled = false;
   }
 }

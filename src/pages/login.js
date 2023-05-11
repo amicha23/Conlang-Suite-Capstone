@@ -72,6 +72,5 @@ export default function login() {
             </div >
         </section>
       </div>
-
   );
 }
