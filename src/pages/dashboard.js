@@ -127,7 +127,9 @@ function LangCard(props) {
 
     return (
         <Card onClick={handleClick} hoverable
-            cover={<img alt="Picture for given dictionary" src={props.langImg} />}>
+            cover={<img alt="Picture for given dictionary" src="/langtime-logo.JPG" />}>
+            {/* commented out firebase images for deploy */}
+            {/* cover={<img alt="Picture for given dictionary" src={props.langImg} />}>  */}
             <Meta title={props.langName} />
         </Card>
     )

@@ -183,17 +183,11 @@ export function SetUp({setUpView, changeSetUpView, file, setFile, blob, setBlob}
             />
             {/* )} */}
 
-                {/* <p>Upload Custom Font</p> */}
-                {/* Removed file props for now */}
-                {/* <Upload > */}
-                  {/* <Button icon={<UploadOutlined />}>Click to Upload</Button> */}
-                {/* </Upload> */}
 
-                <p>Upload Cover Image</p>
-                {/* <Upload {...props}>
-                  <Button icon={<UploadOutlined />}>Click to Upload</Button>
-                </Upload> */}
-                <UploadFile />
+                {/* comment out upload image for deploy */}
+
+                {/* <p>Upload Cover Image</p>
+                <UploadFile /> */}
               </div>
               <div id="img-error" style={{display: "none"}}>
                 <p>Upload File must be jpg or png!</p>
