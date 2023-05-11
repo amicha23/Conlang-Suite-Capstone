@@ -1,17 +1,15 @@
-import {
+import { 
   onAuthStateChanged,
-  signOut,
-  createUserWithEmailAndPassword,
+  signOut, 
+  createUserWithEmailAndPassword, 
   signInWithEmailAndPassword,
   sendPasswordResetEmail,
   GoogleAuthProvider,
   getAuth,
   signInWithPopup } from "firebase/auth";
-
-import { ref, child, update, set, get } from "firebase/database";
+import { ref, set, get } from "firebase/database";
 import { db, auth } from "firebaseConfig/firebaseAdmin";
-import { useRouter } from 'next/router';
-import getCurrentUid from '../pages/api/user/getCurrentUID';
+
 // var testAuth = {
 //   email: "test@test.me",
 //   password: "Test1234"
@@ -24,24 +22,23 @@ export async function registerUser() {
 
   try {
     const userCredential = await createUserWithEmailAndPassword(auth, registerEmail, registerPassword);
-
+    
     console.log("Successful registered HERE!")
-
+    
     const userKey = userCredential.user.uid;
-
+    
     set(ref(db, 'users/' + userKey), {
       username: registerUserName,
       lid: "",
 
     }).then(() => {
       console.log("User data pushed successfully");
-      window.location.href = '/login';
     })
     .catch((error) => {
       console.error("Error pushing data:", error);
     });
 
-    // window.location.href = '/login';
+    window.location.href = '/login';
 
   }
   catch(error) {
@@ -60,14 +57,9 @@ export async function loginUser() {
     await signInWithEmailAndPassword(auth, loginEmail, loginPassword)
     console.log("Successful logged in HERE!");
 
-    const uid :any = await getCurrentUid();
-    console.log("TEST", uid)
-    sessionStorage.setItem("uid", uid);
-    console.log("TES UID", sessionStorage.getItem("uid"))
     window.location.href = '/dashboard';
     // router.push({pathname: '/dashboard'});
-
-
+    
   }
   catch(error) {
     console.log(`There was an error: ${error}`);
@@ -89,54 +81,52 @@ export async function monitorAuthState()  {
 }
 
 
-// export async function googleLogin() {
-//   const provider = new GoogleAuthProvider();
-//   signInWithPopup(auth, provider)
-//   .then((result) => {
-//     // This gives you a Google Access Token. You can use it to access the Google API.
-//     const credential = GoogleAuthProvider.credentialFromResult(result);
-//     const user = result.user;
-//     const uid = user.uid;
-//     const refUser = ref(db, 'users/');
-//     const snapshot = await get(userRef);
-//     alert("google loign successfully");
-//     // window.location.href = '/dashboard';
-//   }).catch((error) => {
-//     // Handle Errors here.
-//     // const errorCode = error.code;
-//     // const errorMessage = error.message;
-//     // The email of the user's account used.
-//     // const email = error.customData.email;
-//     // The AuthCredential type that was used.
-//     // const credential = GoogleAuthProvider.credentialFromError(error);
-//     // ...
-//   });
-
-// }
-
 export async function googleLogin() {
   const provider = new GoogleAuthProvider();
-  signInWithPopup(auth, provider)
-  .then(async (result) => {
+  try {
+    const result = await signInWithPopup(auth, provider);
     // This gives you a Google Access Token. You can use it to access the Google API.
     const credential = GoogleAuthProvider.credentialFromResult(result);
     const user = result.user;
-    // IdP data available using getAdditionalUserInfo(result)
-    // ...
-    alert("google login successfully");
-    const uid :any = await getCurrentUid();
+    const uid = user.uid;
+
+    const userRef = ref(db, 'users');
+    const snapshot = await get(userRef);
+    if (!snapshot.exists()) {
+      return 'snapshot not found';
+    }
+    let users = snapshot.val();
+    let userIds = Object.keys(users);
+    alert("Google login successful");
+
     console.log("Google UID", uid)
     sessionStorage.setItem("uid", uid);
     console.log("TEST GOOGLE UID", sessionStorage.getItem("uid"))
-    window.location.href = '/dashboard';
-  }).catch((error) => {
+
+    if (!userIds.includes(uid)) {
+      set(ref(db, 'users/' + uid), {
+        username: user.displayName,
+        lid: "",
+  
+      }).then(() => {
+        console.log("User data pushed successfully");
+      })
+      .catch((error) => {
+        console.error("Error pushing data:", error);
+      });
+    }
+
+    window.open('/dashboard', `_self`);
+  } catch (error: any) {
     // Handle Errors here.
     const errorCode = error.code;
     const errorMessage = error.message;
     alert(`Google login failed with error code ${errorCode} and message ${errorMessage}`);
     // ...
-  })
+  }
 }
+
+
 
 export async function logoutUser() {
   await signOut(auth);
@@ -156,6 +146,4 @@ export async function resetPassword() {
       const errorMessage = error.message;
       alert(errorCode + errorMessage)
     });
-
 }
-
