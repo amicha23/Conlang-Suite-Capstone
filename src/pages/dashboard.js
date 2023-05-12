@@ -137,7 +137,7 @@ function LangCard(props) {
 
   function LangCards({langData}) {
     console.log('LANGDATA2: ' + JSON.stringify(langData));
-    if (langData === "No data available") {
+    if (langData === "No data available" || langData.languageIDs === "") {
         console.log("no images", langData)
         return null
     }
