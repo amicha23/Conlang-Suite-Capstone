@@ -137,20 +137,20 @@ function LangCard(props) {
 
   function LangCards({langData}) {
     console.log('LANGDATA2: ' + JSON.stringify(langData));
-    if (langData === "No data available" || langData.languageCovers[0] === undefined) {
+    if (langData === "No data available") {
         console.log("no images", langData)
         return null
     }
         const langIDS = langData.languageIDs.split(",");
         const langNames = langData.languageNames;
-        const langImgs = langData.languageCovers;
+        // const langImgs = langData.languageCovers;
 
 
         let langCards = [];
         for (let i = 0; i < langNames.length; i++) {
             langCards.push(
                 <Col span={6}>
-                    <LangCard langName={langNames[i]} langImg={langImgs[i]} langID={langIDS[i]} key={langIDS[i]}/>
+                    <LangCard langName={langNames[i]} langID={langIDS[i]} key={langIDS[i]}/>
                 </Col>
             )
         }
