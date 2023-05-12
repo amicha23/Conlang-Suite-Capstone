@@ -97,7 +97,7 @@ export default function setup() {
                 <p className='fields'>
                   To get started, you'll need to set up the header fields.
                   These fields will be used to organize your dictionary.
-                  Some common header fields are: [X, X, X].
+                  Some common header fields are: English Definition, Orthographic forms, Pronunciation.
                   You can also create your own header fields that make sense for your language.
                   Once your header fields are set up, you'll be ready to start adding words and their definitions.
                 </p>
@@ -151,7 +151,7 @@ export default function setup() {
                         // console.log("Blob: ", blob)
                         await saveDictionaryFields(fieldView);
                         // Router.push({pathname: '/dashboard'})
-                        window.open('/dashboard', `_self`);
+                        // window.open('/dashboard', `_self`);
                       }}
                       >
                       Create Dictionary

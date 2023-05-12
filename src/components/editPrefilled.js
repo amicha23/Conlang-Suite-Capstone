@@ -90,6 +90,7 @@ function PreFilledList({ fields, setFields, data, setData, queryParam}) {
       // await fetchData()
     } else {
       console.log("updated column failed ", updateFieldData)
+      window.alert('Updated column failed. Make sure header does not contain ".", "#", "$", "[", or "]"')
     }
 
     let getLandData = await getLangData({'lid' : queryParam});
@@ -150,6 +151,7 @@ function PreFilledList({ fields, setFields, data, setData, queryParam}) {
       // await fetchData()
     } else {
       console.log("Add column failed ", addCol)
+      window.alert('Add column failed. Make sure header does not contain ".", "#", "$", "[", or "]"')
     }
     // setFields((prevTodos) => {
     //   return prevTodos.concat(AddColumn.name);

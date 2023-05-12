@@ -71,8 +71,10 @@ export default async function saveDictionaryFields(fieldView :any) {
 
   if (createSetupData === "Success") {
     console.log('sent dictionary fields :>> ', createSetupData);
+    window.open('/dashboard', `_self`);
   } else {
     console.log("failed to create dictionary ", createSetupData)
+    window.alert('Failed to create dictionary. Make sure headers do not contain ".", "#", "$", "/", "[", or "]" ')
   }
 
 }
