@@ -45,10 +45,10 @@ export default async function saveEditDictionaryInfo(data) {
 
   let langName = (document.getElementById('langNameID')).value
   let desc = (document.querySelectorAll('TextArea')[0]).value
-  let img = (document.getElementById('uploadImg')).textContent
+  // let img = (document.getElementById('uploadImg')).textContent
   let consonantList = (document.getElementById('langConsonantsID')).value
   let vowelList = (document.getElementById('langVowelsID')).value
-  console.log("IMG ", img)
+  // console.log("IMG ", img)
   console.log('consonantList :>> ', consonantList.split(""));
   console.log('vowelList :>> ', vowelList.split(""));
 

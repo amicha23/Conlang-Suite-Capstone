@@ -57,7 +57,7 @@ const { TextArea } = Input;
 
 
 
-export function SetUp({setUpView, changeSetUpView, file, setFile, blob, setBlob}) {
+export function SetUp({setUpView, changeSetUpView}) {
   const [langName, setValue] = useState('');
   const [langDesc, setDesc] = useState('');
 
@@ -66,57 +66,6 @@ export function SetUp({setUpView, changeSetUpView, file, setFile, blob, setBlob}
   const [vowelList, setVowelList] = useState([]);
 
   const router = useRouter();
-  // const [setUpView, changeSetUpView] = useState(true);
-
-  function UploadFile() {
-
-
-    function handleUpload(info) {
-      if (info.file.status === "done" && (info.file.type === "image/png" || info.file.type === "image/jpeg")) {
-        setFile(info.file)
-        message.success(`${info.file.name} file uploaded successfully`);
-        const reader = new FileReader();
-        reader.readAsDataURL(info.file.originFileObj);
-        reader.onload = () => {
-          const blob = new Blob([reader.result], { type: info.file.type });
-          sendBlobToServer(blob);
-          console.log("CHECK FOR FILE ", info.file)
-          console.log("CHECK FOR BLOB ", blob)
-          setBlob(blob)
-          let errormsgImg = document.getElementById("img-error")
-          errormsgImg.style.display="none"
-        };
-      } else if (info.file.status === "error") {
-        message.error(`${info.file.name} file upload failed.`);
-      } else if (info.file.type !== "image/png" || info.file.type !== "image/jpeg") {
-        let errormsgImg = document.getElementById("img-error")
-        errormsgImg.style.display="block"
-        // message.error(`${info.file.name} file upload failed.`);
-      }
-    }
-
-    async function sendBlobToServer(blob) {
-      const formData = new FormData();
-      formData.append("file", blob);
-      // await uploadCoverImg(formData);
-      // try {
-      //   const response = await fetch("/upload", {
-      //     method: "POST",
-      //     body: formData,
-      //   });
-      //   const data = await response.json();
-      //   console.log(data);
-      // } catch (error) {
-      //   console.error(error);
-      // }
-    }
-
-    return (
-      <Upload id="uploadImg" onChange={handleUpload}>
-        <Button icon={<UploadOutlined />}>Click to Upload</Button>
-      </Upload>
-    );
-  }
 
   const backToDashboard = () => {
     window.open(`/dashboard`, `_self`);
@@ -182,12 +131,6 @@ export function SetUp({setUpView, changeSetUpView, file, setFile, blob, setBlob}
               noDup={true}
             />
             {/* )} */}
-
-
-                {/* comment out upload image for deploy */}
-
-                {/* <p>Upload Cover Image</p>
-                <UploadFile /> */}
               </div>
               <div id="img-error" style={{display: "none"}}>
                 <p>Upload File must be jpg or png!</p>
@@ -207,16 +150,6 @@ export function SetUp({setUpView, changeSetUpView, file, setFile, blob, setBlob}
                         checkLangNameExists(langName)
                         changeSetUpView(false);
                       }
-                      // Response.Cache.SetCacheability(HttpCacheability.NoCache);
-                      // Response.Cache.SetExpires(DateTime.Now);
-                      // saveUserInfo({langName, langDesc})
-
-                      // sessionStorage.langName = langName;
-                      // sessionStorage.langDesc = langDesc;
-
-                      // router.push('/setupFields')
-                      // console.log("Language Name: ", sessionStorage.langName);
-                      // console.log("Language Desc: ", sessionStorage.langName);
                     }}>
                     Continue
                  </Button>

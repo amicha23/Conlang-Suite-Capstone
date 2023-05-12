@@ -37,22 +37,22 @@ export default async function createSetup(data) {
 
     const newLangKey = push(child(ref(db), "languages")).key;
 
-    const storage = getStorage();
-    const desertRef = storageRef(storage, `coverImg/default.jpg`);
-    var coverURL = await getDownloadURL(desertRef);
+    // const storage = getStorage();
+    // const desertRef = storageRef(storage, `coverImg/default.jpg`);
+    // var coverURL = await getDownloadURL(desertRef);
 
-    if (data.coverFile) {
-      console.log(
-        "data.coverFile.originFileObj :>> ",
-        data.coverFile.originFileObj
-      );
-      coverURL = await uploadCoverImg(
-        data.coverFile.originFileObj,
-        newLangKey
-      );
-    }
+    // if (data.coverFile) {
+    //   console.log(
+    //     "data.coverFile.originFileObj :>> ",
+    //     data.coverFile.originFileObj
+    //   );
+    //   coverURL = await uploadCoverImg(
+    //     data.coverFile.originFileObj,
+    //     newLangKey
+    //   );
+    // }
 
-    langData["coverURL"] = coverURL;
+    // langData["coverURL"] = coverURL;
 
     // Update user data with new language ID and name
     const userRef = ref(db, `users/${uid}`);

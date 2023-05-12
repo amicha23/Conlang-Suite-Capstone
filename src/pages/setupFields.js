@@ -36,26 +36,6 @@ const { TextArea } = Input;
 
 
 
-// Implement file upload later
-const props = {
-  name: 'file',
-  action: 'https://www.mocky.io/v2/5cc8019d300000980a055e76',
-  headers: {
-    authorization: 'authorization-text',
-  },
-  onChange(info) {
-    if (info.file.status !== 'uploading') {
-      console.log(info.file, info.fileList);
-    }
-    if (info.file.status === 'done') {
-      message.success(`${info.file.name} file uploaded successfully`);
-    } else if (info.file.status === 'error') {
-      message.error(`${info.file.name} file upload failed.`);
-    }
-  },
-};
-
-
 export default function setup() {
   const [langName, setValue] = useState('');
   const [langDesc, setDesc] = useState('');
@@ -96,7 +76,7 @@ export default function setup() {
   return (
       <div>
           <div id="LangInfo-Setup" style={{display: setUpView ? "block" : "none"}}>
-            <SetUp setUpView={setUpView} changeSetUpView={changeSetUpView} file={file} setFile={setFile} blob={blob} setBlob={setBlob}/>
+            <SetUp setUpView={setUpView} changeSetUpView={changeSetUpView} />
           </div>
           <div id="Fields-Setup"  style={{display: setUpView ? "none" : "block"}}>
             <Layout>
@@ -167,9 +147,9 @@ export default function setup() {
                       type="primary"
                       htmlType="submit"
                       onClick={async () => {
-                        console.log("FILE: ", file)
-                        console.log("Blob: ", blob)
-                        await saveDictionaryFields(fieldView, file, blob);
+                        // console.log("FILE: ", file)
+                        // console.log("Blob: ", blob)
+                        await saveDictionaryFields(fieldView);
                         // Router.push({pathname: '/dashboard'})
                         window.open('/dashboard', `_self`);
                       }}
