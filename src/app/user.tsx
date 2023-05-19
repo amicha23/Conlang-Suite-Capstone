@@ -24,7 +24,7 @@ export async function registerUser() {
   try {
     const userCredential = await createUserWithEmailAndPassword(auth, registerEmail, registerPassword);
 
-    console.log("Successful registered HERE!")
+    console.log("Successful registered HERE!!")
 
     const userKey = userCredential.user.uid;
 

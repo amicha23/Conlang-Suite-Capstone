@@ -45,24 +45,26 @@ async function registerUser() {
     }
   try {
     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-    
+
     console.log("Successful registered HERE!");
-    console.log(userCredential.user.uid);
-    console.log(registerUserName)
+    // console.log(userCredential.user.uid);
+    // console.log(registerUserName)
     const userKey = userCredential.user.uid;
-    
+
     set(ref(db, 'users/' + userKey), {
       username: registerUserName,
       lid: "",
 
     }).then(() => {
       console.log("User data pushed successfully");
+      window.open('/login', `_self`);
+
     })
     .catch((error) => {
       console.error("Error pushing data:", error);
     });
 
-    window.open('/login', `_self`);
+    // window.open('/login', `_self`);
 
   }
   catch(error) {
